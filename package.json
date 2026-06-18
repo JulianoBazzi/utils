@@ -33,7 +33,7 @@
     "access": "public"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
     "dayjs": "1.11.21"

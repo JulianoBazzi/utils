@@ -45,6 +45,11 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatAddress(address)` — monta um endereço em uma linha
 - `formatCityAndState(city?, state?)` — `"Cidade - UF"` (ou `"Não Informado"`)
 - `formatWeekDay(date?)` — data + dia da semana abreviado, ex.: `15/6 - Sáb`
+- `formatCPF(value?)` — `000.000.000-00`
+- `formatCNPJ(value?)` — `00.000.000/0000-00` (suporta CNPJ alfanumérico)
+- `formatDocument(value?)` — formata como CPF ou CNPJ conforme o tamanho
+- `formatPostalCode(value?)` — CEP `00000-000`
+- `removeAccents(value?)` — remove acentos, ex.: `João` → `Joao`
 - `onlyNumbers(value?)` — remove tudo que não for dígito
 - `truncate(value?, length = 40)` — corta o texto e adiciona `...`
 - `getLastCharacter(value?)` — último caractere de uma string
@@ -59,6 +64,10 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `isValidUrl(value)` — `true` para URL `http`/`https` válida
 - `isValidPhone(value?)` — `true` para telefone BR válido (fixo ou celular)
 - `isBirthday(value?)` — `true` se a data cai no dia/mês de hoje
+- `isValidCPF(value?)` — `true` para CPF com dígitos verificadores válidos
+- `isValidCNPJ(value?)` — `true` para CNPJ válido (numérico ou alfanumérico)
+- `isValidDocument(value?)` — valida como CPF ou CNPJ conforme o tamanho
+- `isValidPostalCode(value?)` — `true` para CEP de 8 dígitos
 
 ### number (números)
 - `precisionRound(value?, precision = 2)` — arredonda para N casas decimais
