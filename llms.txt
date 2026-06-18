@@ -31,9 +31,9 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `formatDocument(value?: string): string` — formata como CPF (≤11 chars) ou CNPJ (senão).
 - `formatCityAndState(city?: string, state?: string): string` — `"São Paulo", "SP"` → `"São Paulo - SP"`. Só um → sem traço. Ambos vazios → `"Não Informado"`.
 - `formatCurrency(value?: number, divisor = 100): string` — BRL; divide por `divisor` (centavos). `1990` → `"R$ 19,90"`. Zero/ausente → `"R$ 0,00"`.
-- `formatDate(value?: string | null, simplified = true): string` — `"2024-01-02"` → `"02/01/24"`; `simplified=false` → `"02/01/2024"`.
-- `formatDateTime(date?: string | null, simplified = true): string` — `"02/01/24 13:45"` (ou ano com 4 dígitos).
-- `formatHour(value?: string | null, simplified = true): string` — `"...T13:45:30"` → `"13:45"` (ou `"13:45:30"` com `simplified = false`).
+- `formatDate(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"2024-01-02"` → `"02/01/24"`; `{ simplified: false }` → `"02/01/2024"`; `{ fallback }` p/ vazio.
+- `formatDateTime(date?: string | null, options?: { simplified?: boolean; showSeconds?: boolean; fallback?: string }): string` — `"02/01/24 13:45"`; `{ simplified: false }` → ano 4 dígitos; `{ showSeconds: true }` → `"...13:45:30"`.
+- `formatHour(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"13:45"` (ou `"13:45:30"` via `{ simplified: false }`).
 - `formatMonth(value?: string | null): string` — `"2024-01-02"` → `"01/2024"`.
 - `formatWeekDay(date?: string): string` — `"2024-06-15"` → `"15/6 - Sáb"` (pt-BR, por instância, sem mutar dayjs global).
 - `formatSecondsToTime(value?: number, showSeconds = true): string` — segundos → `"01:01:01"` (ou `"01:01"`). Negativos tratados como positivos.

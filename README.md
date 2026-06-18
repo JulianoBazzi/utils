@@ -31,10 +31,10 @@ onlyNumbers("(11) 98765-4321"); // "11987654321"
 Todas as funções são exportadas de forma plana a partir da raiz do pacote, agrupadas internamente por finalidade.
 
 ### formatting (formatação)
-- `formatDate(value?, simplified = true)` — `DD/MM/YY` (ou `DD/MM/YYYY`)
-- `formatDateTime(date?, simplified = true)` — `DD/MM/YY HH:mm` (ou `DD/MM/YYYY HH:mm`)
+- `formatDate(value?, { simplified?, fallback? })` — `DD/MM/YY` (ou `DD/MM/YYYY`)
+- `formatDateTime(date?, { simplified?, showSeconds?, fallback? })` — `DD/MM/YY HH:mm` (ano 4 dígitos e/ou `:ss` opcionais)
 - `formatMonth(value?)` — `MM/YYYY`
-- `formatHour(value?, simplified = true)` — `HH:mm` (ou `HH:mm:ss`)
+- `formatHour(value?, { simplified?, fallback? })` — `HH:mm` (ou `HH:mm:ss`)
 - `formatDuration(minutes?)` — duração legível, ex.: `1h e 30 min`
 - `formatCurrency(value?, divisor = 100)` — moeda BRL, ex.: `R$ 19,90`
 - `formatPercentage(value?, round = false)` — porcentagem, ex.: `12,50%`
