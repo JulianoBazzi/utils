@@ -10,7 +10,13 @@ describe("contains", () => {
     expect(contains(3, [1, 2])).toBe(false);
   });
 
-  it("returns false for a falsy value", () => {
+  it("matches falsy members that are present", () => {
+    expect(contains(0, [0, 1])).toBe(true);
+    expect(contains(false, [false])).toBe(true);
+    expect(contains("", ["", "a"])).toBe(true);
+  });
+
+  it("returns false when a falsy value is absent", () => {
     expect(contains("", ["a"])).toBe(false);
   });
 });

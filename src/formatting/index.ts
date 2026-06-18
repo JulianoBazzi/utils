@@ -12,6 +12,7 @@ export * from "./formatDocument.js";
 export * from "./formatDuration.js";
 export * from "./formatHour.js";
 export * from "./formatMonth.js";
+export * from "./formatPercentage.js";
 export * from "./formatPhone.js";
 export * from "./formatPostalCode.js";
 export * from "./formatSecondsToTime.js";

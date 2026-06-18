@@ -37,6 +37,7 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatHour(value?)` — `HH:mm`
 - `formatDuration(minutes?)` — duração legível, ex.: `1h e 30 min`
 - `formatCurrency(value?, divisor = 100)` — moeda BRL, ex.: `R$ 19,90`
+- `formatPercentage(value?, round = false)` — porcentagem, ex.: `12,50%`
 - `formatBoolean(value?)` — `Sim` / `Não`
 - `formatPhone(phone?)` — máscara de telefone BR (10 ou 11 dígitos)
 - `formatBytes(bytes?, round = false)` — tamanho legível, ex.: `1.50 KB`
@@ -68,11 +69,12 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `isValidCNPJ(value?)` — `true` para CNPJ válido (numérico ou alfanumérico)
 - `isValidDocument(value?)` — valida como CPF ou CNPJ conforme o tamanho
 - `isValidPostalCode(value?)` — `true` para CEP de 8 dígitos
+- `isValidEmail(value?)` — `true` para email válido
+- `isValidUF(value?)` — `true` para sigla de estado BR válida (case-insensitive)
 
 ### number (números)
 - `precisionRound(value?, precision = 2)` — arredonda para N casas decimais
 - `formatInteger(value?)` — arredonda para o inteiro mais próximo
-- `generateOTP(length = 6)` — gera um OTP numérico aleatório
 - `toPositive(value?)` — limita a um valor não negativo
 - `getRandomInt(min = 1, max = 100)` — inteiro aleatório no intervalo (inclusivo)
 - `safeDivide(value1, value2?)` — divide; 0 quando o divisor é ≤ 0 ou ausente

@@ -7,5 +7,5 @@
  */
 export function onlyNumbers(value?: string | null): string {
   if (!value) return "";
-  return String(value).replace(/[^0-9]/g, "");
+  return value.replace(/[^0-9]/g, "");
 }

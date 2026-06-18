@@ -6,22 +6,29 @@
  * formatBytes(1536) // "1.50 KB"
  * formatBytes(1536, true) // "2 KB"
  */
+const KB = 1024;
+const MB = 1024 ** 2;
+const GB = 1024 ** 3;
+
 export function formatBytes(bytes?: number, round = false): string {
   if (!bytes) {
     return "0 Bytes";
   }
 
-  if (bytes < 1024) {
+  if (bytes < KB) {
     return `${bytes} Bytes`;
   }
 
-  if (bytes < 1024 ** 2) {
-    return round ? `${Math.round(bytes / 1024)} KB` : `${(bytes / 1024).toFixed(2)} KB`;
+  const format = (size: number, unit: string) =>
+    round ? `${Math.round(size)} ${unit}` : `${size.toFixed(2)} ${unit}`;
+
+  if (bytes < MB) {
+    return format(bytes / KB, "KB");
   }
 
-  if (bytes < 1024 ** 3) {
-    return round ? `${Math.round(bytes / 1024 ** 2)} MB` : `${(bytes / 1024 ** 2).toFixed(2)} MB`;
+  if (bytes < GB) {
+    return format(bytes / MB, "MB");
   }
 
-  return round ? `${Math.round(bytes / 1024 ** 3)} GB` : `${(bytes / 1024 ** 3).toFixed(2)} GB`;
+  return format(bytes / GB, "GB");
 }

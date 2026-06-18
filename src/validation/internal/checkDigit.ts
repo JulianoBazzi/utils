@@ -7,9 +7,9 @@
  */
 export function checkDigit(value: string, weights: number[]): number {
   let sum = 0;
-  weights.forEach((weight, index) => {
-    sum += (value.charCodeAt(index) - 48) * weight;
-  });
+  for (let i = 0; i < weights.length; i += 1) {
+    sum += (value.charCodeAt(i) - 48) * (weights[i] as number);
+  }
 
   const rest = sum % 11;
   return rest < 2 ? 0 : 11 - rest;

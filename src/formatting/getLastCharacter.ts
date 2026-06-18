@@ -5,9 +5,5 @@
  * getLastCharacter("hello") // "o"
  */
 export function getLastCharacter(value?: string): string {
-  if (value && value.length > 0) {
-    return value.charAt(value.length - 1);
-  }
-
-  return "";
+  return value ? value.slice(-1) : "";
 }
