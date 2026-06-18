@@ -34,7 +34,7 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatDate(value?, simplified = true)` — `DD/MM/YY` (ou `DD/MM/YYYY`)
 - `formatDateTime(date?, simplified = true)` — `DD/MM/YY HH:mm` (ou `DD/MM/YYYY HH:mm`)
 - `formatMonth(value?)` — `MM/YYYY`
-- `formatHour(value?)` — `HH:mm`
+- `formatHour(value?, simplified = true)` — `HH:mm` (ou `HH:mm:ss`)
 - `formatDuration(minutes?)` — duração legível, ex.: `1h e 30 min`
 - `formatCurrency(value?, divisor = 100)` — moeda BRL, ex.: `R$ 19,90`
 - `formatPercentage(value?, round = false)` — porcentagem, ex.: `12,50%`
