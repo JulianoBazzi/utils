@@ -10,6 +10,10 @@ describe("formatPhone", () => {
     expect(formatPhone("11912345678")).toBe("(11) 91234-5678");
   });
 
+  it("strips non-digits from already-masked input", () => {
+    expect(formatPhone("(11) 1234-5678")).toBe("(11) 1234-5678");
+  });
+
   it("returns empty string for missing input", () => {
     expect(formatPhone()).toBe("");
     expect(formatPhone(null)).toBe("");

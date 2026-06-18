@@ -15,4 +15,9 @@ describe("isOdd", () => {
     expect(isOdd(-4)).toBe(false);
     expect(isOdd(0)).toBe(false);
   });
+
+  it("returns false for non-integers and NaN", () => {
+    expect(isOdd(2.5)).toBe(false);
+    expect(isOdd(Number.NaN)).toBe(false);
+  });
 });

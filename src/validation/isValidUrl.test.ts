@@ -11,5 +11,6 @@ describe("isValidUrl", () => {
     expect(isValidUrl("ftp://example.com")).toBe(false);
     expect(isValidUrl("not a url")).toBe(false);
     expect(isValidUrl("")).toBe(false);
+    expect(isValidUrl()).toBe(false);
   });
 });

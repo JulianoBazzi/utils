@@ -9,6 +9,10 @@
     "type": "git",
     "url": "git+https://github.com/julianobazzi/utils.git"
   },
+  "homepage": "https://github.com/julianobazzi/utils#readme",
+  "bugs": {
+    "url": "https://github.com/julianobazzi/utils/issues"
+  },
   "keywords": [
     "utils",
     "typescript",
@@ -35,6 +39,7 @@
   "engines": {
     "node": ">=20"
   },
+  "packageManager": "pnpm@11.6.0",
   "dependencies": {
     "dayjs": "1.11.21"
   },
@@ -48,7 +53,7 @@
     "lint:fix": "biome check --write",
     "format": "biome format --write",
     "release": "changeset publish",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "pnpm run build"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.0",

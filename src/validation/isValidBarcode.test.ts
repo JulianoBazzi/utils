@@ -17,5 +17,6 @@ describe("isValidBarcode", () => {
   it("rejects an invalid length", () => {
     expect(isValidBarcode("123")).toBe(false);
     expect(isValidBarcode("abc")).toBe(false);
+    expect(isValidBarcode()).toBe(false);
   });
 });

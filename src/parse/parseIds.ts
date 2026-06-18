@@ -1,6 +1,6 @@
 /**
- * Parse one or more comma-separated id strings into a deduplicated-free list
- * of numbers. Non-string and non-numeric entries are dropped.
+ * Parse one or more comma-separated id strings into a flat list of numbers.
+ * Non-string and non-numeric entries are dropped.
  *
  * @example
  * parseIds("1,2", "3") // [1, 2, 3]

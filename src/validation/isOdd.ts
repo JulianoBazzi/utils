@@ -7,5 +7,5 @@
  * isOdd(4) // false
  */
 export function isOdd(value: number): boolean {
-  return value % 2 !== 0;
+  return Number.isInteger(value) && value % 2 !== 0;
 }
