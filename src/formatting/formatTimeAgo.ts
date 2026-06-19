@@ -1,5 +1,10 @@
 import dayjs from 'dayjs';
 
+interface FormatTimeAgoOptions {
+  /** Returned when the input is empty/missing. Defaults to `""`. */
+  fallback?: string;
+}
+
 /**
  * Format how long ago a date was, in Portuguese (e.g. `"5 dias"`, `"2 horas"`).
  * Picks the largest fitting unit (minutos → horas → dias → meses → anos).
@@ -7,10 +12,12 @@ import dayjs from 'dayjs';
  *
  * @example
  * formatTimeAgo(dayjs().subtract(3, "day").toISOString()) // "3 dias"
+ * formatTimeAgo(null, { fallback: "Não Informado" }) // "Não Informado"
  */
-export function formatTimeAgo(date?: string | null): string {
+export function formatTimeAgo(date?: string | null, options: FormatTimeAgoOptions = {}): string {
+  const { fallback = '' } = options;
   if (!date) {
-    return '';
+    return fallback;
   }
 
   const receivedDate = dayjs(date);

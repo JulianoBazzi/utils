@@ -18,4 +18,8 @@ describe('formatWeekDay', () => {
     expect(formatWeekDay()).toBe('');
     expect(formatWeekDay('')).toBe('');
   });
+
+  it('returns the fallback for missing input', () => {
+    expect(formatWeekDay('', { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });

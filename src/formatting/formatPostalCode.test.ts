@@ -10,4 +10,8 @@ describe('formatPostalCode', () => {
     expect(formatPostalCode()).toBe('');
     expect(formatPostalCode('')).toBe('');
   });
+
+  it('returns the fallback for missing input', () => {
+    expect(formatPostalCode('', { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });

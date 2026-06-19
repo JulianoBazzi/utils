@@ -14,4 +14,8 @@ describe('formatDocument', () => {
   it('returns empty string for missing input', () => {
     expect(formatDocument()).toBe('');
   });
+
+  it('returns the fallback for missing input', () => {
+    expect(formatDocument('', { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });

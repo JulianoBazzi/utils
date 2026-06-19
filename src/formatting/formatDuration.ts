@@ -1,3 +1,8 @@
+interface FormatDurationOptions {
+  /** Returned when the input is empty/missing. Defaults to `""`. */
+  fallback?: string;
+}
+
 /**
  * Format a number of minutes as a human-readable duration.
  * Sub-minute values render as seconds. Returns an empty string for missing input.
@@ -7,10 +12,15 @@
  * formatDuration(120) // "2h"
  * formatDuration(45) // "45 min"
  * formatDuration(0.5) // "30s"
+ * formatDuration(null, { fallback: "Não Informado" }) // "Não Informado"
  */
-export function formatDuration(minutes?: number | null): string {
+export function formatDuration(
+  minutes?: number | null,
+  options: FormatDurationOptions = {},
+): string {
+  const { fallback = '' } = options;
   if (!minutes) {
-    return '';
+    return fallback;
   }
 
   if (minutes < 1) {

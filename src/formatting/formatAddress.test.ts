@@ -23,4 +23,8 @@ describe('formatAddress', () => {
     expect(formatAddress({})).toBe('');
     expect(formatAddress({ zipcode: '01000-000' })).toBe('');
   });
+
+  it('returns the fallback when no meaningful field is present', () => {
+    expect(formatAddress({}, { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });

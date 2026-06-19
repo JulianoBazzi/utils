@@ -14,4 +14,8 @@ describe('formatCPF', () => {
     expect(formatCPF()).toBe('');
     expect(formatCPF('')).toBe('');
   });
+
+  it('returns the fallback for missing input', () => {
+    expect(formatCPF('', { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });

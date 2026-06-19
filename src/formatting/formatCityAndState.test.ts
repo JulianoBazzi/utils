@@ -11,8 +11,13 @@ describe('formatCityAndState', () => {
     expect(formatCityAndState(undefined, 'SP')).toBe('SP');
   });
 
+  it('uses a custom separator', () => {
+    expect(formatCityAndState('São Paulo', 'SP', { separator: '/' })).toBe('São Paulo/SP');
+  });
+
   it('returns the fallback when both are empty', () => {
-    expect(formatCityAndState()).toBe('Não Informado');
-    expect(formatCityAndState('', '')).toBe('Não Informado');
+    expect(formatCityAndState()).toBe('');
+    expect(formatCityAndState('', '')).toBe('');
+    expect(formatCityAndState('', '', { fallback: 'Não Informado' })).toBe('Não Informado');
   });
 });

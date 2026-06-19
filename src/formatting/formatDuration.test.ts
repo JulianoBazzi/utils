@@ -22,4 +22,8 @@ describe('formatDuration', () => {
     expect(formatDuration()).toBe('');
     expect(formatDuration(0)).toBe('');
   });
+
+  it('returns the fallback for missing input', () => {
+    expect(formatDuration(null, { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });

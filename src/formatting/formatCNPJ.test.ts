@@ -13,4 +13,8 @@ describe('formatCNPJ', () => {
   it('returns empty string for missing input', () => {
     expect(formatCNPJ()).toBe('');
   });
+
+  it('returns the fallback for missing input', () => {
+    expect(formatCNPJ('', { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });

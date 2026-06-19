@@ -1,5 +1,10 @@
 import { onlyNumbers } from './onlyNumbers.js';
 
+interface FormatPhoneOptions {
+  /** Returned when the input is empty/missing. Defaults to `""`. */
+  fallback?: string;
+}
+
 /**
  * Mask a Brazilian phone number. Strips non-digits first, then handles both
  * 10-digit (landline) and 11-digit (mobile) numbers. Empty input → `""`.
@@ -7,11 +12,13 @@ import { onlyNumbers } from './onlyNumbers.js';
  * @example
  * formatPhone("1112345678") // "(11) 1234-5678"
  * formatPhone("11912345678") // "(11) 91234-5678"
+ * formatPhone(null, { fallback: "Não Informado" }) // "Não Informado"
  */
-export function formatPhone(phone?: string | null): string {
+export function formatPhone(phone?: string | null, options: FormatPhoneOptions = {}): string {
+  const { fallback = '' } = options;
   const digits = onlyNumbers(phone);
   if (!digits) {
-    return '';
+    return fallback;
   }
 
   if (digits.length > 10) {

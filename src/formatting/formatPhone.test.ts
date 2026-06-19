@@ -18,4 +18,8 @@ describe('formatPhone', () => {
     expect(formatPhone()).toBe('');
     expect(formatPhone(null)).toBe('');
   });
+
+  it('returns the fallback for missing input', () => {
+    expect(formatPhone(null, { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });
