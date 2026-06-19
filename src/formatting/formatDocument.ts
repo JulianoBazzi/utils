@@ -1,6 +1,6 @@
-import { onlyAlphanumeric } from "../validation/internal/onlyAlphanumeric.js";
 import { formatCNPJ } from "./formatCNPJ.js";
 import { formatCPF } from "./formatCPF.js";
+import { onlyAlphanumeric } from "./onlyAlphanumeric.js";
 
 /**
  * Format a value as a CPF (≤ 11 chars) or a CNPJ (otherwise).

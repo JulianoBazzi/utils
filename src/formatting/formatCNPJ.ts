@@ -1,4 +1,4 @@
-import { onlyAlphanumeric } from "../validation/internal/onlyAlphanumeric.js";
+import { onlyAlphanumeric } from "./onlyAlphanumeric.js";
 
 /**
  * Format a CNPJ as `00.000.000/0000-00` (legacy) or `12.ABC.345/01DE-35`

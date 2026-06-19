@@ -52,6 +52,7 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatPostalCode(value?)` — CEP `00000-000`
 - `removeAccents(value?)` — remove acentos, ex.: `João` → `Joao`
 - `onlyNumbers(value?)` — remove tudo que não for dígito
+- `onlyAlphanumeric(value?)` — remove não-alfanuméricos + uppercase (`"12.abc"` → `"12ABC"`)
 - `truncate(value?, length = 40)` — corta o texto e adiciona `...`
 - `getLastCharacter(value?)` — último caractere de uma string
 - `abbreviateName(name?)` — `"John Smith"` → `"John S."`

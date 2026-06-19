@@ -1,4 +1,4 @@
-import { onlyAlphanumeric } from "./internal/onlyAlphanumeric.js";
+import { onlyAlphanumeric } from "../formatting/onlyAlphanumeric.js";
 import { isValidCNPJ } from "./isValidCNPJ.js";
 import { isValidCPF } from "./isValidCPF.js";
 

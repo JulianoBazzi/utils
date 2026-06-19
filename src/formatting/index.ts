@@ -20,6 +20,7 @@ export * from "./formatTimeAgo.js";
 export * from "./formatWeekDay.js";
 export * from "./getLastCharacter.js";
 export * from "./joinByKey.js";
+export * from "./onlyAlphanumeric.js";
 export * from "./onlyNumbers.js";
 export * from "./removeAccents.js";
 export * from "./truncate.js";

@@ -43,6 +43,7 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `formatPhone(phone?: string | null): string` — máscara BR. Faz strip antes. `"11912345678"` → `"(11) 91234-5678"`; 10 dígitos → `"(11) 1234-5678"`.
 - `formatPostalCode(value?: string): string` — CEP `"01310100"` → `"01310-100"`.
 - `onlyNumbers(value?: string | null): string` — remove tudo que não é dígito. `"(11) 98765-4321"` → `"11987654321"`.
+- `onlyAlphanumeric(value?: string | null): string` — remove não-alfanuméricos e **uppercase**. `"12.abc-345"` → `"12ABC345"`.
 - `removeAccents(value?: string | null): string` — remove acentos (NFD). `"João Coração"` → `"Joao Coracao"`.
 - `truncate(value?: string | null, length = 40): string` — corta e adiciona `"..."` se exceder `length`.
 - `getLastCharacter(value?: string): string` — último caractere. `"hello"` → `"o"`.
