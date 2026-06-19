@@ -1,6 +1,6 @@
 {
   "name": "@julianobazzi/utils",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A collection of small, tree-shakeable TypeScript utility functions.",
   "type": "module",
   "license": "MIT",
@@ -39,7 +39,7 @@
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "pnpm@11.6.0",
+  "packageManager": "pnpm@11.8.0",
   "dependencies": {
     "dayjs": "1.11.21"
   },
