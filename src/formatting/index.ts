@@ -1,4 +1,5 @@
 export * from './abbreviateName.js';
+export * from './applyCasing.js';
 export * from './formatAddress.js';
 export * from './formatBoolean.js';
 export * from './formatBytes.js';

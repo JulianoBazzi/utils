@@ -11,4 +11,10 @@ describe('formatBoolean', () => {
     expect(formatBoolean()).toBe('Não');
     expect(formatBoolean(null)).toBe('Não');
   });
+
+  it('applies casing', () => {
+    expect(formatBoolean(true, { casing: 'uppercase' })).toBe('SIM');
+    expect(formatBoolean(true, { casing: 'lowercase' })).toBe('sim');
+    expect(formatBoolean(false, { casing: 'uppercase' })).toBe('NÃO');
+  });
 });

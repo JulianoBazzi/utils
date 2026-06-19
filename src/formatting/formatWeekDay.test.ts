@@ -22,4 +22,14 @@ describe('formatWeekDay', () => {
   it('returns the fallback for missing input', () => {
     expect(formatWeekDay('', { fallback: 'Não Informado' })).toBe('Não Informado');
   });
+
+  it('applies casing', () => {
+    expect(formatWeekDay('2024-06-15', { casing: 'uppercase' })).toMatch(/^15\/6 - S\S*$/);
+    expect(formatWeekDay('2024-06-15', { casing: 'uppercase' })).toBe(
+      formatWeekDay('2024-06-15').toUpperCase(),
+    );
+    expect(formatWeekDay('2024-06-15', { casing: 'lowercase' })).toBe(
+      formatWeekDay('2024-06-15').toLowerCase(),
+    );
+  });
 });
