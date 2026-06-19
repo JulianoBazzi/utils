@@ -1,4 +1,4 @@
-import { onlyNumbers } from "../formatting/onlyNumbers.js";
+import { onlyNumbers } from '../formatting/onlyNumbers.js';
 
 // All characters identical (e.g. "11111111").
 const isRepeated = (value: string): boolean => /^(\d)\1*$/.test(value);
@@ -23,7 +23,7 @@ export function isValidPhone(value?: string): boolean {
   }
 
   // DDD não pode começar com 0.
-  if (phone.length > 9 && [0, 1].includes(phone.indexOf("0"))) {
+  if (phone.length > 9 && [0, 1].includes(phone.indexOf('0'))) {
     return false;
   }
 
@@ -35,5 +35,5 @@ export function isValidPhone(value?: string): boolean {
   }
 
   // Celular (9 dígitos): inicia com 9.
-  return shortNumber[0] === "9";
+  return shortNumber[0] === '9';
 }

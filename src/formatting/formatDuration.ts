@@ -10,7 +10,7 @@
  */
 export function formatDuration(minutes?: number | null): string {
   if (!minutes) {
-    return "";
+    return '';
   }
 
   if (minutes < 1) {

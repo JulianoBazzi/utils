@@ -1,13 +1,13 @@
-import { describe, expect, it } from "vitest";
-import { getLastCharacter } from "./getLastCharacter.js";
+import { describe, expect, it } from 'vitest';
+import { getLastCharacter } from './getLastCharacter.js';
 
-describe("getLastCharacter", () => {
-  it("returns the last character", () => {
-    expect(getLastCharacter("hello")).toBe("o");
+describe('getLastCharacter', () => {
+  it('returns the last character', () => {
+    expect(getLastCharacter('hello')).toBe('o');
   });
 
-  it("returns empty string for empty/missing input", () => {
-    expect(getLastCharacter("")).toBe("");
-    expect(getLastCharacter()).toBe("");
+  it('returns empty string for empty/missing input', () => {
+    expect(getLastCharacter('')).toBe('');
+    expect(getLastCharacter()).toBe('');
   });
 });

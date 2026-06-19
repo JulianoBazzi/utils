@@ -1,6 +1,6 @@
-import { onlyAlphanumeric } from "../formatting/onlyAlphanumeric.js";
-import { isValidCNPJ } from "./isValidCNPJ.js";
-import { isValidCPF } from "./isValidCPF.js";
+import { onlyAlphanumeric } from '../formatting/onlyAlphanumeric.js';
+import { isValidCNPJ } from './isValidCNPJ.js';
+import { isValidCPF } from './isValidCPF.js';
 
 /**
  * Validate a value as either a CPF (11 chars) or a CNPJ (14 chars).

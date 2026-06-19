@@ -1,4 +1,4 @@
-import { onlyAlphanumeric } from "./onlyAlphanumeric.js";
+import { onlyAlphanumeric } from './onlyAlphanumeric.js';
 
 /**
  * Format a CNPJ as `00.000.000/0000-00` (legacy) or `12.ABC.345/01DE-35`
@@ -10,9 +10,9 @@ import { onlyAlphanumeric } from "./onlyAlphanumeric.js";
  */
 export function formatCNPJ(value?: string): string {
   const cnpj = onlyAlphanumeric(value);
-  if (!cnpj) return "";
+  if (!cnpj) return '';
 
   return cnpj
-    .padStart(14, "0")
-    .replace(/^([0-9A-Z]{2})([0-9A-Z]{3})([0-9A-Z]{3})([0-9A-Z]{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+    .padStart(14, '0')
+    .replace(/^([0-9A-Z]{2})([0-9A-Z]{3})([0-9A-Z]{3})([0-9A-Z]{4})(\d{2})$/, '$1.$2.$3/$4-$5');
 }

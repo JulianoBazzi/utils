@@ -1,1 +1,1 @@
-export * from "./parseIds.js";
+export * from './parseIds.js';

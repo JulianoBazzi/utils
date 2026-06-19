@@ -8,7 +8,7 @@
  */
 export function abbreviateName(name?: string): string {
   if (!name) {
-    return "";
+    return '';
   }
 
   const words = name.trim().split(/\s+/);

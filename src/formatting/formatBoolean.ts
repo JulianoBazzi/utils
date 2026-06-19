@@ -6,5 +6,5 @@
  * formatBoolean(false) // "Não"
  */
 export function formatBoolean(value?: boolean | null): string {
-  return value ? "Sim" : "Não";
+  return value ? 'Sim' : 'Não';
 }

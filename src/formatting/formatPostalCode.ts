@@ -1,4 +1,4 @@
-import { onlyNumbers } from "./onlyNumbers.js";
+import { onlyNumbers } from './onlyNumbers.js';
 
 /**
  * Format a Brazilian postal code (CEP) as `00000-000`. Pads with leading zeros.
@@ -9,7 +9,7 @@ import { onlyNumbers } from "./onlyNumbers.js";
  */
 export function formatPostalCode(value?: string): string {
   const cep = onlyNumbers(value);
-  if (!cep) return "";
+  if (!cep) return '';
 
-  return cep.padStart(8, "0").replace(/(\d{5})(\d{3})/, "$1-$2");
+  return cep.padStart(8, '0').replace(/(\d{5})(\d{3})/, '$1-$2');
 }

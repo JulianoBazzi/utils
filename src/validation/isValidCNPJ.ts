@@ -1,5 +1,5 @@
-import { onlyAlphanumeric } from "../formatting/onlyAlphanumeric.js";
-import { checkDigit } from "./internal/checkDigit.js";
+import { onlyAlphanumeric } from '../formatting/onlyAlphanumeric.js';
+import { checkDigit } from './internal/checkDigit.js';
 
 /**
  * Validate a Brazilian CNPJ via its two check digits. Supports both the legacy

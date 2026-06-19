@@ -1,5 +1,5 @@
-import dayjs from "dayjs";
-import "dayjs/locale/pt-br.js";
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br.js';
 
 /**
  * Format a date as `"D/M - Ddd"` with a capitalized Portuguese weekday
@@ -12,10 +12,10 @@ import "dayjs/locale/pt-br.js";
  * formatWeekDay("2024-06-15") // "15/6 - Sáb"
  */
 export function formatWeekDay(date?: string): string {
-  if (!date) return "";
+  if (!date) return '';
 
-  const formatted = dayjs(date).locale("pt-br").format("D/M - ddd");
-  const [day, weekDay] = formatted.split(" - ");
+  const formatted = dayjs(date).locale('pt-br').format('D/M - ddd');
+  const [day, weekDay] = formatted.split(' - ');
 
   if (!weekDay) return formatted;
 

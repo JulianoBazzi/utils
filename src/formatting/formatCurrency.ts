@@ -8,11 +8,11 @@
  */
 export function formatCurrency(value?: number, divisor = 100): string {
   if (!value) {
-    return "R$ 0,00";
+    return 'R$ 0,00';
   }
 
-  return (value / divisor).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
+  return (value / divisor).toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
   });
 }

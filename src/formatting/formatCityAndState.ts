@@ -8,8 +8,8 @@
  */
 export function formatCityAndState(city?: string, state?: string): string {
   if (!city && !state) {
-    return "Não Informado";
+    return 'Não Informado';
   }
 
-  return [city, state].filter(Boolean).join(" - ");
+  return [city, state].filter(Boolean).join(' - ');
 }

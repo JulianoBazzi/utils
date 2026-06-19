@@ -6,5 +6,5 @@
  * if (isNotificationsSupported()) { ... }
  */
 export function isNotificationsSupported(): boolean {
-  return "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
+  return 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
 }

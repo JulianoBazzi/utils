@@ -8,8 +8,8 @@
  */
 export function parseIds(...ids: Array<string | undefined>): number[] {
   return ids
-    .filter((id): id is string => typeof id === "string")
-    .flatMap((id) => id.split(","))
+    .filter((id): id is string => typeof id === 'string')
+    .flatMap((id) => id.split(','))
     .map(Number)
     .filter((num) => !Number.isNaN(num));
 }

@@ -1,4 +1,4 @@
-import { onlyNumbers } from "../formatting/onlyNumbers.js";
+import { onlyNumbers } from '../formatting/onlyNumbers.js';
 
 /**
  * Validate a Brazilian postal code (CEP). CEP has no check digit, so this

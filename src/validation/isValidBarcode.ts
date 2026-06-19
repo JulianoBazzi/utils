@@ -11,7 +11,7 @@ export function isValidBarcode(value?: string): boolean {
     return false;
   }
 
-  const paddedValue = value.padStart(14, "0");
+  const paddedValue = value.padStart(14, '0');
 
   let result = 0;
   for (let i = 0; i < paddedValue.length - 1; i += 1) {

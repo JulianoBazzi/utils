@@ -1,4 +1,4 @@
-import { getImageDimensions } from "./getImageDimensions.js";
+import { getImageDimensions } from './getImageDimensions.js';
 
 /**
  * Resolve whether an image is landscape (width > height). Accepts a `File` or

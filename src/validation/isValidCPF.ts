@@ -1,5 +1,5 @@
-import { onlyNumbers } from "../formatting/onlyNumbers.js";
-import { checkDigit } from "./internal/checkDigit.js";
+import { onlyNumbers } from '../formatting/onlyNumbers.js';
+import { checkDigit } from './internal/checkDigit.js';
 
 /**
  * Validate a Brazilian CPF (with or without mask) via its two check digits.

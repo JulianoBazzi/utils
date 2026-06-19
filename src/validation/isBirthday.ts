@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 
 /**
  * Check whether a date falls on today's day and month (a birthday).
@@ -12,5 +12,5 @@ export function isBirthday(value?: Date): boolean {
     return false;
   }
 
-  return dayjs(value).format("DD/MM") === dayjs().format("DD/MM");
+  return dayjs(value).format('DD/MM') === dayjs().format('DD/MM');
 }

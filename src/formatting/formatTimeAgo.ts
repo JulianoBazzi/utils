@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 
 /**
  * Format how long ago a date was, in Portuguese (e.g. `"5 dias"`, `"2 horas"`).
@@ -10,7 +10,7 @@ import dayjs from "dayjs";
  */
 export function formatTimeAgo(date?: string | null): string {
   if (!date) {
-    return "";
+    return '';
   }
 
   const receivedDate = dayjs(date);
@@ -18,26 +18,26 @@ export function formatTimeAgo(date?: string | null): string {
 
   const formatDiff = (diff: number, unit: string) => `${diff > 0 ? diff : 1} ${unit}`;
 
-  const diffInMinutes = currentDate.diff(receivedDate, "minute");
+  const diffInMinutes = currentDate.diff(receivedDate, 'minute');
   if (diffInMinutes < 60) {
-    return formatDiff(diffInMinutes, diffInMinutes > 1 ? "minutos" : "minuto");
+    return formatDiff(diffInMinutes, diffInMinutes > 1 ? 'minutos' : 'minuto');
   }
 
-  const diffInHours = currentDate.diff(receivedDate, "hour");
+  const diffInHours = currentDate.diff(receivedDate, 'hour');
   if (diffInHours < 24) {
-    return formatDiff(diffInHours, diffInHours > 1 ? "horas" : "hora");
+    return formatDiff(diffInHours, diffInHours > 1 ? 'horas' : 'hora');
   }
 
-  const diffInDays = currentDate.diff(receivedDate, "day");
+  const diffInDays = currentDate.diff(receivedDate, 'day');
   if (diffInDays < 30) {
-    return formatDiff(diffInDays, diffInDays > 1 ? "dias" : "dia");
+    return formatDiff(diffInDays, diffInDays > 1 ? 'dias' : 'dia');
   }
 
-  const diffInMonths = currentDate.diff(receivedDate, "month");
+  const diffInMonths = currentDate.diff(receivedDate, 'month');
   if (diffInMonths < 12) {
-    return formatDiff(diffInMonths, diffInMonths > 1 ? "meses" : "mês");
+    return formatDiff(diffInMonths, diffInMonths > 1 ? 'meses' : 'mês');
   }
 
-  const diffInYears = currentDate.diff(receivedDate, "year");
-  return formatDiff(diffInYears, diffInYears > 1 ? "anos" : "ano");
+  const diffInYears = currentDate.diff(receivedDate, 'year');
+  return formatDiff(diffInYears, diffInYears > 1 ? 'anos' : 'ano');
 }

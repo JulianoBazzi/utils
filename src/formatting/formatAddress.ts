@@ -24,13 +24,13 @@ export function formatAddress({
   number,
 }: Address): string {
   if (!address && !city && !state && !district) {
-    return "";
+    return '';
   }
 
-  const street = [address, number].filter(Boolean).join(", ");
-  const districtPart = district ? ` - ${district}` : "";
-  const cityState = [city, state].filter(Boolean).join(" - ");
-  const zipcodePart = zipcode ? `, ${zipcode}` : "";
+  const street = [address, number].filter(Boolean).join(', ');
+  const districtPart = district ? ` - ${district}` : '';
+  const cityState = [city, state].filter(Boolean).join(' - ');
+  const zipcodePart = zipcode ? `, ${zipcode}` : '';
 
   let result = `${street}${districtPart}`;
 

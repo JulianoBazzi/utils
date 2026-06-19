@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 
 interface FormatHourOptions {
   /** Drop seconds (`HH:mm`) when true (default); include them (`HH:mm:ss`) when false. */
@@ -16,7 +16,7 @@ interface FormatHourOptions {
  * formatHour(null, { fallback: "Não Informado" }) // "Não Informado"
  */
 export function formatHour(value?: string | null, options: FormatHourOptions = {}): string {
-  const { simplified = true, fallback = "" } = options;
+  const { simplified = true, fallback = '' } = options;
   if (!value) return fallback;
-  return dayjs(value).format(simplified ? "HH:mm" : "HH:mm:ss");
+  return dayjs(value).format(simplified ? 'HH:mm' : 'HH:mm:ss');
 }

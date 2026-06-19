@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 
 /**
  * Format a number of seconds as a clock string. Negative values are treated as
@@ -10,9 +10,9 @@ import dayjs from "dayjs";
  */
 export function formatSecondsToTime(value?: number, showSeconds = true): string {
   if (value) {
-    const base = dayjs().startOf("day").add(Math.abs(value), "seconds");
-    return base.format(showSeconds ? "HH:mm:ss" : "HH:mm");
+    const base = dayjs().startOf('day').add(Math.abs(value), 'seconds');
+    return base.format(showSeconds ? 'HH:mm:ss' : 'HH:mm');
   }
 
-  return showSeconds ? "00:00:00" : "00:00";
+  return showSeconds ? '00:00:00' : '00:00';
 }

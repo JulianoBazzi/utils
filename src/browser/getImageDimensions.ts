@@ -13,7 +13,7 @@ interface ImageDimensions {
  */
 export function getImageDimensions(file: File): Promise<ImageDimensions> {
   return new Promise((resolve, reject) => {
-    const fail = () => reject(new Error("Falha ao obter as dimensões da imagem."));
+    const fail = () => reject(new Error('Falha ao obter as dimensões da imagem.'));
     const reader = new FileReader();
 
     reader.onerror = fail;
@@ -25,11 +25,11 @@ export function getImageDimensions(file: File): Promise<ImageDimensions> {
 
       const img = new Image();
       img.onload = () => {
-        const extension = file.name.split(".").pop();
+        const extension = file.name.split('.').pop();
         resolve({
           width: img.width,
           height: img.height,
-          extension: extension || "jpeg",
+          extension: extension || 'jpeg',
         });
       };
       img.onerror = fail;

@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 
 interface FormatDateOptions {
   /** Use a 2-digit year (`DD/MM/YY`) when true (default), `DD/MM/YYYY` when false. */
@@ -16,7 +16,7 @@ interface FormatDateOptions {
  * formatDate(null, { fallback: "Não Informado" }) // "Não Informado"
  */
 export function formatDate(value?: string | null, options: FormatDateOptions = {}): string {
-  const { simplified = true, fallback = "" } = options;
+  const { simplified = true, fallback = '' } = options;
   if (!value) return fallback;
-  return dayjs(value).format(simplified ? "DD/MM/YY" : "DD/MM/YYYY");
+  return dayjs(value).format(simplified ? 'DD/MM/YY' : 'DD/MM/YYYY');
 }

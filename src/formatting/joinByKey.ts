@@ -1,4 +1,4 @@
-import { getProperty } from "../object/getProperty.js";
+import { getProperty } from '../object/getProperty.js';
 
 /**
  * Join a single property of each object in an array into a string.
@@ -8,8 +8,8 @@ import { getProperty } from "../object/getProperty.js";
  * joinByKey([{ name: "a" }, { name: "b" }], "name") // "a | b"
  * joinByKey([{ id: 1 }, { id: 2 }], "id", ", ") // "1, 2"
  */
-export function joinByKey<T, K extends keyof T>(values: T[], key: K, divider = " | "): string {
-  if (!values?.length) return "";
+export function joinByKey<T, K extends keyof T>(values: T[], key: K, divider = ' | '): string {
+  if (!values?.length) return '';
 
   return values
     .filter((value): value is T => Boolean(value))

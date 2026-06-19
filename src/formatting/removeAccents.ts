@@ -11,6 +11,6 @@ const COMBINING_MARKS = /[̀-ͯ]/g;
  * removeAccents("ÁÉÍÓÚ") // "AEIOU"
  */
 export function removeAccents(value?: string | null): string {
-  if (!value) return "";
-  return value.normalize("NFD").replace(COMBINING_MARKS, "");
+  if (!value) return '';
+  return value.normalize('NFD').replace(COMBINING_MARKS, '');
 }
