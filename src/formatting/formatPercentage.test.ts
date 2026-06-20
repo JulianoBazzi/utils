@@ -14,4 +14,9 @@ describe('formatPercentage', () => {
     expect(formatPercentage(0)).toBe('0%');
     expect(formatPercentage()).toBe('0%');
   });
+
+  it('uses a custom fallback for zero/missing input', () => {
+    expect(formatPercentage(null, false, { fallback: '—' })).toBe('—');
+    expect(formatPercentage(0, true, { fallback: '—' })).toBe('—');
+  });
 });

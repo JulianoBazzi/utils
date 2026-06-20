@@ -18,4 +18,9 @@ describe('formatCurrency', () => {
     expect(normalize(formatCurrency())).toBe('R$ 0,00');
     expect(normalize(formatCurrency(0))).toBe('R$ 0,00');
   });
+
+  it('uses a custom fallback for zero/missing input', () => {
+    expect(formatCurrency(null, 100, { fallback: '—' })).toBe('—');
+    expect(formatCurrency(0, 100, { fallback: '—' })).toBe('—');
+  });
 });

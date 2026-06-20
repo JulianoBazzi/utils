@@ -18,4 +18,14 @@ describe('abbreviateName', () => {
     expect(abbreviateName()).toBe('');
     expect(abbreviateName('')).toBe('');
   });
+
+  it('normalizes casing with titlecase', () => {
+    expect(abbreviateName('JOAO SILVA', { casing: 'titlecase' })).toBe('Joao S.');
+    expect(abbreviateName('JOAO', { casing: 'titlecase' })).toBe('Joao');
+  });
+
+  it('applies uppercase and lowercase casing', () => {
+    expect(abbreviateName('john smith', { casing: 'uppercase' })).toBe('JOHN S.');
+    expect(abbreviateName('John Smith', { casing: 'lowercase' })).toBe('john s.');
+  });
 });

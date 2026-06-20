@@ -5,7 +5,7 @@
 ## Visão geral para IA
 
 - Todas as funções são **named exports planos** a partir da raiz do pacote (`@julianobazzi/utils`). Não há default export.
-- Internamente agrupadas por: `formatting`, `validation`, `number`, `object`, `parse`, `browser`. O consumidor importa tudo do root.
+- Internamente agrupadas por: `formatting`, `mask`, `validation`, `number`, `object`, `parse`, `transform`, `browser`. O consumidor importa tudo do root.
 - Convenções: funções de formatação retornam `string` e dão `""` (ou um fallback documentado) para entrada vazia/nula; validações retornam `boolean`; quase todos os parâmetros de entrada são opcionais e aceitam `undefined`/`null`.
 - Padrão de options (último parâmetro, objeto): `fallback?: string` (retorno quando entrada vazia/ausente, default `""`), `separator?: string` (junção), e `casing?: LetterCasing` onde `LetterCasing = 'lowercase' | 'uppercase' | 'titlecase'` (titlecase põe a 1ª letra de cada palavra em maiúscula preservando o resto, ex.: `"KB"`). Cada função expõe só as options que fazem sentido.
 - Funções do grupo `browser` dependem de APIs DOM (`Image`, `FileReader`, `URL`, `window`) — só funcionam no navegador.
@@ -23,7 +23,7 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 
 ## API — formatting
 
-- `abbreviateName(name?: string | null): string` — primeiro nome + inicial do sobrenome. `"John Smith"` → `"John S."`.
+- `abbreviateName(name?: string | null, options?: { casing?: LetterCasing }): string` — primeiro nome + inicial do sobrenome. `"John Smith"` → `"John S."`. `casing: 'titlecase'` normaliza (lowercase antes): `"JOAO SILVA"` → `"Joao S."`.
 - `appendValue(base?: string | null, value?: string | null, options?: { separator?: string; fallback?: string; casing?: LetterCasing }): string` — junta dois textos preservando o presente; faz trim em cada lado antes; ambos → `"base; value"` (separator default `"; "`); ambos vazios → `fallback`. `"a", "b"` → `"a; b"`.
 - `applyCasing(value: string, casing?: LetterCasing): string` — aplica caixa ao texto. `"são paulo"` → `uppercase` `"SÃO PAULO"` / `titlecase` `"São Paulo"`; titlecase preserva o resto da palavra (`"1.50 KB"` intacto). Sem `casing` → inalterado.
 - `formatAddress(address: { state?: string; city?: string; zipcode?: string; address?: string; district?: string; number?: string }, options?: { fallback?: string }): string` — monta endereço em uma linha. Vazio (ou `fallback`) se sem rua/cidade/estado/bairro.
@@ -33,7 +33,8 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `formatCNPJ(value?: string | null, options?: { fallback?: string }): string` — `"11222333000181"` → `"11.222.333/0001-81"`. Suporta CNPJ alfanumérico: `"12ABC34501DE35"` → `"12.ABC.345/01DE-35"`.
 - `formatDocument(value?: string | null, options?: { fallback?: string }): string` — formata como CPF (≤11 chars) ou CNPJ (senão).
 - `formatCityAndState(city?: string | null, state?: string | null, options?: { fallback?: string; separator?: string; casing?: LetterCasing }): string` — `"São Paulo", "SP"` → `"São Paulo - SP"`. Só um → sem separador. `separator` default `" - "`. Ambos vazios → `fallback` (default `""`).
-- `formatCurrency(value?: number | null, divisor = 100): string` — BRL; divide por `divisor` (centavos). `1990` → `"R$ 19,90"`. Zero/ausente → `"R$ 0,00"`.
+- `formatCurrency(value?: number | null, divisor = 100, options?: { fallback?: string }): string` — BRL; divide por `divisor` (centavos). `1990` → `"R$ 19,90"`. Zero/ausente → `fallback` (default `"R$ 0,00"`).
+- `formatCompactNumber(value?: number | null, options?: { decimals?: number; fallback?: string }): string` — notação compacta via `Intl` locale `en`. `1500000` → `"1.5M"`; `100000` → `"100K"`; `decimals` default 1; `0` → `"0"`; ausente → `fallback` (default `""`).
 - `formatDate(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"2024-01-02"` → `"02/01/24"`; `{ simplified: false }` → `"02/01/2024"`; `{ fallback }` p/ vazio.
 - `formatDateTime(date?: string | null, options?: { simplified?: boolean; showSeconds?: boolean; fallback?: string }): string` — `"02/01/24 13:45"`; `{ simplified: false }` → ano 4 dígitos; `{ showSeconds: true }` → `"...13:45:30"`.
 - `formatHour(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"13:45"` (ou `"13:45:30"` via `{ simplified: false }`).
@@ -41,16 +42,29 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `formatWeekDay(date?: string | null, options?: { fallback?: string; casing?: LetterCasing }): string` — `"2024-06-15"` → `"15/6 - Sáb"` (pt-BR, por instância, sem mutar dayjs global).
 - `formatSecondsToTime(value?: number | null, showSeconds = true): string` — segundos → `"01:01:01"` (ou `"01:01"`). Negativos tratados como positivos.
 - `formatTimeAgo(date?: string | null, options?: { fallback?: string; casing?: LetterCasing }): string` — tempo decorrido em pt-BR: `"5 dias"`, `"2 horas"`. Escolhe a maior unidade que cabe.
-- `formatDuration(minutes?: number | null, options?: { fallback?: string; casing?: LetterCasing }): string` — minutos → `"1h e 30 min"`, `"2h"`, `"45 min"`; `<1` → segundos (`"30s"`).
-- `formatPercentage(value?: number | null, round = false): string` — `12.5` → `"12,50%"`; `round` → `"13%"`. Zero/ausente → `"0%"`.
+- `formatMinutesToDuration(minutes?: number | null, options?: { fallback?: string; spaced?: boolean }): string` — minutos → `"1h e 30 min"`, `"2h"`, `"45 min"`; `<1` → segundos (`"30s"`). `spaced` separa unidade colada (`"1 h"`, `"30 s"`).
+- `formatSecondsToDuration(seconds?: number | null, options?: { fallback?: string; spaced?: boolean }): string` — igual, a partir de segundos. `30` → `"30s"`; `≥60` arredonda p/ minutos (`90` → `"2 min"`).
+- `formatDuration(minutes?: number | null, options?: { fallback?: string; spaced?: boolean }): string` — **deprecated**, alias de `formatMinutesToDuration`.
+- `formatPercentage(value?: number | null, round = false, options?: { fallback?: string }): string` — `12.5` → `"12,50%"`; `round` → `"13%"`. Zero/ausente → `fallback` (default `"0%"`).
 - `formatPhone(phone?: string | null, options?: { fallback?: string }): string` — máscara BR. Faz strip antes. `"11912345678"` → `"(11) 91234-5678"`; 10 dígitos → `"(11) 1234-5678"`.
 - `formatPostalCode(value?: string | null, options?: { fallback?: string }): string` — CEP `"01310100"` → `"01310-100"`.
 - `onlyNumbers(value?: string | null): string` — remove tudo que não é dígito. `"(11) 98765-4321"` → `"11987654321"`.
 - `onlyAlphanumeric(value?: string | null): string` — remove não-alfanuméricos e **uppercase**. `"12.abc-345"` → `"12ABC345"`.
+- `formatWithPattern(value?: string | null, pattern?: string): string` — máscara pura char-agnostic; `#` consome próximo char do value, demais são literais; para quando value acaba. `'12ABC34501DE35'` + `'##.###.###/####-##'` → `"12.ABC.345/01DE-35"`. value/pattern ausente → `""`.
 - `removeAccents(value?: string | null): string` — remove acentos (NFD). `"João Coração"` → `"Joao Coracao"`.
 - `truncate(value?: string | null, length = 40): string` — corta e adiciona `"..."` se exceder `length`.
 - `getLastCharacter(value?: string | null): string` — último caractere. `"hello"` → `"o"`.
 - `joinByKey<T, K extends keyof T>(values: T[], key: K, divider = " | "): string` — junta uma propriedade de cada objeto. `[{name:"a"},{name:"b"}], "name"` → `"a | b"`.
+
+## API — mask (constantes)
+
+Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` = alfanumérico).
+- `CPF_MASK = '999.999.999-99'`
+- `CNPJ_MASK = '99.999.999/9999-99'`
+- `CNPJ_ALPHANUMERIC_MASK = '**.***.***/****-99'`
+- `PHONE_MASK = '(99) 9999-9999'` (fixo, 10 díg)
+- `CELLPHONE_MASK = '(99) 99999-9999'` (celular, 11 díg)
+- `POSTAL_CODE_MASK = '99999-999'` (CEP)
 
 ## API — validation
 
@@ -70,7 +84,7 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 
 ## API — number
 
-- `formatInteger(value?: number | null): number` — arredonda ao inteiro mais próximo. Zero/ausente → `0`.
+- `formatInteger(value?: number | null, options?: { fallback?: number }): number` — arredonda ao inteiro mais próximo. Zero/ausente → `fallback` (default `0`).
 - `getRandomInt(min = 1, max = 100): number` — inteiro aleatório no intervalo inclusivo (usa `Math.random`, não criptográfico).
 - `precisionRound(value?: number | null, precision = 2): number` — arredonda a N casas decimais.
 - `safeDivide(value1: number, value2?: number | null): number` — divide; `0` quando divisor é ausente, zero ou negativo.
@@ -80,12 +94,21 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 
 - `getProperty<T, K extends keyof T>(obj: T, key: K): T[K]` — acesso a propriedade com tipo seguro.
 - `omitFields<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K>` — cópia rasa sem `keys` (não muta o original).
-- `getOptionId<T extends { id?: string | number }>(option?: T): string | number | undefined` — extrai `id`.
-- `getListIds<T extends { id?: string | number }>(list?: T[]): Array<string | number> | undefined` — mapeia ids; pula itens sem id; `undefined` p/ lista vazia/ausente.
+- `getOptionId<Id extends string | number>(option?: { id?: Id | null } | null): Id | undefined` — extrai `id` (tipo inferido do input; aceita null).
+- `getListIds<Id extends string | number>(list?: Array<{ id?: Id | null } | null> | null): Id[] | undefined` — mapeia ids; pula itens sem id; `undefined` p/ lista vazia/ausente.
 
 ## API — parse
 
 - `parseIds(...ids: Array<string | undefined | null>): number[]` — strings CSV → números. `"1,2", "3"` → `[1, 2, 3]`. Descarta não-numéricos.
+- `resolveIdsToObjects<T, P = void>(ids: number[] | undefined, resolver: (id: number, params?: P) => Promise<T>, params?: P): Promise<T[]>` — resolve ids em objetos via resolver async (Promise.all). Lista vazia/ausente → `[]`. `params` repassado a cada chamada.
+- `resolveList<T, P = void>(value: string | string[] | undefined, resolver: (id: number, params?: P) => Promise<T>, params?: P): Promise<T[]>` — `parseIds` + `resolveIdsToObjects`; aceita string CSV ou array.
+- `resolveId<T, P = void>(value: string | string[] | undefined, resolver: (id: number, params?: P) => Promise<T>, params?: P): Promise<T | null>` — resolve o 1º id válido (via `parseIds`), ou `null`.
+
+## API — transform (compatível com yup)
+
+Transforms dependency-free com assinatura `(value, originalValue) => string` (formato de `yup.transform`); só embrulham as funções base.
+- `onlyNumbersTransform(_value: unknown, originalValue: unknown): string` — embrulha `onlyNumbers`. Uso: `yup.string().transform(onlyNumbersTransform)`.
+- `onlyAlphanumericTransform(_value: unknown, originalValue: unknown): string` — embrulha `onlyAlphanumeric` (alfanumérico + uppercase). Uso: `yup.string().transform(onlyAlphanumericTransform)`.
 
 ## API — browser (somente DOM)
 

@@ -6,13 +6,11 @@
  * getListIds([{ id: 1 }, { id: 2 }]) // [1, 2]
  * getListIds([]) // undefined
  */
-export function getListIds<T extends { id?: string | number }>(
-  list?: T[],
-): Array<string | number> | undefined {
+export function getListIds<T extends string | number>(
+  list?: Array<{ id?: T | null } | null> | null,
+): T[] | undefined {
   if (list && list.length > 0) {
-    return list
-      .map((item) => item.id)
-      .filter((id): id is string | number => id !== undefined && id !== null);
+    return list.map((item) => item?.id).filter((id): id is T => id !== undefined && id !== null);
   }
 
   return undefined;

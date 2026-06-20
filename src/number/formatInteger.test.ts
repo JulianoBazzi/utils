@@ -15,4 +15,9 @@ describe('formatInteger', () => {
     expect(formatInteger(0)).toBe(0);
     expect(formatInteger()).toBe(0);
   });
+
+  it('uses a custom fallback for zero/missing input', () => {
+    expect(formatInteger(null, { fallback: -1 })).toBe(-1);
+    expect(formatInteger(0, { fallback: -1 })).toBe(-1);
+  });
 });

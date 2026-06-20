@@ -6,8 +6,8 @@
  * getOptionId({ id: 7 }) // 7
  * getOptionId(undefined) // undefined
  */
-export function getOptionId<T extends { id?: string | number }>(
-  option?: T,
-): string | number | undefined {
+export function getOptionId<T extends string | number>(
+  option?: { id?: T | null } | null,
+): T | undefined {
   return option?.id ?? undefined;
 }

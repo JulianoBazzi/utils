@@ -51,9 +51,12 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatDateTime(date?, { simplified?, showSeconds?, fallback? })` — `DD/MM/YY HH:mm` (ano 4 dígitos e/ou `:ss` opcionais)
 - `formatMonth(value?, { fallback? })` — `MM/YYYY`
 - `formatHour(value?, { simplified?, fallback? })` — `HH:mm` (ou `HH:mm:ss`)
-- `formatDuration(minutes?, { fallback?, casing? })` — duração legível, ex.: `1h e 30 min`
-- `formatCurrency(value?, divisor = 100)` — moeda BRL, ex.: `R$ 19,90`
-- `formatPercentage(value?, round = false)` — porcentagem, ex.: `12,50%`
+- `formatMinutesToDuration(minutes?, { fallback?, spaced? })` — duração legível, ex.: `1h e 30 min`
+- `formatSecondsToDuration(seconds?, { fallback?, spaced? })` — idem, a partir de segundos (≥60s arredonda p/ minutos)
+- `formatDuration(minutes?, { fallback?, spaced? })` — **deprecated**, alias de `formatMinutesToDuration`
+- `formatCurrency(value?, divisor = 100, { fallback? })` — moeda BRL, ex.: `R$ 19,90`
+- `formatCompactNumber(value?, { decimals?, fallback? })` — notação compacta (EN), ex.: `1.5M`, `100K`
+- `formatPercentage(value?, round = false, { fallback? })` — porcentagem, ex.: `12,50%`
 - `formatBoolean(value?, { casing? })` — `Sim` / `Não`
 - `formatPhone(phone?, { fallback? })` — máscara de telefone BR (10 ou 11 dígitos)
 - `formatBytes(bytes?, round = false, { casing? })` — tamanho legível, ex.: `1.50 KB`
@@ -71,10 +74,22 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `removeAccents(value?)` — remove acentos, ex.: `João` → `Joao`
 - `onlyNumbers(value?)` — remove tudo que não for dígito
 - `onlyAlphanumeric(value?)` — remove não-alfanuméricos + uppercase (`"12.abc"` → `"12ABC"`)
+- `formatWithPattern(value?, pattern?)` — máscara char-agnostic (`#` = próximo char), ex.: `'12345678900'` + `'###.###.###-##'` → `123.456.789-00`
 - `truncate(value?, length = 40)` — corta o texto e adiciona `...`
 - `getLastCharacter(value?)` — último caractere de uma string
-- `abbreviateName(name?)` — `"John Smith"` → `"John S."`
+- `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normaliza: `"JOAO SILVA"` → `"Joao S."`)
 - `joinByKey(values, key, divider = " | ")` — junta uma propriedade de cada objeto
+
+### mask (constantes)
+
+Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` = alfanumérico).
+
+- `CPF_MASK` — `999.999.999-99`
+- `CNPJ_MASK` — `99.999.999/9999-99`
+- `CNPJ_ALPHANUMERIC_MASK` — `**.***.***/****-99`
+- `PHONE_MASK` — `(99) 9999-9999` (fixo)
+- `CELLPHONE_MASK` — `(99) 99999-9999` (celular)
+- `POSTAL_CODE_MASK` — `99999-999` (CEP)
 
 ### validation (validação)
 
@@ -95,7 +110,7 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 ### number (números)
 
 - `precisionRound(value?, precision = 2)` — arredonda para N casas decimais
-- `formatInteger(value?)` — arredonda para o inteiro mais próximo
+- `formatInteger(value?, { fallback? })` — arredonda para o inteiro mais próximo
 - `toPositive(value?)` — limita a um valor não negativo
 - `getRandomInt(min = 1, max = 100)` — inteiro aleatório no intervalo (inclusivo)
 - `safeDivide(value1, value2?)` — divide; 0 quando o divisor é ≤ 0 ou ausente
@@ -110,6 +125,16 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 ### parse (conversão)
 
 - `parseIds(...ids)` — strings de ids separadas por vírgula → `number[]`
+- `resolveIdsToObjects(ids?, resolver, params?)` — resolve uma lista de ids em objetos via resolver async (em paralelo)
+- `resolveList(value?, resolver, params?)` — `parseIds` + `resolveIdsToObjects`; aceita string ou array de strings
+- `resolveId(value?, resolver, params?)` — resolve o 1º id válido em objeto, ou `null`
+
+### transform (compatível com yup)
+
+Transforms dependency-free no formato `(value, originalValue) => string` (igual ao `yup.transform`); embrulham as funções base.
+
+- `onlyNumbersTransform(_value, originalValue)` — embrulha `onlyNumbers`, ex.: `yup.string().transform(onlyNumbersTransform)`
+- `onlyAlphanumericTransform(_value, originalValue)` — embrulha `onlyAlphanumeric`, ex.: `yup.string().transform(onlyAlphanumericTransform)`
 
 ### browser (somente DOM)
 
