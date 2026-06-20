@@ -66,7 +66,7 @@ All functions are exported flat from the package root, grouped internally by pur
 - `formatTimeAgo(date?, { fallback?, casing? })` — elapsed time in PT-BR, e.g. `5 dias`
 - `formatAddress(address, { fallback? })` — builds a single-line address
 - `formatCityAndState(city?, state?, { fallback?, separator?, casing? })` — `"City - UF"` (empty when both missing)
-- `formatWeekDay(date?, { fallback?, casing? })` — date + abbreviated weekday, e.g. `15/6 - Sáb`
+- `formatWeekDay(date?, { fallback?, casing?, dateFormat? })` — date + abbreviated weekday, e.g. `15/6 - Sáb` (`dateFormat` default `D/M`)
 - `formatCPF(value?, { fallback? })` — `000.000.000-00`
 - `formatCNPJ(value?, { fallback? })` — `00.000.000/0000-00` (supports alphanumeric CNPJ)
 - `formatDocument(value?, { fallback? })` — formats as CPF or CNPJ based on length
@@ -116,6 +116,8 @@ Input mask patterns (react-input-mask convention: `9` = digit, `*` = alphanumeri
 - `toPositive(value?)` — clamps to a non-negative value
 - `getRandomInt(min = 1, max = 100)` — random integer in range (inclusive)
 - `safeDivide(value1, value2?)` — divides; returns 0 when the divisor is ≤ 0 or missing
+- `toCents(value?)` — amount → integer cents, e.g. `19.9` → `1990` (inverse of `formatCurrency`)
+- `parseCurrencyToCents(value?)` — BRL string → integer cents, e.g. `"R$ 1.234,56"` → `123456`
 
 ### object
 
@@ -123,6 +125,9 @@ Input mask patterns (react-input-mask convention: `9` = digit, `*` = alphanumeri
 - `omitFields(obj, keys)` — shallow copy without `keys`
 - `getOptionId(option?)` — extracts the `id` from an option/entity
 - `getListIds(list?)` — maps a list of entities to their `id`s
+- `findOptionById(options?, value?)` — finds the option whose id matches `value` (string compare), or `null`
+- `findOptionsByIds(options?, value?)` — maps each id in `value` to its option, dropping non-matches
+- `getLabelById(options?, value?, key = "name", fallback = "")` — option's field as a string by id, or `fallback`
 
 ### parse
 

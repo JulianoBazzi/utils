@@ -39,7 +39,7 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `formatDateTime(date?: string | null, options?: { simplified?: boolean; showSeconds?: boolean; fallback?: string }): string` — `"02/01/24 13:45"`; `{ simplified: false }` → ano 4 dígitos; `{ showSeconds: true }` → `"...13:45:30"`.
 - `formatHour(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"13:45"` (ou `"13:45:30"` via `{ simplified: false }`).
 - `formatMonth(value?: string | null, options?: { fallback?: string }): string` — `"2024-01-02"` → `"01/2024"`.
-- `formatWeekDay(date?: string | null, options?: { fallback?: string; casing?: LetterCasing }): string` — `"2024-06-15"` → `"15/6 - Sáb"` (pt-BR, por instância, sem mutar dayjs global).
+- `formatWeekDay(date?: string | null, options?: { fallback?: string; casing?: LetterCasing; dateFormat?: string }): string` — `"2024-06-15"` → `"15/6 - Sáb"` (pt-BR, por instância, sem mutar dayjs global). `dateFormat` (default `'D/M'`) muda a parte da data, ex.: `{ dateFormat: 'DD/MM/YY' }` → `"15/06/24 - Sáb"`.
 - `formatSecondsToTime(value?: number | null, showSeconds = true): string` — segundos → `"01:01:01"` (ou `"01:01"`). Negativos tratados como positivos.
 - `formatTimeAgo(date?: string | null, options?: { fallback?: string; casing?: LetterCasing }): string` — tempo decorrido em pt-BR: `"5 dias"`, `"2 horas"`. Escolhe a maior unidade que cabe.
 - `formatMinutesToDuration(minutes?: number | null, options?: { fallback?: string; spaced?: boolean }): string` — minutos → `"1h e 30 min"`, `"2h"`, `"45 min"`; `<1` → segundos (`"30s"`). `spaced` separa unidade colada (`"1 h"`, `"30 s"`).
@@ -89,6 +89,8 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` 
 - `precisionRound(value?: number | null, precision = 2): number` — arredonda a N casas decimais.
 - `safeDivide(value1: number, value2?: number | null): number` — divide; `0` quando divisor é ausente, zero ou negativo.
 - `toPositive(value?: number | null): number` — limita a não-negativo (negativo/zero/ausente → `0`).
+- `toCents(value?: number | null): number` — valor → centavos inteiros (`Math.round(value*100)`); inverso de `formatCurrency`. `19.9` → `1990`. Zero/ausente → `0`.
+- `parseCurrencyToCents(value?: string | null): number` — string BRL → centavos. Remove `R$`/espaço, `.` de milhar, `,`→decimal. `"R$ 1.234,56"` → `123456`. Inválido/ausente → `0`.
 
 ## API — object
 
@@ -96,6 +98,9 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` 
 - `omitFields<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K>` — cópia rasa sem `keys` (não muta o original).
 - `getOptionId<Id extends string | number>(option?: { id?: Id | null } | null): Id | undefined` — extrai `id` (tipo inferido do input; aceita null).
 - `getListIds<Id extends string | number>(list?: Array<{ id?: Id | null } | null> | null): Id[] | undefined` — mapeia ids; pula itens sem id; `undefined` p/ lista vazia/ausente.
+- `findOptionById<O extends { id?: string | number | null }>(options?: O[] | null, value?: string | string[] | null): O | null` — acha a opção cujo id casa com `value` (1º id se array; compara como string). Sem match/valor → `null`.
+- `findOptionsByIds<O extends { id?: string | number | null }>(options?: O[] | null, value?: string | string[] | null): O[]` — mapeia cada id de `value` p/ sua opção (via `findOptionById`), descartando sem match. Sem valor → `[]`.
+- `getLabelById<O extends { id?: string | number | null }>(options?: O[] | null, value?: string | string[] | null, key: keyof O = 'name', fallback = ''): string` — acha por id (via `findOptionById`) e retorna o campo `key` como string. Sem match/campo vazio → `fallback`.
 
 ## API — parse
 

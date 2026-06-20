@@ -23,6 +23,10 @@ describe('formatWeekDay', () => {
     expect(formatWeekDay('', { fallback: 'Não Informado' })).toBe('Não Informado');
   });
 
+  it('supports a custom date format', () => {
+    expect(formatWeekDay('2024-06-15', { dateFormat: 'DD/MM/YY' })).toMatch(/^15\/06\/24 - S/);
+  });
+
   it('applies casing', () => {
     expect(formatWeekDay('2024-06-15', { casing: 'uppercase' })).toMatch(/^15\/6 - S\S*$/);
     expect(formatWeekDay('2024-06-15', { casing: 'uppercase' })).toBe(

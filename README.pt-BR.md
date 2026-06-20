@@ -64,7 +64,7 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatTimeAgo(date?, { fallback?, casing? })` — tempo decorrido em PT, ex.: `5 dias`
 - `formatAddress(address, { fallback? })` — monta um endereço em uma linha
 - `formatCityAndState(city?, state?, { fallback?, separator?, casing? })` — `"Cidade - UF"` (vazio quando ambos ausentes)
-- `formatWeekDay(date?, { fallback?, casing? })` — data + dia da semana abreviado, ex.: `15/6 - Sáb`
+- `formatWeekDay(date?, { fallback?, casing?, dateFormat? })` — data + dia da semana abreviado, ex.: `15/6 - Sáb` (`dateFormat` default `D/M`)
 - `formatCPF(value?, { fallback? })` — `000.000.000-00`
 - `formatCNPJ(value?, { fallback? })` — `00.000.000/0000-00` (suporta CNPJ alfanumérico)
 - `formatDocument(value?, { fallback? })` — formata como CPF ou CNPJ conforme o tamanho
@@ -114,6 +114,8 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` 
 - `toPositive(value?)` — limita a um valor não negativo
 - `getRandomInt(min = 1, max = 100)` — inteiro aleatório no intervalo (inclusivo)
 - `safeDivide(value1, value2?)` — divide; 0 quando o divisor é ≤ 0 ou ausente
+- `toCents(value?)` — valor → centavos inteiros, ex.: `19.9` → `1990` (inverso de `formatCurrency`)
+- `parseCurrencyToCents(value?)` — string BRL → centavos inteiros, ex.: `"R$ 1.234,56"` → `123456`
 
 ### object (objetos)
 
@@ -121,6 +123,9 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` 
 - `omitFields(obj, keys)` — cópia rasa sem as `keys`
 - `getOptionId(option?)` — extrai o `id` de uma opção/entidade
 - `getListIds(list?)` — mapeia uma lista de entidades para seus `id`s
+- `findOptionById(options?, value?)` — acha a opção cujo id casa com `value` (compara como string), ou `null`
+- `findOptionsByIds(options?, value?)` — mapeia cada id de `value` p/ sua opção, descartando sem match
+- `getLabelById(options?, value?, key = "name", fallback = "")` — campo da opção como string pelo id, ou `fallback`
 
 ### parse (conversão)
 

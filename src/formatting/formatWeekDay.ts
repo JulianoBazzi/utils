@@ -7,28 +7,32 @@ interface FormatWeekDayOptions {
   fallback?: string;
   /** Letter casing of the output. Defaults to no transformation. */
   casing?: LetterCasing;
+  /** dayjs format for the date part. Defaults to `"D/M"`. */
+  dateFormat?: string;
 }
 
 /**
- * Format a date as `"D/M - Ddd"` with a capitalized Portuguese weekday
- * abbreviation (e.g. `"5/6 - Sáb"`). Returns an empty string for missing input.
+ * Format a date as `"<date> - Ddd"` with a capitalized Portuguese weekday
+ * abbreviation (e.g. `"15/6 - Sáb"`). The date part format is configurable via
+ * `dateFormat`. Returns an empty string for missing input.
  *
  * The pt-br locale is applied per-instance, so it never mutates the consumer's
  * global dayjs configuration.
  *
  * @example
  * formatWeekDay("2024-06-15") // "15/6 - Sáb"
+ * formatWeekDay("2024-06-15", { dateFormat: "DD/MM/YY" }) // "15/06/24 - Sáb"
  * formatWeekDay("", { fallback: "Não Informado" }) // "Não Informado"
  * formatWeekDay("2024-06-15", { casing: "uppercase" }) // "15/6 - SÁB"
  */
 export function formatWeekDay(date?: string | null, options: FormatWeekDayOptions = {}): string {
-  const { fallback = '', casing } = options;
+  const { fallback = '', casing, dateFormat = 'D/M' } = options;
   if (!date) return fallback;
 
-  const formatted = dayjs(date).locale('pt-br').format('D/M - ddd');
-  const [day, weekDay] = formatted.split(' - ');
+  const instance = dayjs(date).locale('pt-br');
+  const datePart = instance.format(dateFormat);
+  const weekday = instance.format('ddd');
+  const weekdayCap = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)}`;
 
-  if (!weekDay) return applyCasing(formatted, casing);
-
-  return applyCasing(`${day} - ${weekDay.charAt(0).toUpperCase()}${weekDay.slice(1)}`, casing);
+  return applyCasing(`${datePart} - ${weekdayCap}`, casing);
 }
