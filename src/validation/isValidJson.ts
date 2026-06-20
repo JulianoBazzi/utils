@@ -6,7 +6,7 @@
  * isValidJson('{"a":1}') // true
  * isValidJson("not json") // false
  */
-export function isValidJson(value?: string): boolean {
+export function isValidJson(value?: string | null): boolean {
   if (!value) return false;
 
   try {

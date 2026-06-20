@@ -4,6 +4,6 @@
  * @example
  * getLastCharacter("hello") // "o"
  */
-export function getLastCharacter(value?: string): string {
+export function getLastCharacter(value?: string | null): string {
   return value ? value.slice(-1) : '';
 }

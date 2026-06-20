@@ -6,7 +6,7 @@
  * parseIds("1,2", "3") // [1, 2, 3]
  * parseIds("1,abc,4") // [1, 4]
  */
-export function parseIds(...ids: Array<string | undefined>): number[] {
+export function parseIds(...ids: Array<string | undefined | null>): number[] {
   return ids
     .filter((id): id is string => typeof id === 'string')
     .flatMap((id) => id.split(','))

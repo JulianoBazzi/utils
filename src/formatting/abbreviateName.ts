@@ -6,7 +6,7 @@
  * abbreviateName("John Smith") // "John S."
  * abbreviateName("John") // "John"
  */
-export function abbreviateName(name?: string): string {
+export function abbreviateName(name?: string | null): string {
   if (!name) {
     return '';
   }

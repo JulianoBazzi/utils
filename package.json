@@ -1,6 +1,6 @@
 {
   "name": "@julianobazzi/utils",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A collection of small, tree-shakeable TypeScript utility functions.",
   "type": "module",
   "license": "MIT",

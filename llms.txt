@@ -6,7 +6,8 @@
 
 - Todas as funções são **named exports planos** a partir da raiz do pacote (`@julianobazzi/utils`). Não há default export.
 - Internamente agrupadas por: `formatting`, `validation`, `number`, `object`, `parse`, `browser`. O consumidor importa tudo do root.
-- Convenções: funções de formatação retornam `string` e dão `""` (ou um fallback documentado) para entrada vazia/nula; validações retornam `boolean`; quase todos os parâmetros de entrada são opcionais e tratam `undefined`/`null`.
+- Convenções: funções de formatação retornam `string` e dão `""` (ou um fallback documentado) para entrada vazia/nula; validações retornam `boolean`; quase todos os parâmetros de entrada são opcionais e aceitam `undefined`/`null`.
+- Padrão de options (último parâmetro, objeto): `fallback?: string` (retorno quando entrada vazia/ausente, default `""`), `separator?: string` (junção), e `casing?: LetterCasing` onde `LetterCasing = 'lowercase' | 'uppercase' | 'titlecase'` (titlecase põe a 1ª letra de cada palavra em maiúscula preservando o resto, ex.: `"KB"`). Cada função expõe só as options que fazem sentido.
 - Funções do grupo `browser` dependem de APIs DOM (`Image`, `FileReader`, `URL`, `window`) — só funcionam no navegador.
 - Texto/locale são pt-BR (ex.: `formatBoolean` → `"Sim"`/`"Não"`, moeda em BRL, vírgula decimal).
 
@@ -22,56 +23,58 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 
 ## API — formatting
 
-- `abbreviateName(name?: string): string` — primeiro nome + inicial do sobrenome. `"John Smith"` → `"John S."`.
-- `formatAddress(address: { state?: string; city?: string; zipcode?: string; address?: string; district?: string; number?: string }): string` — monta endereço em uma linha. Vazio se sem rua/cidade/estado/bairro.
-- `formatBoolean(value?: boolean | null): string` — `true` → `"Sim"`, senão `"Não"`.
-- `formatBytes(bytes?: number, round = false): string` — tamanho legível. `1536` → `"1.50 KB"`; `round` arredonda.
-- `formatCPF(value?: string): string` — `"52998224725"` → `"529.982.247-25"`. Faz strip de não-dígitos e pad.
-- `formatCNPJ(value?: string): string` — `"11222333000181"` → `"11.222.333/0001-81"`. Suporta CNPJ alfanumérico: `"12ABC34501DE35"` → `"12.ABC.345/01DE-35"`.
-- `formatDocument(value?: string): string` — formata como CPF (≤11 chars) ou CNPJ (senão).
-- `formatCityAndState(city?: string, state?: string): string` — `"São Paulo", "SP"` → `"São Paulo - SP"`. Só um → sem traço. Ambos vazios → `"Não Informado"`.
-- `formatCurrency(value?: number, divisor = 100): string` — BRL; divide por `divisor` (centavos). `1990` → `"R$ 19,90"`. Zero/ausente → `"R$ 0,00"`.
+- `abbreviateName(name?: string | null): string` — primeiro nome + inicial do sobrenome. `"John Smith"` → `"John S."`.
+- `appendValue(base?: string | null, value?: string | null, options?: { separator?: string; fallback?: string; casing?: LetterCasing }): string` — junta dois textos preservando o presente; faz trim em cada lado antes; ambos → `"base; value"` (separator default `"; "`); ambos vazios → `fallback`. `"a", "b"` → `"a; b"`.
+- `applyCasing(value: string, casing?: LetterCasing): string` — aplica caixa ao texto. `"são paulo"` → `uppercase` `"SÃO PAULO"` / `titlecase` `"São Paulo"`; titlecase preserva o resto da palavra (`"1.50 KB"` intacto). Sem `casing` → inalterado.
+- `formatAddress(address: { state?: string; city?: string; zipcode?: string; address?: string; district?: string; number?: string }, options?: { fallback?: string }): string` — monta endereço em uma linha. Vazio (ou `fallback`) se sem rua/cidade/estado/bairro.
+- `formatBoolean(value?: boolean | null, options?: { casing?: LetterCasing }): string` — `true` → `"Sim"`, senão `"Não"`.
+- `formatBytes(bytes?: number | null, round = false, options?: { casing?: LetterCasing }): string` — tamanho legível. `1536` → `"1.50 KB"`; `round` arredonda.
+- `formatCPF(value?: string | null, options?: { fallback?: string }): string` — `"52998224725"` → `"529.982.247-25"`. Faz strip de não-dígitos e pad.
+- `formatCNPJ(value?: string | null, options?: { fallback?: string }): string` — `"11222333000181"` → `"11.222.333/0001-81"`. Suporta CNPJ alfanumérico: `"12ABC34501DE35"` → `"12.ABC.345/01DE-35"`.
+- `formatDocument(value?: string | null, options?: { fallback?: string }): string` — formata como CPF (≤11 chars) ou CNPJ (senão).
+- `formatCityAndState(city?: string | null, state?: string | null, options?: { fallback?: string; separator?: string; casing?: LetterCasing }): string` — `"São Paulo", "SP"` → `"São Paulo - SP"`. Só um → sem separador. `separator` default `" - "`. Ambos vazios → `fallback` (default `""`).
+- `formatCurrency(value?: number | null, divisor = 100): string` — BRL; divide por `divisor` (centavos). `1990` → `"R$ 19,90"`. Zero/ausente → `"R$ 0,00"`.
 - `formatDate(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"2024-01-02"` → `"02/01/24"`; `{ simplified: false }` → `"02/01/2024"`; `{ fallback }` p/ vazio.
 - `formatDateTime(date?: string | null, options?: { simplified?: boolean; showSeconds?: boolean; fallback?: string }): string` — `"02/01/24 13:45"`; `{ simplified: false }` → ano 4 dígitos; `{ showSeconds: true }` → `"...13:45:30"`.
 - `formatHour(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"13:45"` (ou `"13:45:30"` via `{ simplified: false }`).
-- `formatMonth(value?: string | null): string` — `"2024-01-02"` → `"01/2024"`.
-- `formatWeekDay(date?: string): string` — `"2024-06-15"` → `"15/6 - Sáb"` (pt-BR, por instância, sem mutar dayjs global).
-- `formatSecondsToTime(value?: number, showSeconds = true): string` — segundos → `"01:01:01"` (ou `"01:01"`). Negativos tratados como positivos.
-- `formatTimeAgo(date?: string | null): string` — tempo decorrido em pt-BR: `"5 dias"`, `"2 horas"`. Escolhe a maior unidade que cabe.
-- `formatDuration(minutes?: number | null): string` — minutos → `"1h e 30 min"`, `"2h"`, `"45 min"`; `<1` → segundos (`"30s"`).
-- `formatPercentage(value?: number, round = false): string` — `12.5` → `"12,50%"`; `round` → `"13%"`. Zero/ausente → `"0%"`.
-- `formatPhone(phone?: string | null): string` — máscara BR. Faz strip antes. `"11912345678"` → `"(11) 91234-5678"`; 10 dígitos → `"(11) 1234-5678"`.
-- `formatPostalCode(value?: string): string` — CEP `"01310100"` → `"01310-100"`.
+- `formatMonth(value?: string | null, options?: { fallback?: string }): string` — `"2024-01-02"` → `"01/2024"`.
+- `formatWeekDay(date?: string | null, options?: { fallback?: string; casing?: LetterCasing }): string` — `"2024-06-15"` → `"15/6 - Sáb"` (pt-BR, por instância, sem mutar dayjs global).
+- `formatSecondsToTime(value?: number | null, showSeconds = true): string` — segundos → `"01:01:01"` (ou `"01:01"`). Negativos tratados como positivos.
+- `formatTimeAgo(date?: string | null, options?: { fallback?: string; casing?: LetterCasing }): string` — tempo decorrido em pt-BR: `"5 dias"`, `"2 horas"`. Escolhe a maior unidade que cabe.
+- `formatDuration(minutes?: number | null, options?: { fallback?: string; casing?: LetterCasing }): string` — minutos → `"1h e 30 min"`, `"2h"`, `"45 min"`; `<1` → segundos (`"30s"`).
+- `formatPercentage(value?: number | null, round = false): string` — `12.5` → `"12,50%"`; `round` → `"13%"`. Zero/ausente → `"0%"`.
+- `formatPhone(phone?: string | null, options?: { fallback?: string }): string` — máscara BR. Faz strip antes. `"11912345678"` → `"(11) 91234-5678"`; 10 dígitos → `"(11) 1234-5678"`.
+- `formatPostalCode(value?: string | null, options?: { fallback?: string }): string` — CEP `"01310100"` → `"01310-100"`.
 - `onlyNumbers(value?: string | null): string` — remove tudo que não é dígito. `"(11) 98765-4321"` → `"11987654321"`.
 - `onlyAlphanumeric(value?: string | null): string` — remove não-alfanuméricos e **uppercase**. `"12.abc-345"` → `"12ABC345"`.
 - `removeAccents(value?: string | null): string` — remove acentos (NFD). `"João Coração"` → `"Joao Coracao"`.
 - `truncate(value?: string | null, length = 40): string` — corta e adiciona `"..."` se exceder `length`.
-- `getLastCharacter(value?: string): string` — último caractere. `"hello"` → `"o"`.
+- `getLastCharacter(value?: string | null): string` — último caractere. `"hello"` → `"o"`.
 - `joinByKey<T, K extends keyof T>(values: T[], key: K, divider = " | "): string` — junta uma propriedade de cada objeto. `[{name:"a"},{name:"b"}], "name"` → `"a | b"`.
 
 ## API — validation
 
 - `contains<T>(value: T, items: T[]): boolean` — `value` está em `items`. Aceita membros falsy (`0`, `""`, `false`).
-- `isBirthday(value?: Date): boolean` — data cai no dia/mês de hoje.
+- `isBirthday(value?: Date | null): boolean` — data cai no dia/mês de hoje.
 - `isOdd(value: number): boolean` — ímpar (só inteiros; `2.5`/`NaN` → false).
-- `isValidBarcode(value?: string): boolean` — EAN-8/EAN-13/GTIN-12/14 via dígito mod-10.
-- `isValidCPF(value?: string): boolean` — CPF via dígitos verificadores (aceita com/sem máscara).
-- `isValidCNPJ(value?: string): boolean` — CNPJ numérico legado **e** alfanumérico (2026).
-- `isValidDocument(value?: string): boolean` — valida como CPF (11) ou CNPJ (14).
-- `isValidEmail(value?: string): boolean` — email (regex padrão WHATWG).
-- `isValidJson(value?: string): boolean` — string é JSON parseável.
-- `isValidPhone(value?: string): boolean` — telefone BR (fixo/celular): tamanho, DDD ≠ 0, dígito inicial.
-- `isValidPostalCode(value?: string): boolean` — CEP de 8 dígitos (formato; CEP não tem dígito verificador).
-- `isValidUF(value?: string): boolean` — sigla de estado BR (27 UFs), case-insensitive.
-- `isValidUrl(value?: string): boolean` — URL `http`/`https` válida.
+- `isValidBarcode(value?: string | null): boolean` — EAN-8/EAN-13/GTIN-12/14 via dígito mod-10.
+- `isValidCPF(value?: string | null): boolean` — CPF via dígitos verificadores (aceita com/sem máscara).
+- `isValidCNPJ(value?: string | null): boolean` — CNPJ numérico legado **e** alfanumérico (2026).
+- `isValidDocument(value?: string | null): boolean` — valida como CPF (11) ou CNPJ (14).
+- `isValidEmail(value?: string | null): boolean` — email (regex padrão WHATWG).
+- `isValidJson(value?: string | null): boolean` — string é JSON parseável.
+- `isValidPhone(value?: string | null): boolean` — telefone BR (fixo/celular): tamanho, DDD ≠ 0, dígito inicial.
+- `isValidPostalCode(value?: string | null): boolean` — CEP de 8 dígitos (formato; CEP não tem dígito verificador).
+- `isValidUF(value?: string | null): boolean` — sigla de estado BR (27 UFs), case-insensitive.
+- `isValidUrl(value?: string | null): boolean` — URL `http`/`https` válida.
 
 ## API — number
 
-- `formatInteger(value?: number): number` — arredonda ao inteiro mais próximo. Zero/ausente → `0`.
+- `formatInteger(value?: number | null): number` — arredonda ao inteiro mais próximo. Zero/ausente → `0`.
 - `getRandomInt(min = 1, max = 100): number` — inteiro aleatório no intervalo inclusivo (usa `Math.random`, não criptográfico).
-- `precisionRound(value?: number, precision = 2): number` — arredonda a N casas decimais.
-- `safeDivide(value1: number, value2?: number): number` — divide; `0` quando divisor é ausente, zero ou negativo.
-- `toPositive(value?: number): number` — limita a não-negativo (negativo/zero/ausente → `0`).
+- `precisionRound(value?: number | null, precision = 2): number` — arredonda a N casas decimais.
+- `safeDivide(value1: number, value2?: number | null): number` — divide; `0` quando divisor é ausente, zero ou negativo.
+- `toPositive(value?: number | null): number` — limita a não-negativo (negativo/zero/ausente → `0`).
 
 ## API — object
 
@@ -82,7 +85,7 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 
 ## API — parse
 
-- `parseIds(...ids: Array<string | undefined>): number[]` — strings CSV → números. `"1,2", "3"` → `[1, 2, 3]`. Descarta não-numéricos.
+- `parseIds(...ids: Array<string | undefined | null>): number[]` — strings CSV → números. `"1,2", "3"` → `[1, 2, 3]`. Descarta não-numéricos.
 
 ## API — browser (somente DOM)
 

@@ -8,7 +8,7 @@ import { checkDigit } from './internal/checkDigit.js';
  * isValidCPF("529.982.247-25") // true
  * isValidCPF("11111111111") // false
  */
-export function isValidCPF(value?: string): boolean {
+export function isValidCPF(value?: string | null): boolean {
   const cpf = onlyNumbers(value);
 
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {

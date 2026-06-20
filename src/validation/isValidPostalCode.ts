@@ -8,6 +8,6 @@ import { onlyNumbers } from '../formatting/onlyNumbers.js';
  * isValidPostalCode("01310-100") // true
  * isValidPostalCode("123") // false
  */
-export function isValidPostalCode(value?: string): boolean {
+export function isValidPostalCode(value?: string | null): boolean {
   return onlyNumbers(value).length === 8;
 }

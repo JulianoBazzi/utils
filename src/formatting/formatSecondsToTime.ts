@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
  * formatSecondsToTime(3661) // "01:01:01"
  * formatSecondsToTime(3661, false) // "01:01"
  */
-export function formatSecondsToTime(value?: number, showSeconds = true): string {
+export function formatSecondsToTime(value?: number | null, showSeconds = true): string {
   if (value) {
     const base = dayjs().startOf('day').add(Math.abs(value), 'seconds');
     return base.format(showSeconds ? 'HH:mm:ss' : 'HH:mm');

@@ -9,7 +9,7 @@ const UF =
  * isValidUF("SP") // true
  * isValidUF("XX") // false
  */
-export function isValidUF(value?: string): boolean {
+export function isValidUF(value?: string | null): boolean {
   if (!value) return false;
   return UF.test(value);
 }

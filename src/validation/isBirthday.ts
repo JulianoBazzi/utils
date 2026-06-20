@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
  * @example
  * isBirthday(new Date()) // true
  */
-export function isBirthday(value?: Date): boolean {
+export function isBirthday(value?: Date | null): boolean {
   if (!value) {
     return false;
   }

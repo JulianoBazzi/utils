@@ -6,7 +6,7 @@
  * isValidBarcode("4006381333931") // true
  * isValidBarcode("4006381333930") // false
  */
-export function isValidBarcode(value?: string): boolean {
+export function isValidBarcode(value?: string | null): boolean {
   if (!value || !/^(\d{8}|\d{12,14})$/.test(value)) {
     return false;
   }

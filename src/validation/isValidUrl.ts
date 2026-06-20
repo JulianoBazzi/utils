@@ -5,7 +5,7 @@
  * isValidUrl("https://example.com") // true
  * isValidUrl("not a url") // false
  */
-export function isValidUrl(value?: string): boolean {
+export function isValidUrl(value?: string | null): boolean {
   if (!value) return false;
 
   try {

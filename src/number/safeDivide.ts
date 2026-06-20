@@ -6,6 +6,6 @@
  * safeDivide(10, 2) // 5
  * safeDivide(10, 0) // 0
  */
-export function safeDivide(value1: number, value2?: number): number {
+export function safeDivide(value1: number, value2?: number | null): number {
   return value2 && value2 > 0 ? value1 / value2 : 0;
 }

@@ -6,7 +6,7 @@
  * formatCurrency(1990) // "R$ 19,90"
  * formatCurrency(19.9, 1) // "R$ 19,90"
  */
-export function formatCurrency(value?: number, divisor = 100): string {
+export function formatCurrency(value?: number | null, divisor = 100): string {
   if (!value) {
     return 'R$ 0,00';
   }

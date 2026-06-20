@@ -7,7 +7,7 @@
  * formatPercentage(12.5) // "12,50%"
  * formatPercentage(12.5, true) // "13%"
  */
-export function formatPercentage(value?: number, round = false): string {
+export function formatPercentage(value?: number | null, round = false): string {
   if (!value) {
     return '0%';
   }

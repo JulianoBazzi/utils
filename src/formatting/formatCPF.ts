@@ -13,7 +13,7 @@ interface FormatCPFOptions {
  * formatCPF("52998224725") // "529.982.247-25"
  * formatCPF("", { fallback: "Não Informado" }) // "Não Informado"
  */
-export function formatCPF(value?: string, options: FormatCPFOptions = {}): string {
+export function formatCPF(value?: string | null, options: FormatCPFOptions = {}): string {
   const { fallback = '' } = options;
   const cpf = onlyNumbers(value);
   if (!cpf) return fallback;

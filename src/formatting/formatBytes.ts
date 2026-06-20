@@ -10,7 +10,7 @@ const GB = 1024 ** 3;
  * formatBytes(1536) // "1.50 KB"
  * formatBytes(1536, true) // "2 KB"
  */
-export function formatBytes(bytes?: number, round = false): string {
+export function formatBytes(bytes?: number | null, round = false): string {
   if (!bytes) {
     return '0 Bytes';
   }

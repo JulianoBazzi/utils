@@ -14,7 +14,7 @@ interface FormatCNPJOptions {
  * formatCNPJ("12ABC34501DE35") // "12.ABC.345/01DE-35"
  * formatCNPJ("", { fallback: "Não Informado" }) // "Não Informado"
  */
-export function formatCNPJ(value?: string, options: FormatCNPJOptions = {}): string {
+export function formatCNPJ(value?: string | null, options: FormatCNPJOptions = {}): string {
   const { fallback = '' } = options;
   const cnpj = onlyAlphanumeric(value);
   if (!cnpj) return fallback;

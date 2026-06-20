@@ -5,7 +5,7 @@
  * toPositive(5) // 5
  * toPositive(-5) // 0
  */
-export function toPositive(value?: number): number {
+export function toPositive(value?: number | null): number {
   if (value) {
     return value > 0 ? value : 0;
   }

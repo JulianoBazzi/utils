@@ -51,23 +51,25 @@ All functions are exported flat from the package root, grouped internally by pur
 
 - `formatDate(value?, { simplified?, fallback? })` — `DD/MM/YY` (or `DD/MM/YYYY`)
 - `formatDateTime(date?, { simplified?, showSeconds?, fallback? })` — `DD/MM/YY HH:mm` (optional 4-digit year and/or `:ss`)
-- `formatMonth(value?)` — `MM/YYYY`
+- `formatMonth(value?, { fallback? })` — `MM/YYYY`
 - `formatHour(value?, { simplified?, fallback? })` — `HH:mm` (or `HH:mm:ss`)
-- `formatDuration(minutes?)` — human-readable duration, e.g. `1h e 30 min`
+- `formatDuration(minutes?, { fallback?, casing? })` — human-readable duration, e.g. `1h e 30 min`
 - `formatCurrency(value?, divisor = 100)` — BRL currency, e.g. `R$ 19,90`
 - `formatPercentage(value?, round = false)` — percentage, e.g. `12,50%`
-- `formatBoolean(value?)` — `Sim` / `Não` (PT-BR yes/no)
-- `formatPhone(phone?)` — BR phone mask (10 or 11 digits)
-- `formatBytes(bytes?, round = false)` — human-readable size, e.g. `1.50 KB`
+- `formatBoolean(value?, { casing? })` — `Sim` / `Não` (PT-BR yes/no)
+- `formatPhone(phone?, { fallback? })` — BR phone mask (10 or 11 digits)
+- `formatBytes(bytes?, round = false, { casing? })` — human-readable size, e.g. `1.50 KB`
 - `formatSecondsToTime(value?, showSeconds = true)` — `HH:mm:ss` (or `HH:mm`)
-- `formatTimeAgo(date?)` — elapsed time in PT-BR, e.g. `5 dias`
-- `formatAddress(address)` — builds a single-line address
-- `formatCityAndState(city?, state?)` — `"City - UF"` (or `"Não Informado"`)
-- `formatWeekDay(date?)` — date + abbreviated weekday, e.g. `15/6 - Sáb`
-- `formatCPF(value?)` — `000.000.000-00`
-- `formatCNPJ(value?)` — `00.000.000/0000-00` (supports alphanumeric CNPJ)
-- `formatDocument(value?)` — formats as CPF or CNPJ based on length
-- `formatPostalCode(value?)` — BR postal code (CEP) `00000-000`
+- `formatTimeAgo(date?, { fallback?, casing? })` — elapsed time in PT-BR, e.g. `5 dias`
+- `formatAddress(address, { fallback? })` — builds a single-line address
+- `formatCityAndState(city?, state?, { fallback?, separator?, casing? })` — `"City - UF"` (empty when both missing)
+- `formatWeekDay(date?, { fallback?, casing? })` — date + abbreviated weekday, e.g. `15/6 - Sáb`
+- `formatCPF(value?, { fallback? })` — `000.000.000-00`
+- `formatCNPJ(value?, { fallback? })` — `00.000.000/0000-00` (supports alphanumeric CNPJ)
+- `formatDocument(value?, { fallback? })` — formats as CPF or CNPJ based on length
+- `formatPostalCode(value?, { fallback? })` — BR postal code (CEP) `00000-000`
+- `appendValue(base?, value?, { separator?, fallback?, casing? })` — joins two texts (each trimmed), e.g. `"a; b"`
+- `applyCasing(value, casing?)` — `lowercase` / `uppercase` / `titlecase` (titlecase keeps the rest of each word, so `"KB"` survives)
 - `removeAccents(value?)` — strips accents, e.g. `João` → `Joao`
 - `onlyNumbers(value?)` — removes everything that is not a digit
 - `onlyAlphanumeric(value?)` — removes non-alphanumerics + uppercase (`"12.abc"` → `"12ABC"`)

@@ -21,7 +21,7 @@ interface FormatWeekDayOptions {
  * formatWeekDay("", { fallback: "Não Informado" }) // "Não Informado"
  * formatWeekDay("2024-06-15", { casing: "uppercase" }) // "15/6 - SÁB"
  */
-export function formatWeekDay(date?: string, options: FormatWeekDayOptions = {}): string {
+export function formatWeekDay(date?: string | null, options: FormatWeekDayOptions = {}): string {
   const { fallback = '', casing } = options;
   if (!date) return fallback;
 

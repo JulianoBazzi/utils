@@ -16,8 +16,8 @@ interface FormatCityAndStateOptions {
  * formatCityAndState("", "", { fallback: "Não Informado" }) // "Não Informado"
  */
 export function formatCityAndState(
-  city?: string,
-  state?: string,
+  city?: string | null,
+  state?: string | null,
   options: FormatCityAndStateOptions = {},
 ): string {
   const { fallback = '', separator = ' - ' } = options;

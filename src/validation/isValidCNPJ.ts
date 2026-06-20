@@ -10,7 +10,7 @@ import { checkDigit } from './internal/checkDigit.js';
  * isValidCNPJ("11.222.333/0001-81") // true
  * isValidCNPJ("12ABC34501DE35") // true (alphanumeric)
  */
-export function isValidCNPJ(value?: string): boolean {
+export function isValidCNPJ(value?: string | null): boolean {
   const cnpj = onlyAlphanumeric(value);
 
   if (cnpj.length !== 14 || !/\d{2}$/.test(cnpj) || /^(.)\1{13}$/.test(cnpj)) {

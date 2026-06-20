@@ -9,7 +9,7 @@ const EMAIL =
  * isValidEmail("user@example.com") // true
  * isValidEmail("no-at") // false
  */
-export function isValidEmail(value?: string): boolean {
+export function isValidEmail(value?: string | null): boolean {
   if (!value) return false;
   return EMAIL.test(value);
 }

@@ -11,7 +11,7 @@ const isRepeated = (value: string): boolean => /^(\d)\1*$/.test(value);
  * isValidPhone("(11) 98765-4321") // true
  * isValidPhone("11111111") // false
  */
-export function isValidPhone(value?: string): boolean {
+export function isValidPhone(value?: string | null): boolean {
   const phone = onlyNumbers(value);
 
   if (isRepeated(phone)) {

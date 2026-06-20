@@ -13,7 +13,10 @@ interface FormatPostalCodeOptions {
  * formatPostalCode("01310100") // "01310-100"
  * formatPostalCode("", { fallback: "Não Informado" }) // "Não Informado"
  */
-export function formatPostalCode(value?: string, options: FormatPostalCodeOptions = {}): string {
+export function formatPostalCode(
+  value?: string | null,
+  options: FormatPostalCodeOptions = {},
+): string {
   const { fallback = '' } = options;
   const cep = onlyNumbers(value);
   if (!cep) return fallback;

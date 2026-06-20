@@ -16,7 +16,7 @@ interface FormatDocumentOptions {
  * formatDocument("12ABC34501DE35") // "12.ABC.345/01DE-35"
  * formatDocument("", { fallback: "Não Informado" }) // "Não Informado"
  */
-export function formatDocument(value?: string, options: FormatDocumentOptions = {}): string {
+export function formatDocument(value?: string | null, options: FormatDocumentOptions = {}): string {
   return onlyAlphanumeric(value).length > 11
     ? formatCNPJ(value, options)
     : formatCPF(value, options);
