@@ -12,6 +12,13 @@ describe('resolveList', () => {
     await expect(resolveList(['1', '2'], resolver)).resolves.toEqual([{ id: 1 }, { id: 2 }]);
   });
 
+  it('tolerates undefined/null elements in the array', async () => {
+    await expect(resolveList(['1', undefined, '2', null], resolver)).resolves.toEqual([
+      { id: 1 },
+      { id: 2 },
+    ]);
+  });
+
   it('returns an empty array for missing input', async () => {
     await expect(resolveList(undefined, resolver)).resolves.toEqual([]);
   });

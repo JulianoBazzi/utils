@@ -1,3 +1,5 @@
+import { formatPostalCode } from './formatPostalCode.js';
+
 interface Address {
   state?: string;
   city?: string;
@@ -33,7 +35,8 @@ export function formatAddress(
   const street = [address, number].filter(Boolean).join(', ');
   const districtPart = district ? ` - ${district}` : '';
   const cityState = [city, state].filter(Boolean).join(' - ');
-  const zipcodePart = zipcode ? `, ${zipcode}` : '';
+  const formattedZipcode = formatPostalCode(zipcode);
+  const zipcodePart = formattedZipcode ? `, ${formattedZipcode}` : '';
 
   let result = `${street}${districtPart}`;
 

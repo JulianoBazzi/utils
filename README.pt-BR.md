@@ -78,7 +78,7 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `truncate(value?, length = 40)` — corta o texto e adiciona `...`
 - `getLastCharacter(value?)` — último caractere de uma string
 - `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normaliza: `"JOAO SILVA"` → `"Joao S."`)
-- `joinByKey(values, key, divider = " | ")` — junta uma propriedade de cada objeto
+- `joinByKey(values, key, dividerOrOptions?)` — junta uma propriedade de cada objeto; 3º arg é string (divider) ou `{ divider?, sort? }`, onde `sort` (`true | "asc" | "desc"`) ordena por `key` antes
 
 ### mask (constantes)
 

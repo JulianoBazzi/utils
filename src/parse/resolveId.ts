@@ -10,7 +10,7 @@ import { parseIds } from './parseIds.js';
  * resolveId(undefined, (id) => api.getUser(id)) // Promise<null>
  */
 export async function resolveId<T, P = void>(
-  value: string | string[] | undefined,
+  value: string | Array<string | null | undefined> | null | undefined,
   resolver: (id: number, params?: P) => Promise<T>,
   params?: P,
 ): Promise<T | null> {

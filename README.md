@@ -80,7 +80,7 @@ All functions are exported flat from the package root, grouped internally by pur
 - `truncate(value?, length = 40)` — trims text and appends `...`
 - `getLastCharacter(value?)` — last character of a string
 - `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normalizes: `"JOAO SILVA"` → `"Joao S."`)
-- `joinByKey(values, key, divider = " | ")` — joins one property from each object
+- `joinByKey(values, key, dividerOrOptions?)` — joins one property from each object; 3rd arg is a divider string or `{ divider?, sort? }`, where `sort` (`true | "asc" | "desc"`) orders by `key` first
 
 ### mask (constants)
 

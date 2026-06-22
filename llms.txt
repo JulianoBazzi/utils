@@ -26,7 +26,7 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `abbreviateName(name?: string | null, options?: { casing?: LetterCasing }): string` — primeiro nome + inicial do sobrenome. `"John Smith"` → `"John S."`. `casing: 'titlecase'` normaliza (lowercase antes): `"JOAO SILVA"` → `"Joao S."`.
 - `appendValue(base?: string | null, value?: string | null, options?: { separator?: string; fallback?: string; casing?: LetterCasing }): string` — junta dois textos preservando o presente; faz trim em cada lado antes; ambos → `"base; value"` (separator default `"; "`); ambos vazios → `fallback`. `"a", "b"` → `"a; b"`.
 - `applyCasing(value: string, casing?: LetterCasing): string` — aplica caixa ao texto. `"são paulo"` → `uppercase` `"SÃO PAULO"` / `titlecase` `"São Paulo"`; titlecase preserva o resto da palavra (`"1.50 KB"` intacto). Sem `casing` → inalterado.
-- `formatAddress(address: { state?: string; city?: string; zipcode?: string; address?: string; district?: string; number?: string }, options?: { fallback?: string }): string` — monta endereço em uma linha. Vazio (ou `fallback`) se sem rua/cidade/estado/bairro.
+- `formatAddress(address: { state?: string; city?: string; zipcode?: string; address?: string; district?: string; number?: string }, options?: { fallback?: string }): string` — monta endereço em uma linha; o `zipcode` é formatado como CEP (via `formatPostalCode`). Vazio (ou `fallback`) se sem rua/cidade/estado/bairro.
 - `formatBoolean(value?: boolean | null, options?: { casing?: LetterCasing }): string` — `true` → `"Sim"`, senão `"Não"`.
 - `formatBytes(bytes?: number | null, round = false, options?: { casing?: LetterCasing }): string` — tamanho legível. `1536` → `"1.50 KB"`; `round` arredonda.
 - `formatCPF(value?: string | null, options?: { fallback?: string }): string` — `"52998224725"` → `"529.982.247-25"`. Faz strip de não-dígitos e pad.
@@ -54,7 +54,7 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `removeAccents(value?: string | null): string` — remove acentos (NFD). `"João Coração"` → `"Joao Coracao"`.
 - `truncate(value?: string | null, length = 40): string` — corta e adiciona `"..."` se exceder `length`.
 - `getLastCharacter(value?: string | null): string` — último caractere. `"hello"` → `"o"`.
-- `joinByKey<T, K extends keyof T>(values: T[], key: K, divider = " | "): string` — junta uma propriedade de cada objeto. `[{name:"a"},{name:"b"}], "name"` → `"a | b"`.
+- `joinByKey<T, K extends keyof T>(values: T[], key: K, dividerOrOptions?: string | { divider?: string; sort?: boolean | "asc" | "desc" }): string` — junta uma propriedade de cada objeto. 3º arg aceita string (divider) ou options. `sort` ordena por `key` antes de juntar (imutável; numérico p/ números, `localeCompare` pt-BR p/ strings). `[{name:"a"},{name:"b"}], "name"` → `"a | b"`. `[{name:"b"},{name:"a"}], "name", {sort:true}` → `"a | b"`.
 
 ## API — mask (constantes)
 
@@ -106,8 +106,8 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` 
 
 - `parseIds(...ids: Array<string | undefined | null>): number[]` — strings CSV → números. `"1,2", "3"` → `[1, 2, 3]`. Descarta não-numéricos.
 - `resolveIdsToObjects<T, P = void>(ids: number[] | undefined, resolver: (id: number, params?: P) => Promise<T>, params?: P): Promise<T[]>` — resolve ids em objetos via resolver async (Promise.all). Lista vazia/ausente → `[]`. `params` repassado a cada chamada.
-- `resolveList<T, P = void>(value: string | string[] | undefined, resolver: (id: number, params?: P) => Promise<T>, params?: P): Promise<T[]>` — `parseIds` + `resolveIdsToObjects`; aceita string CSV ou array.
-- `resolveId<T, P = void>(value: string | string[] | undefined, resolver: (id: number, params?: P) => Promise<T>, params?: P): Promise<T | null>` — resolve o 1º id válido (via `parseIds`), ou `null`.
+- `resolveList<T, P = void>(value: string | Array<string | null | undefined> | null | undefined, resolver: (id: number, params?: P) => Promise<T>, params?: P): Promise<T[]>` — `parseIds` + `resolveIdsToObjects`; aceita string CSV ou array (tolera undefined/null nos elementos).
+- `resolveId<T, P = void>(value: string | Array<string | null | undefined> | null | undefined, resolver: (id: number, params?: P) => Promise<T>, params?: P): Promise<T | null>` — resolve o 1º id válido (via `parseIds`), ou `null`.
 
 ## API — transform (compatível com yup)
 

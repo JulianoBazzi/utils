@@ -10,7 +10,7 @@ import { resolveIdsToObjects } from './resolveIdsToObjects.js';
  * resolveList("1,2", (id) => api.getUser(id)) // Promise<User[]>
  */
 export function resolveList<T, P = void>(
-  value: string | string[] | undefined,
+  value: string | Array<string | null | undefined> | null | undefined,
   resolver: (id: number, params?: P) => Promise<T>,
   params?: P,
 ): Promise<T[]> {

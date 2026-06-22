@@ -16,6 +16,10 @@ describe('resolveId', () => {
     await expect(resolveId(['5'], resolver)).resolves.toEqual({ id: 5 });
   });
 
+  it('skips undefined/null elements and resolves the first valid id', async () => {
+    await expect(resolveId([undefined, '5'], resolver)).resolves.toEqual({ id: 5 });
+  });
+
   it('returns null when no valid id is found', async () => {
     await expect(resolveId(undefined, resolver)).resolves.toBeNull();
     await expect(resolveId([], resolver)).resolves.toBeNull();

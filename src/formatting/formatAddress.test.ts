@@ -15,6 +15,18 @@ describe('formatAddress', () => {
     ).toBe('Rua A, 10 - Centro, São Paulo - SP, 01000-000');
   });
 
+  it('formats a raw-digit zipcode as CEP', () => {
+    expect(
+      formatAddress({
+        address: 'Rua A',
+        number: '10',
+        city: 'São Paulo',
+        state: 'SP',
+        zipcode: '01000000',
+      }),
+    ).toBe('Rua A, 10, São Paulo - SP, 01000-000');
+  });
+
   it('handles partial fields', () => {
     expect(formatAddress({ city: 'São Paulo', state: 'SP' })).toBe(', São Paulo - SP');
   });
