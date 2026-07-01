@@ -55,6 +55,7 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `truncate(value?: string | null, length = 40): string` — corta e adiciona `"..."` se exceder `length`.
 - `getLastCharacter(value?: string | null): string` — último caractere. `"hello"` → `"o"`.
 - `joinByKey<T, K extends keyof T>(values: T[], key: K, dividerOrOptions?: string | { divider?: string; sort?: boolean | "asc" | "desc" }): string` — junta uma propriedade de cada objeto. 3º arg aceita string (divider) ou options. `sort` ordena por `key` antes de juntar (imutável; numérico p/ números, `localeCompare` pt-BR p/ strings). `[{name:"a"},{name:"b"}], "name"` → `"a | b"`. `[{name:"b"},{name:"a"}], "name", {sort:true}` → `"a | b"`.
+- `maskSecret(value?: string | null, options?: { visibleStart?: number; visibleEnd?: number; mask?: string }): string` — mascara parcialmente, mantendo `visibleStart` (default 5) primeiros e `visibleEnd` (default 5) últimos chars, com `mask` (default `"••••••"`) no miolo. `"$2y$10$AbCdEfGhIjKlMnOp"` → `"$2y$1••••••lMnOp"`. Se `length <= visibleStart + visibleEnd`, retorna só a máscara (`"short"` → `"••••••"`). Vazio/ausente → `""`.
 
 ## API — mask (constantes)
 
@@ -81,6 +82,8 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` 
 - `isValidPostalCode(value?: string | null): boolean` — CEP de 8 dígitos (formato; CEP não tem dígito verificador).
 - `isValidUF(value?: string | null): boolean` — sigla de estado BR (27 UFs), case-insensitive.
 - `isValidUrl(value?: string | null): boolean` — URL `http`/`https` válida.
+- `isDateString(value?: string | null): boolean` — data ISO `YYYY-MM-DD` sem hora. `"2026-06-25"` → `true`; `"2026-06-25 11:04:23"` → `false`.
+- `isDateTimeString(value?: string | null): boolean` — data-hora `YYYY-MM-DD` + `T` ou espaço + `HH:mm` (`:ss` opcional). `"2026-06-25T11:04:23"` e `"2026-06-25 11:04"` → `true`; `"2026-06-25"` → `false`.
 
 ## API — number
 

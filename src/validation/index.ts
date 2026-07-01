@@ -1,5 +1,7 @@
 export * from './contains.js';
 export * from './isBirthday.js';
+export * from './isDateString.js';
+export * from './isDateTimeString.js';
 export * from './isOdd.js';
 export * from './isValidBarcode.js';
 export * from './isValidCNPJ.js';

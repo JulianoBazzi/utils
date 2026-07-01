@@ -81,6 +81,7 @@ All functions are exported flat from the package root, grouped internally by pur
 - `getLastCharacter(value?)` — last character of a string
 - `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normalizes: `"JOAO SILVA"` → `"Joao S."`)
 - `joinByKey(values, key, dividerOrOptions?)` — joins one property from each object; 3rd arg is a divider string or `{ divider?, sort? }`, where `sort` (`true | "asc" | "desc"`) orders by `key` first
+- `maskSecret(value?, { visibleStart = 5, visibleEnd = 5, mask = '••••••' })` — partially masks a secret, keeping the ends visible, e.g. `$2y$1••••••lMnOp` (short values → mask only)
 
 ### mask (constants)
 
@@ -100,6 +101,8 @@ Input mask patterns (react-input-mask convention: `9` = digit, `*` = alphanumeri
 - `isValidJson(value?)` — `true` if the string is valid JSON
 - `isValidBarcode(value)` — `true` for a valid EAN/GTIN check digit
 - `isValidUrl(value)` — `true` for a valid `http`/`https` URL
+- `isDateString(value?)` — `true` for an ISO date `YYYY-MM-DD` (no time)
+- `isDateTimeString(value?)` — `true` for a date-time (`T` or space separator, `HH:mm[:ss]`)
 - `isValidPhone(value?)` — `true` for a valid BR phone (landline or mobile)
 - `isBirthday(value?)` — `true` if the date falls on today's day/month
 - `isValidCPF(value?)` — `true` for a CPF with valid check digits

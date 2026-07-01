@@ -79,6 +79,7 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `getLastCharacter(value?)` — último caractere de uma string
 - `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normaliza: `"JOAO SILVA"` → `"Joao S."`)
 - `joinByKey(values, key, dividerOrOptions?)` — junta uma propriedade de cada objeto; 3º arg é string (divider) ou `{ divider?, sort? }`, onde `sort` (`true | "asc" | "desc"`) ordena por `key` antes
+- `maskSecret(value?, { visibleStart = 5, visibleEnd = 5, mask = '••••••' })` — mascara parcialmente um segredo, mantendo as pontas visíveis, ex.: `$2y$1••••••lMnOp` (valores curtos → só a máscara)
 
 ### mask (constantes)
 
@@ -98,6 +99,8 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` 
 - `isValidJson(value?)` — `true` se a string é um JSON válido
 - `isValidBarcode(value)` — `true` para dígito verificador EAN/GTIN válido
 - `isValidUrl(value)` — `true` para URL `http`/`https` válida
+- `isDateString(value?)` — `true` para data ISO `YYYY-MM-DD` (sem hora)
+- `isDateTimeString(value?)` — `true` para data-hora (separador `T` ou espaço, `HH:mm[:ss]`)
 - `isValidPhone(value?)` — `true` para telefone BR válido (fixo ou celular)
 - `isBirthday(value?)` — `true` se a data cai no dia/mês de hoje
 - `isValidCPF(value?)` — `true` para CPF com dígitos verificadores válidos

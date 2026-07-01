@@ -26,6 +26,7 @@ export * from './formatWeekDay.js';
 export * from './formatWithPattern.js';
 export * from './getLastCharacter.js';
 export * from './joinByKey.js';
+export * from './maskSecret.js';
 export * from './onlyAlphanumeric.js';
 export * from './onlyNumbers.js';
 export * from './removeAccents.js';
