@@ -12,14 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v6
-
-      - uses: actions/setup-node@v6
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
         with:
-          node-version: 20
-          cache: pnpm
+          version: latest
 
-      - run: pnpm install --frozen-lockfile
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - run: pnpm install
 
       - run: pnpm run lint
 
