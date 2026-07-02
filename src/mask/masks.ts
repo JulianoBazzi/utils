@@ -1,5 +1,5 @@
 /**
- * Input mask patterns (react-input-mask convention: `9` = digit,
+ * Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter,
  * `*` = alphanumeric). Centralized so the `*InputMask` components don't repeat
  * the literal strings.
  */
@@ -21,3 +21,12 @@ export const CELLPHONE_MASK = '(99) 99999-9999';
 
 /** Brazilian postal code (CEP) mask, e.g. `12345-678`. */
 export const POSTAL_CODE_MASK = '99999-999';
+
+/**
+ * License plate mask covering legacy (`ABC-1234`) and Mercosul (`ABC-1D23`)
+ * layouts — the 5th slot (`*`) accepts a digit or a letter.
+ */
+export const PLATE_MASK = 'aaa-9*99';
+
+/** PIS/PASEP mask, e.g. `120.12345.67-8`. */
+export const PIS_MASK = '999.99999.99-9';

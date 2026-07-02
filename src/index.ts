@@ -1,5 +1,6 @@
 export * from './browser/index.js';
 export * from './formatting/index.js';
+export * from './generate/index.js';
 export * from './mask/index.js';
 export * from './number/index.js';
 export * from './object/index.js';

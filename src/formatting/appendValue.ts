@@ -32,13 +32,6 @@ export function appendValue(
   const trimmedValue = value?.trim();
   if (!trimmedBase && !trimmedValue) return fallback;
 
-  let result: string;
-  if (!trimmedBase) {
-    result = trimmedValue ?? '';
-  } else if (!trimmedValue) {
-    result = trimmedBase;
-  } else {
-    result = `${trimmedBase}${separator}${trimmedValue}`;
-  }
-  return applyCasing(result?.trim(), casing);
+  const result = [trimmedBase, trimmedValue].filter(Boolean).join(separator);
+  return applyCasing(result, casing);
 }

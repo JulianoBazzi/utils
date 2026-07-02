@@ -5,6 +5,8 @@ import {
   CNPJ_MASK,
   CPF_MASK,
   PHONE_MASK,
+  PIS_MASK,
+  PLATE_MASK,
   POSTAL_CODE_MASK,
 } from './masks.js';
 
@@ -16,5 +18,7 @@ describe('mask constants', () => {
     expect(PHONE_MASK).toBe('(99) 9999-9999');
     expect(CELLPHONE_MASK).toBe('(99) 99999-9999');
     expect(POSTAL_CODE_MASK).toBe('99999-999');
+    expect(PLATE_MASK).toBe('aaa-9*99');
+    expect(PIS_MASK).toBe('999.99999.99-9');
   });
 });

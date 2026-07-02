@@ -1,6 +1,6 @@
 {
   "name": "@julianobazzi/utils",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A collection of small, tree-shakeable TypeScript utility functions.",
   "type": "module",
   "license": "MIT",
@@ -48,6 +48,7 @@
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "lint": "biome check",
     "lint:fix": "biome check --write",
@@ -58,6 +59,8 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.0",
     "@changesets/cli": "2.31.0",
+    "@vitest/coverage-v8": "4.1.9",
+    "happy-dom": "20.10.6",
     "tsup": "8.5.1",
     "typescript": "6.0.3",
     "vitest": "4.1.9"

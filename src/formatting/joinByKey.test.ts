@@ -35,6 +35,13 @@ describe('joinByKey', () => {
     expect(joinByKey([{ id: 1 }, { id: 2 }], 'id', { sort: 'desc', divider: ', ' })).toBe('2, 1');
   });
 
+  it('sorts entries with missing values first', () => {
+    const values = [{ name: 'b' }, { name: null }, { name: null }, { name: 'a' }] as Array<{
+      name: string | null;
+    }>;
+    expect(joinByKey(values, 'name', { sort: true })).toBe('null | null | a | b');
+  });
+
   it('does not mutate the input array when sorting', () => {
     const values = [{ id: 2 }, { id: 1 }];
     joinByKey(values, 'id', { sort: true });

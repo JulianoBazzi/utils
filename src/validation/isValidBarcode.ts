@@ -1,3 +1,5 @@
+import { eanCheckDigit } from './internal/eanCheckDigit.js';
+
 /**
  * Validate an EAN-8 / EAN-13 / GTIN-12/14 barcode via its mod-10 check digit.
  * Accepts 8, 12, 13 or 14 digit strings.
@@ -11,12 +13,5 @@ export function isValidBarcode(value?: string | null): boolean {
     return false;
   }
 
-  const paddedValue = value.padStart(14, '0');
-
-  let result = 0;
-  for (let i = 0; i < paddedValue.length - 1; i += 1) {
-    result += Number.parseInt(paddedValue.charAt(i), 10) * (i % 2 === 0 ? 3 : 1);
-  }
-
-  return (10 - (result % 10)) % 10 === Number.parseInt(paddedValue.charAt(13), 10);
+  return eanCheckDigit(value.slice(0, -1)) === Number(value.slice(-1));
 }

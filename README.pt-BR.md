@@ -65,10 +65,17 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatAddress(address, { fallback? })` — monta um endereço em uma linha
 - `formatCityAndState(city?, state?, { fallback?, separator?, casing? })` — `"Cidade - UF"` (vazio quando ambos ausentes)
 - `formatWeekDay(date?, { fallback?, casing?, dateFormat? })` — data + dia da semana abreviado, ex.: `15/6 - Sáb` (`dateFormat` default `D/M`)
+- `getAge(birthDate?)` — idade em anos completos (hoje); ausente/inválido/futuro → `0`
+- `formatAge(birthDate?, { fallback? })` — idade em texto PT-BR, ex.: `"36 anos"` / `"1 ano"`
 - `formatCPF(value?, { fallback? })` — `000.000.000-00`
 - `formatCNPJ(value?, { fallback? })` — `00.000.000/0000-00` (suporta CNPJ alfanumérico)
 - `formatDocument(value?, { fallback? })` — formata como CPF ou CNPJ conforme o tamanho
 - `formatPostalCode(value?, { fallback? })` — CEP `00000-000`
+- `formatPlate(value?, { fallback? })` — placa BR: antiga → `ABC-1234`, Mercosul mantém `ABC1D23`
+- `formatPIS(value?, { fallback? })` — PIS/PASEP `000.00000.00-0`
+- `formatLongDate(value?, { fallback?, casing? })` — data por extenso, ex.: `1º de julho de 2026`
+- `numberToWords(value?, { fallback? })` — inteiro por extenso até trilhões, ex.: `mil duzentos e trinta e quatro`
+- `currencyToWords(value?, divisor = 100, { fallback? })` — valor BRL por extenso (espelha `formatCurrency`), ex.: `dezenove reais e noventa centavos`
 - `appendValue(base?, value?, { separator?, fallback?, casing? })` — junta dois textos (cada um com trim), ex.: `"a; b"`
 - `applyCasing(value, casing?)` — `lowercase` / `uppercase` / `titlecase` (titlecase preserva o resto de cada palavra, ex.: `"KB"`)
 - `removeAccents(value?)` — remove acentos, ex.: `João` → `Joao`
@@ -83,7 +90,7 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 
 ### mask (constantes)
 
-Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` = alfanumérico).
+Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` = letra, `*` = alfanumérico).
 
 - `CPF_MASK` — `999.999.999-99`
 - `CNPJ_MASK` — `99.999.999/9999-99`
@@ -91,6 +98,8 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` 
 - `PHONE_MASK` — `(99) 9999-9999` (fixo)
 - `CELLPHONE_MASK` — `(99) 99999-9999` (celular)
 - `POSTAL_CODE_MASK` — `99999-999` (CEP)
+- `PLATE_MASK` — `aaa-9*99` (placa; o slot `*` cobre antiga e Mercosul)
+- `PIS_MASK` — `999.99999.99-9` (PIS/PASEP)
 
 ### validation (validação)
 
@@ -109,6 +118,12 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` 
 - `isValidPostalCode(value?)` — `true` para CEP de 8 dígitos
 - `isValidEmail(value?)` — `true` para email válido
 - `isValidUF(value?)` — `true` para sigla de estado BR válida (case-insensitive)
+- `isValidPlate(value?)` — `true` para placa BR (antiga `AAA9999` ou Mercosul `AAA9A99`)
+- `isValidPIS(value?)` — `true` para PIS/PASEP com dígito verificador válido
+- `isValidRenavam(value?)` — `true` para RENAVAM válido (11 dígitos ou legado 9–10)
+- `isValidCNH(value?)` — `true` para CNH com dígitos verificadores válidos (algoritmo Denatran)
+- `isValidVoterId(value?)` — `true` para título de eleitor válido (UF + dígitos, com exceção SP/MG)
+- `isValidBoleto(value?)` — `true` para linha digitável de boleto válida (bancário ou arrecadação)
 
 ### number (números)
 
@@ -144,6 +159,21 @@ Transforms dependency-free no formato `(value, originalValue) => string` (igual 
 - `onlyNumbersTransform(_value, originalValue)` — embrulha `onlyNumbers`, ex.: `yup.string().transform(onlyNumbersTransform)`
 - `onlyAlphanumericTransform(_value, originalValue)` — embrulha `onlyAlphanumeric`, ex.: `yup.string().transform(onlyAlphanumericTransform)`
 
+### generate (geradores p/ testes/seeds)
+
+Todos os geradores produzem valores aleatórios que passam no validador correspondente.
+
+- `generateCPF({ formatted? })` — CPF válido; `formatted: true` → `000.000.000-00`
+- `generateCNPJ({ formatted?, alphanumeric? })` — CNPJ válido (filial `0001`); `alphanumeric: true` → formato 2026
+- `generatePIS({ formatted? })` — PIS/PASEP válido; `formatted: true` → `000.00000.00-0`
+- `generateRenavam({ legacy? })` — RENAVAM válido; `legacy: true` → formato antigo de 9 dígitos
+- `generateCNH()` — CNH válida (algoritmo Denatran)
+- `generateVoterId()` — título de eleitor válido (UF aleatória 01–28)
+- `generatePlate({ mercosul?, formatted? })` — placa válida; Mercosul por default, `mercosul: false` → antiga
+- `generateBarcode({ length? })` — código EAN/GTIN válido (8/12/13/14 dígitos, default EAN-13)
+- `generatePhone({ mobile?, formatted? })` — telefone BR válido; celular por default, `mobile: false` → fixo
+- `generatePostalCode({ formatted? })` — CEP de 8 dígitos; `formatted: true` → `00000-000`
+
 ### browser (somente DOM)
 
 - `loadImageFromBlob(blob)` — `Promise<HTMLImageElement>`
@@ -159,6 +189,7 @@ Transforms dependency-free no formato `(value, originalValue) => string` (igual 
 | `npm run dev`        | Build em modo watch                                |
 | `npm run test`       | Roda os testes uma vez (Vitest)                    |
 | `npm run test:watch` | Roda os testes em modo watch                       |
+| `npm run test:coverage` | Roda os testes com cobertura (thresholds ativos) |
 | `npm run typecheck`  | Checagem de tipos com `tsc --noEmit`               |
 | `npm run lint`       | Lint + checagem de formatação (Biome)              |
 | `npm run lint:fix`   | Aplica correções seguras de lint/formatação        |

@@ -21,6 +21,24 @@ describe('formatTimeAgo', () => {
     );
   });
 
+  it('never goes below one unit (zero diff reads as "1 minuto")', () => {
+    expect(formatTimeAgo(dayjs().toISOString())).toBe('1 minuto');
+  });
+
+  it('uses singular for one hour', () => {
+    expect(formatTimeAgo(dayjs().subtract(90, 'minute').toISOString())).toBe('1 hora');
+  });
+
+  it('formats months (plural and singular)', () => {
+    expect(formatTimeAgo(dayjs().subtract(65, 'day').toISOString())).toBe('2 meses');
+    expect(formatTimeAgo(dayjs().subtract(35, 'day').toISOString())).toBe('1 mês');
+  });
+
+  it('formats years (plural and singular)', () => {
+    expect(formatTimeAgo(dayjs().subtract(800, 'day').toISOString())).toBe('2 anos');
+    expect(formatTimeAgo(dayjs().subtract(400, 'day').toISOString())).toBe('1 ano');
+  });
+
   it('returns empty string for missing input', () => {
     expect(formatTimeAgo()).toBe('');
     expect(formatTimeAgo(null)).toBe('');

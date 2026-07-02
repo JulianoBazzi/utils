@@ -19,4 +19,8 @@ describe('contains', () => {
   it('returns false when a falsy value is absent', () => {
     expect(contains('', ['a'])).toBe(false);
   });
+
+  it('returns false when the items array is missing', () => {
+    expect(contains('a', undefined as unknown as string[])).toBe(false);
+  });
 });

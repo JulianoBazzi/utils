@@ -67,10 +67,17 @@ All functions are exported flat from the package root, grouped internally by pur
 - `formatAddress(address, { fallback? })` — builds a single-line address
 - `formatCityAndState(city?, state?, { fallback?, separator?, casing? })` — `"City - UF"` (empty when both missing)
 - `formatWeekDay(date?, { fallback?, casing?, dateFormat? })` — date + abbreviated weekday, e.g. `15/6 - Sáb` (`dateFormat` default `D/M`)
+- `getAge(birthDate?)` — age in full years (today); missing/invalid/future → `0`
+- `formatAge(birthDate?, { fallback? })` — age as PT-BR text, e.g. `"36 anos"` / `"1 ano"`
 - `formatCPF(value?, { fallback? })` — `000.000.000-00`
 - `formatCNPJ(value?, { fallback? })` — `00.000.000/0000-00` (supports alphanumeric CNPJ)
 - `formatDocument(value?, { fallback? })` — formats as CPF or CNPJ based on length
 - `formatPostalCode(value?, { fallback? })` — BR postal code (CEP) `00000-000`
+- `formatPlate(value?, { fallback? })` — BR license plate: legacy → `ABC-1234`, Mercosul keeps `ABC1D23`
+- `formatPIS(value?, { fallback? })` — PIS/PASEP `000.00000.00-0`
+- `formatLongDate(value?, { fallback?, casing? })` — date in full PT-BR, e.g. `1º de julho de 2026`
+- `numberToWords(value?, { fallback? })` — integer spelled in PT-BR up to the trillions, e.g. `mil duzentos e trinta e quatro`
+- `currencyToWords(value?, divisor = 100, { fallback? })` — BRL amount spelled in PT-BR (mirrors `formatCurrency`), e.g. `dezenove reais e noventa centavos`
 - `appendValue(base?, value?, { separator?, fallback?, casing? })` — joins two texts (each trimmed), e.g. `"a; b"`
 - `applyCasing(value, casing?)` — `lowercase` / `uppercase` / `titlecase` (titlecase keeps the rest of each word, so `"KB"` survives)
 - `removeAccents(value?)` — strips accents, e.g. `João` → `Joao`
@@ -85,7 +92,7 @@ All functions are exported flat from the package root, grouped internally by pur
 
 ### mask (constants)
 
-Input mask patterns (react-input-mask convention: `9` = digit, `*` = alphanumeric).
+Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*` = alphanumeric).
 
 - `CPF_MASK` — `999.999.999-99`
 - `CNPJ_MASK` — `99.999.999/9999-99`
@@ -93,6 +100,8 @@ Input mask patterns (react-input-mask convention: `9` = digit, `*` = alphanumeri
 - `PHONE_MASK` — `(99) 9999-9999` (landline)
 - `CELLPHONE_MASK` — `(99) 99999-9999` (mobile)
 - `POSTAL_CODE_MASK` — `99999-999` (CEP)
+- `PLATE_MASK` — `aaa-9*99` (license plate; the `*` slot covers legacy and Mercosul)
+- `PIS_MASK` — `999.99999.99-9` (PIS/PASEP)
 
 ### validation
 
@@ -111,6 +120,12 @@ Input mask patterns (react-input-mask convention: `9` = digit, `*` = alphanumeri
 - `isValidPostalCode(value?)` — `true` for an 8-digit CEP
 - `isValidEmail(value?)` — `true` for a valid email
 - `isValidUF(value?)` — `true` for a valid BR state abbreviation (case-insensitive)
+- `isValidPlate(value?)` — `true` for a BR license plate (legacy `AAA9999` or Mercosul `AAA9A99`)
+- `isValidPIS(value?)` — `true` for a PIS/PASEP with a valid check digit
+- `isValidRenavam(value?)` — `true` for a valid RENAVAM (11 digits or legacy 9–10)
+- `isValidCNH(value?)` — `true` for a CNH with valid check digits (Denatran algorithm)
+- `isValidVoterId(value?)` — `true` for a valid voter registration number (título de eleitor)
+- `isValidBoleto(value?)` — `true` for a valid boleto digitable line (bank slip or collection)
 
 ### number
 
@@ -146,6 +161,21 @@ Dependency-free transforms with the `(value, originalValue) => string` shape (ma
 - `onlyNumbersTransform(_value, originalValue)` — wraps `onlyNumbers`, e.g. `yup.string().transform(onlyNumbersTransform)`
 - `onlyAlphanumericTransform(_value, originalValue)` — wraps `onlyAlphanumeric`, e.g. `yup.string().transform(onlyAlphanumericTransform)`
 
+### generate (test/seed helpers)
+
+Every generator produces random values that pass the matching validator.
+
+- `generateCPF({ formatted? })` — valid CPF; `formatted: true` → `000.000.000-00`
+- `generateCNPJ({ formatted?, alphanumeric? })` — valid CNPJ (branch `0001`); `alphanumeric: true` → 2026 format
+- `generatePIS({ formatted? })` — valid PIS/PASEP; `formatted: true` → `000.00000.00-0`
+- `generateRenavam({ legacy? })` — valid RENAVAM; `legacy: true` → old 9-digit format
+- `generateCNH()` — valid CNH (Denatran algorithm)
+- `generateVoterId()` — valid voter registration number (random state code 01–28)
+- `generatePlate({ mercosul?, formatted? })` — valid plate; Mercosul by default, `mercosul: false` → legacy
+- `generateBarcode({ length? })` — valid EAN/GTIN barcode (8/12/13/14 digits, default EAN-13)
+- `generatePhone({ mobile?, formatted? })` — valid BR phone; mobile by default, `mobile: false` → landline
+- `generatePostalCode({ formatted? })` — 8-digit CEP; `formatted: true` → `00000-000`
+
 ### browser (DOM only)
 
 - `loadImageFromBlob(blob)` — `Promise<HTMLImageElement>`
@@ -161,6 +191,7 @@ Dependency-free transforms with the `(value, originalValue) => string` shape (ma
 | `npm run dev`        | Build in watch mode                                 |
 | `npm run test`       | Runs the tests once (Vitest)                        |
 | `npm run test:watch` | Runs the tests in watch mode                        |
+| `npm run test:coverage` | Runs the tests with coverage (thresholds enforced) |
 | `npm run typecheck`  | Type-checks with `tsc --noEmit`                     |
 | `npm run lint`       | Lint + format check (Biome)                         |
 | `npm run lint:fix`   | Applies safe lint/format fixes                      |

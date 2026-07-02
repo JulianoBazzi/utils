@@ -1,11 +1,11 @@
 # @julianobazzi/utils
 
-> Coleção de funções utilitárias TypeScript, pequenas e tree-shakeable, com foco em formatação e validação brasileiras (CPF, CNPJ, CEP, telefone, datas, moeda). Distribuída em ESM + CJS com tipos incluídos. Única dependência de runtime: `dayjs`.
+> Coleção de funções utilitárias TypeScript, pequenas e tree-shakeable, com foco em formatação e validação brasileiras (CPF, CNPJ, CEP, telefone, placa, PIS, RENAVAM, CNH, título de eleitor, boleto, datas, moeda e valor por extenso), além de geradores de dados válidos para testes. Distribuída em ESM + CJS com tipos incluídos. Única dependência de runtime: `dayjs`.
 
 ## Visão geral para IA
 
 - Todas as funções são **named exports planos** a partir da raiz do pacote (`@julianobazzi/utils`). Não há default export.
-- Internamente agrupadas por: `formatting`, `mask`, `validation`, `number`, `object`, `parse`, `transform`, `browser`. O consumidor importa tudo do root.
+- Internamente agrupadas por: `formatting`, `mask`, `validation`, `number`, `object`, `parse`, `transform`, `browser`, `generate`. O consumidor importa tudo do root.
 - Convenções: funções de formatação retornam `string` e dão `""` (ou um fallback documentado) para entrada vazia/nula; validações retornam `boolean`; quase todos os parâmetros de entrada são opcionais e aceitam `undefined`/`null`.
 - Padrão de options (último parâmetro, objeto): `fallback?: string` (retorno quando entrada vazia/ausente, default `""`), `separator?: string` (junção), e `casing?: LetterCasing` onde `LetterCasing = 'lowercase' | 'uppercase' | 'titlecase'` (titlecase põe a 1ª letra de cada palavra em maiúscula preservando o resto, ex.: `"KB"`). Cada função expõe só as options que fazem sentido.
 - Funções do grupo `browser` dependem de APIs DOM (`Image`, `FileReader`, `URL`, `window`) — só funcionam no navegador.
@@ -34,6 +34,8 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `formatDocument(value?: string | null, options?: { fallback?: string }): string` — formata como CPF (≤11 chars) ou CNPJ (senão).
 - `formatCityAndState(city?: string | null, state?: string | null, options?: { fallback?: string; separator?: string; casing?: LetterCasing }): string` — `"São Paulo", "SP"` → `"São Paulo - SP"`. Só um → sem separador. `separator` default `" - "`. Ambos vazios → `fallback` (default `""`).
 - `formatCurrency(value?: number | null, divisor = 100, options?: { fallback?: string }): string` — BRL; divide por `divisor` (centavos). `1990` → `"R$ 19,90"`. Zero/ausente → `fallback` (default `"R$ 0,00"`).
+- `currencyToWords(value?: number | null, divisor = 100, options?: { fallback?: string }): string` — valor BRL por extenso em pt-BR; espelha `formatCurrency` (centavos por default). `123456` → `"mil duzentos e trinta e quatro reais e cinquenta e seis centavos"`; `currencyToWords(1234.56, 1)` idem; milhões redondos → `"um milhão de reais"`; `0` → `"zero reais"`; negativo → prefixo `"menos"`. Ausente/inválido → `fallback` (default `""`).
+- `numberToWords(value?: number | null, options?: { fallback?: string }): string` — inteiro por extenso em pt-BR até trilhões (decimais ignorados; use `currencyToWords` p/ dinheiro). `1234` → `"mil duzentos e trinta e quatro"`; `1100` → `"mil e cem"`; `-42` → `"menos quarenta e dois"`; `0` → `"zero"`. Ausente/inválido/≥1e15 → `fallback` (default `""`).
 - `formatCompactNumber(value?: number | null, options?: { decimals?: number; fallback?: string }): string` — notação compacta via `Intl` locale `en`. `1500000` → `"1.5M"`; `100000` → `"100K"`; `decimals` default 1; `0` → `"0"`; ausente → `fallback` (default `""`).
 - `formatDate(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"2024-01-02"` → `"02/01/24"`; `{ simplified: false }` → `"02/01/2024"`; `{ fallback }` p/ vazio.
 - `formatDateTime(date?: string | null, options?: { simplified?: boolean; showSeconds?: boolean; fallback?: string }): string` — `"02/01/24 13:45"`; `{ simplified: false }` → ano 4 dígitos; `{ showSeconds: true }` → `"...13:45:30"`.
@@ -48,6 +50,11 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `formatPercentage(value?: number | null, round = false, options?: { fallback?: string }): string` — `12.5` → `"12,50%"`; `round` → `"13%"`. Zero/ausente → `fallback` (default `"0%"`).
 - `formatPhone(phone?: string | null, options?: { fallback?: string }): string` — máscara BR. Faz strip antes. `"11912345678"` → `"(11) 91234-5678"`; 10 dígitos → `"(11) 1234-5678"`.
 - `formatPostalCode(value?: string | null, options?: { fallback?: string }): string` — CEP `"01310100"` → `"01310-100"`.
+- `formatPlate(value?: string | null, options?: { fallback?: string }): string` — placa BR. Antiga → `"ABC-1234"`; Mercosul mantém layout oficial sem separador (`"abc1d23"` → `"ABC1D23"`); outros valores → limpos e uppercase. Vazio → `fallback` (default `""`).
+- `formatPIS(value?: string | null, options?: { fallback?: string }): string` — PIS/PASEP `"12012345672"` → `"120.12345.67-2"`. Faz strip e pad com zeros.
+- `formatLongDate(value?: string | Date | null, options?: { fallback?: string; casing?: LetterCasing }): string` — data por extenso pt-BR: `"2026-07-01"` → `"1º de julho de 2026"` (dia 1 com `º`). Locale pt-br do dayjs por instância (não muta a config global).
+- `getAge(birthDate?: Date | string | null): number` — idade em anos completos (hoje), via dayjs; strings `YYYY-MM-DD` são parseadas como data **local** (sem off-by-one de UTC). Ausente/inválido/futuro → `0`.
+- `formatAge(birthDate?: Date | string | null, options?: { fallback?: string }): string` — idade formatada em pt-BR via `getAge`. `"1990-07-01"` → `"36 anos"` (singular `"1 ano"`). Ausente → `fallback` (default `""`); inválido/futuro cai em `getAge` → `"0 anos"`.
 - `onlyNumbers(value?: string | null): string` — remove tudo que não é dígito. `"(11) 98765-4321"` → `"11987654321"`.
 - `onlyAlphanumeric(value?: string | null): string` — remove não-alfanuméricos e **uppercase**. `"12.abc-345"` → `"12ABC345"`.
 - `formatWithPattern(value?: string | null, pattern?: string): string` — máscara pura char-agnostic; `#` consome próximo char do value, demais são literais; para quando value acaba. `'12ABC34501DE35'` + `'##.###.###/####-##'` → `"12.ABC.345/01DE-35"`. value/pattern ausente → `""`.
@@ -59,13 +66,15 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 
 ## API — mask (constantes)
 
-Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` = alfanumérico).
+Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` = letra, `*` = alfanumérico).
 - `CPF_MASK = '999.999.999-99'`
 - `CNPJ_MASK = '99.999.999/9999-99'`
 - `CNPJ_ALPHANUMERIC_MASK = '**.***.***/****-99'`
 - `PHONE_MASK = '(99) 9999-9999'` (fixo, 10 díg)
 - `CELLPHONE_MASK = '(99) 99999-9999'` (celular, 11 díg)
 - `POSTAL_CODE_MASK = '99999-999'` (CEP)
+- `PLATE_MASK = 'aaa-9*99'` (placa; o slot `*` aceita dígito [antiga] ou letra [Mercosul])
+- `PIS_MASK = '999.99999.99-9'` (PIS/PASEP)
 
 ## API — validation
 
@@ -84,6 +93,12 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` 
 - `isValidUrl(value?: string | null): boolean` — URL `http`/`https` válida.
 - `isDateString(value?: string | null): boolean` — data ISO `YYYY-MM-DD` sem hora. `"2026-06-25"` → `true`; `"2026-06-25 11:04:23"` → `false`.
 - `isDateTimeString(value?: string | null): boolean` — data-hora `YYYY-MM-DD` + `T` ou espaço + `HH:mm` (`:ss` opcional). `"2026-06-25T11:04:23"` e `"2026-06-25 11:04"` → `true`; `"2026-06-25"` → `false`.
+- `isValidPlate(value?: string | null): boolean` — placa BR antiga (`AAA9999`) ou Mercosul (`AAA9A99`), com/sem separador, case-insensitive.
+- `isValidPIS(value?: string | null): boolean` — PIS/PASEP (11 díg) via dígito verificador mod-11.
+- `isValidRenavam(value?: string | null): boolean` — RENAVAM via dígito verificador; aceita 11 dígitos atuais e legado 9–10 (pad com zeros).
+- `isValidCNH(value?: string | null): boolean` — CNH (11 díg) via dois dígitos verificadores (algoritmo Denatran com regra de desconto).
+- `isValidVoterId(value?: string | null): boolean` — título de eleitor (12 díg): código de UF válido (01–28) + dois dígitos verificadores, com exceção SP/MG.
+- `isValidBoleto(value?: string | null): boolean` — linha digitável de boleto: bancário (47 díg; mod-10 nos 3 campos + DV geral mod-11 do código de barras) e arrecadação (48 díg iniciando com `8`; blocos por mod-10 ou mod-11 conforme dígito de moeda).
 
 ## API — number
 
@@ -117,6 +132,20 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `*` 
 Transforms dependency-free com assinatura `(value, originalValue) => string` (formato de `yup.transform`); só embrulham as funções base.
 - `onlyNumbersTransform(_value: unknown, originalValue: unknown): string` — embrulha `onlyNumbers`. Uso: `yup.string().transform(onlyNumbersTransform)`.
 - `onlyAlphanumericTransform(_value: unknown, originalValue: unknown): string` — embrulha `onlyAlphanumeric` (alfanumérico + uppercase). Uso: `yup.string().transform(onlyAlphanumericTransform)`.
+
+## API — generate (geradores p/ testes/seeds)
+
+Todos geram valores aleatórios que **passam nos validadores correspondentes** da lib.
+- `generateCPF(options?: { formatted?: boolean }): string` — CPF válido. `formatted: true` → `"000.000.000-00"`.
+- `generateCNPJ(options?: { formatted?: boolean; alphanumeric?: boolean }): string` — CNPJ válido (filial `0001`). `alphanumeric: true` → formato 2026 (raiz alfanumérica + DVs numéricos). `formatted: true` → `"00.000.000/0000-00"`.
+- `generatePIS(options?: { formatted?: boolean }): string` — PIS/PASEP válido. `formatted: true` → `"000.00000.00-0"`.
+- `generateRenavam(options?: { legacy?: boolean }): string` — RENAVAM válido. Default 11 dígitos; `legacy: true` → formato antigo de 9 dígitos.
+- `generateCNH(): string` — CNH de 11 dígitos válida (algoritmo Denatran).
+- `generateVoterId(): string` — título de eleitor válido (UF aleatória 01–28, com exceção SP/MG).
+- `generatePlate(options?: { mercosul?: boolean; formatted?: boolean }): string` — placa BR. `mercosul` default `true` → `AAA9A99`; `false` → `AAA9999`; `formatted` aplica `formatPlate` (antiga ganha hífen).
+- `generateBarcode(options?: { length?: 8 | 12 | 13 | 14 }): string` — código EAN/GTIN com DV mod-10 válido (default EAN-13).
+- `generatePhone(options?: { mobile?: boolean; formatted?: boolean }): string` — telefone BR válido. `mobile` default `true` (11 díg iniciando com `9`); `false` → fixo (10 díg). `formatted` → `"(00) 00000-0000"`.
+- `generatePostalCode(options?: { formatted?: boolean }): string` — CEP de 8 dígitos. `formatted: true` → `"00000-000"`.
 
 ## API — browser (somente DOM)
 
