@@ -87,6 +87,14 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normaliza: `"JOAO SILVA"` → `"Joao S."`)
 - `joinByKey(values, key, dividerOrOptions?)` — junta uma propriedade de cada objeto; 3º arg é string (divider) ou `{ divider?, sort? }`, onde `sort` (`true | "asc" | "desc"`) ordena por `key` antes
 - `maskSecret(value?, { visibleStart = 5, visibleEnd = 5, mask = '••••••' })` — mascara parcialmente um segredo, mantendo as pontas visíveis, ex.: `$2y$1••••••lMnOp` (valores curtos → só a máscara)
+- `slugify(value?)` — slug URL-safe (sem acento, minúsculo, hifenizado), ex.: `"São Paulo"` → `sao-paulo`
+- `sanitizeSpreadsheetCell(value?)` — protege contra injeção de fórmula em CSV/Excel: prefixa `'` quando o valor começa com `= + - @` (tab/CR)
+- `buildWhatsAppUrl(phone?, message?, { countryCode = '55', fallback? })` — link `wa.me`; `countryCode` aceita `null` para omitir, ex.: `https://wa.me/5511987654321?text=...`
+- `buildPhoneUrl(phone?, { countryCode = '55', fallback? })` — link `tel:`, ex.: `tel:+5511987654321` (`countryCode: null` → `tel:11987654321`)
+- `buildEmailUrl(email?, { subject?, body?, fallback? })` — link `mailto:` com `subject`/`body` opcionais (encodados)
+- `buildInstagramUrl(username?, { fallback? })` — `https://instagram.com/<handle>` (remove `@` inicial)
+- `buildFacebookUrl(username?, { fallback? })` — `https://facebook.com/<handle>` (remove `@` inicial)
+- `buildLinkedInUrl(handle?, { type = 'profile', fallback? })` — `https://linkedin.com/in/...` ou `/company/...` (via `type`)
 
 ### mask (constantes)
 

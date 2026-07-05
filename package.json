@@ -1,6 +1,6 @@
 {
   "name": "@julianobazzi/utils",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A collection of small, tree-shakeable TypeScript utility functions.",
   "type": "module",
   "license": "MIT",
@@ -39,7 +39,7 @@
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "pnpm@11.8.0",
+  "packageManager": "pnpm@11.10.0",
   "dependencies": {
     "dayjs": "1.11.21"
   },
@@ -57,7 +57,7 @@
     "prepublishOnly": "pnpm run build"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.0",
+    "@biomejs/biome": "2.5.2",
     "@changesets/cli": "2.31.0",
     "@vitest/coverage-v8": "4.1.9",
     "happy-dom": "20.10.6",

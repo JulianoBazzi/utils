@@ -89,6 +89,14 @@ All functions are exported flat from the package root, grouped internally by pur
 - `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normalizes: `"JOAO SILVA"` → `"Joao S."`)
 - `joinByKey(values, key, dividerOrOptions?)` — joins one property from each object; 3rd arg is a divider string or `{ divider?, sort? }`, where `sort` (`true | "asc" | "desc"`) orders by `key` first
 - `maskSecret(value?, { visibleStart = 5, visibleEnd = 5, mask = '••••••' })` — partially masks a secret, keeping the ends visible, e.g. `$2y$1••••••lMnOp` (short values → mask only)
+- `slugify(value?)` — URL-safe slug (accent-free, lowercase, hyphenated), e.g. `"São Paulo"` → `sao-paulo`
+- `sanitizeSpreadsheetCell(value?)` — guards CSV/Excel formula injection: prefixes `'` when the value starts with `= + - @` (tab/CR)
+- `buildWhatsAppUrl(phone?, message?, { countryCode = '55', fallback? })` — `wa.me` link; `countryCode` accepts `null` to omit, e.g. `https://wa.me/5511987654321?text=...`
+- `buildPhoneUrl(phone?, { countryCode = '55', fallback? })` — `tel:` link, e.g. `tel:+5511987654321` (`countryCode: null` → `tel:11987654321`)
+- `buildEmailUrl(email?, { subject?, body?, fallback? })` — `mailto:` link with optional encoded `subject`/`body`
+- `buildInstagramUrl(username?, { fallback? })` — `https://instagram.com/<handle>` (strips a leading `@`)
+- `buildFacebookUrl(username?, { fallback? })` — `https://facebook.com/<handle>` (strips a leading `@`)
+- `buildLinkedInUrl(handle?, { type = 'profile', fallback? })` — `https://linkedin.com/in/...` or `/company/...` (via `type`)
 
 ### mask (constants)
 
