@@ -37,6 +37,7 @@ export * from './formatTimeAgo.js';
 export * from './formatWeekDay.js';
 export * from './formatWithPattern.js';
 export * from './getAge.js';
+export * from './getFirstAndLastWord.js';
 export * from './getLastCharacter.js';
 export * from './getMonthName.js';
 export * from './getWeekDayName.js';

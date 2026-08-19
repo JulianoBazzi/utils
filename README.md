@@ -89,6 +89,7 @@ All functions are exported flat from the package root, grouped internally by pur
 - `truncate(value?, length = 40)` — trims text and appends `...`
 - `getLastCharacter(value?)` — last character of a string
 - `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normalizes: `"JOAO SILVA"` → `"Joao S."`; blank input → `""`)
+- `getFirstAndLastWord(value?, { fallback?, casing? })` — keeps only the first and last word: `"Analista de Sistemas"` → `"Analista Sistemas"`
 - `joinByKey(values, key, dividerOrOptions?)` — joins one property from each object, skipping empty values; 3rd arg is a divider string or `{ divider?, sort?, unique? }`, where `sort` (`true | "asc" | "desc"`) orders by `key` first and `unique` drops duplicates
 - `maskSecret(value?, { visibleStart = 5, visibleEnd = 5, mask = '••••••' })` — partially masks a secret, keeping the ends visible, e.g. `$2y$1••••••lMnOp` (short values → mask only; `visibleStart`/`visibleEnd` are clamped to ≥ 0, so `0` hides that side entirely)
 - `slugify(value?)` — URL-safe slug (accent-free, lowercase, hyphenated), e.g. `"São Paulo"` → `sao-paulo`
@@ -173,6 +174,10 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 - `findOptionById(options?, value?)` — finds the option whose id matches `value` (string compare), or `null`
 - `findOptionsByIds(options?, value?)` — maps each id in `value` to its option, dropping non-matches
 - `getLabelById(options?, value?, key = "name", fallback = "")` — option's field as a string by id, or `fallback`
+- `maskFields(value, fields, { mask? })` — deep-clones a value, masking the string fields listed at any depth (defaults to `maskSecret`)
+- `isEqualIgnoringKeys(a, b, keys)` — structural comparison ignoring `keys` at any depth (key order irrelevant, array order significant)
+- `swapAtIndex(list, index, offset)` — swaps two items immutably; out of bounds returns the same reference
+- `updateAtIndex(list, index, updater)` — copy of `list` with only the item at `index` replaced
 
 ### parse
 
@@ -180,10 +185,17 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 - `resolveIdsToObjects(ids?, resolver, params?)` — resolves an id list into objects via an async resolver (in parallel)
 - `resolveList(value?, resolver, params?)` — `parseIds` + `resolveIdsToObjects`; accepts a string or string array
 - `resolveId(value?, resolver, params?)` — resolves the first valid id into an object, or `null`
+- `parseJson<T>(value?)` — `JSON.parse` returning `undefined` instead of throwing (a parsed `"null"` stays `null`)
+- `toStringArray(value)` — narrows an unknown value to `string[]`, dropping entries of other types; non-arrays → `[]`
+- `getFileExtension(value?)` — extension of a path/URL without the dot; ignores `?query`/`#hash` and dotted hosts, dotfiles → `""`
+- `parseInlineMarkup(value?, { boldMarker?, italicMarker? })` — WhatsApp-style `*bold*`/`_italic_` (nestable) → `{ text, bold?, italic? }[]`
 
-### transform (yup-compatible)
+### transform
 
-Dependency-free transforms with the `(value, originalValue) => string` shape (matches `yup.transform`); they wrap the base helpers.
+- `diffLines(before?, after?)` — line diff (longest common subsequence) returning `{ beforeLines, afterLines }`, each line flagged `changed`
+- `stripInlineMarkup(value?, { boldMarker?, italicMarker? })` — plain text without the `*`/`_` markers, ready for `truncate`, meta tags or e-mail
+
+The rest are dependency-free transforms with the `(value, originalValue) => string` shape (matches `yup.transform`); they wrap the base helpers.
 
 - `onlyNumbersTransform(_value, originalValue)` — wraps `onlyNumbers`, e.g. `yup.string().transform(onlyNumbersTransform)`
 - `onlyAlphanumericTransform(_value, originalValue)` — wraps `onlyAlphanumeric`, e.g. `yup.string().transform(onlyAlphanumericTransform)`
@@ -213,6 +225,9 @@ Every generator produces random values that pass the matching validator. They ar
 - `getImageDimensions(file)` — `Promise<{ width, height, extension }>`
 - `isPhotoLandscape(fileOrUrl)` — `Promise<boolean>` (width > height)
 - `isNotificationsSupported()` — checks web push support (`false` during SSR)
+- `openInNewTab(url?, { target?, features? })` — `window.open` with `noopener,noreferrer` always applied (`null` during SSR or when blocked)
+- `downloadBlob(blob, fileName)` — triggers a file download and revokes the object URL
+- `downloadJson(data, fileName, { space? })` — serializes to JSON and downloads it (indented by default)
 
 ## Scripts
 

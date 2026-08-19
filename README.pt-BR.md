@@ -87,6 +87,7 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `truncate(value?, length = 40)` — corta o texto e adiciona `...`
 - `getLastCharacter(value?)` — último caractere de uma string
 - `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normaliza: `"JOAO SILVA"` → `"Joao S."`; entrada em branco → `""`)
+- `getFirstAndLastWord(value?, { fallback?, casing? })` — mantém só a primeira e a última palavra: `"Analista de Sistemas"` → `"Analista Sistemas"`
 - `joinByKey(values, key, dividerOrOptions?)` — junta uma propriedade de cada objeto, ignorando valores vazios; 3º arg é string (divider) ou `{ divider?, sort?, unique? }`, onde `sort` (`true | "asc" | "desc"`) ordena por `key` antes e `unique` remove duplicados
 - `maskSecret(value?, { visibleStart = 5, visibleEnd = 5, mask = '••••••' })` — mascara parcialmente um segredo, mantendo as pontas visíveis, ex.: `$2y$1••••••lMnOp` (valores curtos → só a máscara; `visibleStart`/`visibleEnd` são limitados a ≥ 0, então `0` esconde aquele lado por completo)
 - `slugify(value?)` — slug URL-safe (sem acento, minúsculo, hifenizado), ex.: `"São Paulo"` → `sao-paulo`
@@ -171,6 +172,10 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `findOptionById(options?, value?)` — acha a opção cujo id casa com `value` (compara como string), ou `null`
 - `findOptionsByIds(options?, value?)` — mapeia cada id de `value` p/ sua opção, descartando sem match
 - `getLabelById(options?, value?, key = "name", fallback = "")` — campo da opção como string pelo id, ou `fallback`
+- `maskFields(value, fields, { mask? })` — clona em profundidade mascarando os campos string listados, em qualquer nível (default `maskSecret`)
+- `isEqualIgnoringKeys(a, b, keys)` — comparação estrutural ignorando `keys` em qualquer profundidade (ordem de chave irrelevante, ordem de array significativa)
+- `swapAtIndex(list, index, offset)` — troca dois itens de forma imutável; fora dos limites devolve a mesma referência
+- `updateAtIndex(list, index, updater)` — cópia da lista com só o item de `index` substituído
 
 ### parse (conversão)
 
@@ -178,10 +183,17 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `resolveIdsToObjects(ids?, resolver, params?)` — resolve uma lista de ids em objetos via resolver async (em paralelo)
 - `resolveList(value?, resolver, params?)` — `parseIds` + `resolveIdsToObjects`; aceita string ou array de strings
 - `resolveId(value?, resolver, params?)` — resolve o 1º id válido em objeto, ou `null`
+- `parseJson<T>(value?)` — `JSON.parse` que devolve `undefined` em vez de lançar (`"null"` parseado continua `null`)
+- `toStringArray(value)` — reduz um valor desconhecido a `string[]`, descartando entradas de outros tipos; não-array → `[]`
+- `getFileExtension(value?)` — extensão de um caminho/URL sem o ponto; ignora `?query`/`#hash` e host com ponto, dotfiles → `""`
+- `parseInlineMarkup(value?, { boldMarker?, italicMarker? })` — markup estilo WhatsApp `*negrito*`/`_itálico_` (aninhável) → `{ text, bold?, italic? }[]`
 
-### transform (compatível com yup)
+### transform
 
-Transforms dependency-free no formato `(value, originalValue) => string` (igual ao `yup.transform`); embrulham as funções base.
+- `diffLines(before?, after?)` — diff linha a linha (maior subsequência comum) devolvendo `{ beforeLines, afterLines }`, com cada linha marcada em `changed`
+- `stripInlineMarkup(value?, { boldMarker?, italicMarker? })` — texto puro sem os marcadores `*`/`_`, pronto p/ `truncate`, meta tags ou e-mail
+
+Os demais são transforms dependency-free no formato `(value, originalValue) => string` (igual ao `yup.transform`); embrulham as funções base.
 
 - `onlyNumbersTransform(_value, originalValue)` — embrulha `onlyNumbers`, ex.: `yup.string().transform(onlyNumbersTransform)`
 - `onlyAlphanumericTransform(_value, originalValue)` — embrulha `onlyAlphanumeric`, ex.: `yup.string().transform(onlyAlphanumericTransform)`
@@ -211,6 +223,9 @@ Todos os geradores produzem valores aleatórios que passam no validador correspo
 - `getImageDimensions(file)` — `Promise<{ width, height, extension }>`
 - `isPhotoLandscape(fileOrUrl)` — `Promise<boolean>` (largura > altura)
 - `isNotificationsSupported()` — verifica suporte a web push (`false` em SSR)
+- `openInNewTab(url?, { target?, features? })` — `window.open` com `noopener,noreferrer` sempre aplicado (`null` em SSR ou se bloqueado)
+- `downloadBlob(blob, fileName)` — dispara o download de um arquivo e revoga o object URL
+- `downloadJson(data, fileName, { space? })` — serializa em JSON e baixa (indentado por default)
 
 ## Scripts
 

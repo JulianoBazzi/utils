@@ -4,4 +4,8 @@ export * from './getLabelById.js';
 export * from './getListIds.js';
 export * from './getOptionId.js';
 export * from './getProperty.js';
+export * from './isEqualIgnoringKeys.js';
+export * from './maskFields.js';
 export * from './omitFields.js';
+export * from './swapAtIndex.js';
+export * from './updateAtIndex.js';
