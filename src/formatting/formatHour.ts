@@ -9,6 +9,7 @@ interface FormatHourOptions {
 
 /**
  * Format a date string as `HH:mm` (or `HH:mm:ss` when not simplified).
+ * Missing or invalid input → `fallback`.
  *
  * @example
  * formatHour("2024-01-02T13:45:30") // "13:45"
@@ -18,5 +19,9 @@ interface FormatHourOptions {
 export function formatHour(value?: string | null, options: FormatHourOptions = {}): string {
   const { simplified = true, fallback = '' } = options;
   if (!value) return fallback;
-  return dayjs(value).format(simplified ? 'HH:mm' : 'HH:mm:ss');
+
+  const date = dayjs(value);
+  if (!date.isValid()) return fallback;
+
+  return date.format(simplified ? 'HH:mm' : 'HH:mm:ss');
 }

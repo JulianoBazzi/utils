@@ -36,4 +36,9 @@ describe('formatWeekDay', () => {
       formatWeekDay('2024-06-15').toLowerCase(),
     );
   });
+
+  it('returns the fallback for an invalid date', () => {
+    expect(formatWeekDay('not-a-date')).toBe('');
+    expect(formatWeekDay('not-a-date', { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });

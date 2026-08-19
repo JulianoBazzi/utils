@@ -1,5 +1,6 @@
-const UF =
-  /^(?:AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/i;
+import { UFS } from './internal/ufs.js';
+
+const VALID = new Set<string>(UFS);
 
 /**
  * Check whether a string is a valid Brazilian state code (UF), e.g. `"SP"`.
@@ -11,5 +12,5 @@ const UF =
  */
 export function isValidUF(value?: string | null): boolean {
   if (!value) return false;
-  return UF.test(value);
+  return VALID.has(value.toUpperCase());
 }

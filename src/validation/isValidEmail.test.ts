@@ -17,4 +17,9 @@ describe('isValidEmail', () => {
     expect(isValidEmail()).toBe(false);
     expect(isValidEmail('')).toBe(false);
   });
+
+  it('accepts long TLDs', () => {
+    expect(isValidEmail('a@b.photography')).toBe(true);
+    expect(isValidEmail('a@b.international')).toBe(true);
+  });
 });

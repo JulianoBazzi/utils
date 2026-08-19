@@ -16,6 +16,13 @@ describe('buildEmailUrl', () => {
     );
   });
 
+  it('encodes the address so it cannot inject extra mailto fields', () => {
+    expect(buildEmailUrl('a@b.com?bcc=evil@x.com', { subject: 'Hi' })).toBe(
+      'mailto:a@b.com%3Fbcc%3Devil@x.com?subject=Hi',
+    );
+    expect(buildEmailUrl("o'neil+tag@bar.com")).toBe("mailto:o'neil%2Btag@bar.com");
+  });
+
   it('returns empty string for missing input', () => {
     expect(buildEmailUrl()).toBe('');
     expect(buildEmailUrl(null, { subject: 'x' })).toBe('');

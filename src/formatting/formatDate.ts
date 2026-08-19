@@ -9,6 +9,7 @@ interface FormatDateOptions {
 
 /**
  * Format a date string as `DD/MM/YY` (or `DD/MM/YYYY` when not simplified).
+ * Missing or invalid input → `fallback`.
  *
  * @example
  * formatDate("2024-01-02") // "02/01/24"
@@ -18,5 +19,9 @@ interface FormatDateOptions {
 export function formatDate(value?: string | null, options: FormatDateOptions = {}): string {
   const { simplified = true, fallback = '' } = options;
   if (!value) return fallback;
-  return dayjs(value).format(simplified ? 'DD/MM/YY' : 'DD/MM/YYYY');
+
+  const date = dayjs(value);
+  if (!date.isValid()) return fallback;
+
+  return date.format(simplified ? 'DD/MM/YY' : 'DD/MM/YYYY');
 }

@@ -4,7 +4,8 @@ interface BuildInstagramUrlOptions {
 }
 
 /**
- * Build an Instagram profile URL from a username. Trims and strips a leading `@`.
+ * Build an Instagram profile URL from a username. Trims, strips a leading `@`
+ * and URL-encodes the handle (so `?`, `#` or `/` can't alter the target path).
  * Empty username → `fallback`.
  *
  * @example
@@ -21,5 +22,5 @@ export function buildInstagramUrl(
     return fallback;
   }
 
-  return `https://instagram.com/${handle}`;
+  return `https://instagram.com/${encodeURIComponent(handle)}`;
 }

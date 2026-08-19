@@ -1,5 +1,5 @@
 // Combining diacritical marks block (U+0300–U+036F).
-const COMBINING_MARKS = /[̀-ͯ]/g;
+const COMBINING_MARKS = /[\u0300-\u036f]/g;
 
 /**
  * Remove diacritics/accents from a string, preserving case and other

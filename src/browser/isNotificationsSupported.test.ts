@@ -29,6 +29,12 @@ describe('isNotificationsSupported', () => {
     expect(isNotificationsSupported()).toBe(true);
   });
 
+  it('returns false during SSR (no window/navigator)', () => {
+    vi.stubGlobal('window', undefined);
+    vi.stubGlobal('navigator', undefined);
+    expect(isNotificationsSupported()).toBe(false);
+  });
+
   it('returns false when Notification is missing', () => {
     stubEnvironment({ notification: false });
     expect(isNotificationsSupported()).toBe(false);

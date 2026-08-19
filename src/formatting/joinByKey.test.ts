@@ -35,11 +35,46 @@ describe('joinByKey', () => {
     expect(joinByKey([{ id: 1 }, { id: 2 }], 'id', { sort: 'desc', divider: ', ' })).toBe('2, 1');
   });
 
-  it('sorts entries with missing values first', () => {
+  it('sorts entries with missing values first, then drops them', () => {
     const values = [{ name: 'b' }, { name: null }, { name: null }, { name: 'a' }] as Array<{
       name: string | null;
     }>;
-    expect(joinByKey(values, 'name', { sort: true })).toBe('null | null | a | b');
+    expect(joinByKey(values, 'name', { sort: true })).toBe('a | b');
+  });
+
+  it('skips null, undefined and empty values', () => {
+    const values = [
+      { name: 'a' },
+      { name: null },
+      { name: undefined },
+      { name: '' },
+      { name: 'b' },
+    ] as Array<{ name?: string | null }>;
+    expect(joinByKey(values, 'name')).toBe('a | b');
+  });
+
+  it('keeps zero, which is falsy but meaningful', () => {
+    expect(joinByKey([{ id: 0 }, { id: 1 }], 'id', ', ')).toBe('0, 1');
+  });
+
+  it('drops duplicates when unique is set', () => {
+    expect(joinByKey([{ name: 'a' }, { name: 'b' }, { name: 'a' }], 'name', { unique: true })).toBe(
+      'a | b',
+    );
+  });
+
+  it('keeps duplicates by default', () => {
+    expect(joinByKey([{ name: 'a' }, { name: 'a' }], 'name')).toBe('a | a');
+  });
+
+  it('combines unique with sort', () => {
+    expect(
+      joinByKey([{ name: 'b' }, { name: 'a' }, { name: 'b' }], 'name', {
+        unique: true,
+        sort: true,
+        divider: ', ',
+      }),
+    ).toBe('a, b');
   });
 
   it('does not mutate the input array when sorting', () => {

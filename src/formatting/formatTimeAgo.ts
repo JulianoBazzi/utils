@@ -8,7 +8,8 @@ interface FormatTimeAgoOptions {
 /**
  * Format how long ago a date was, in Portuguese (e.g. `"5 dias"`, `"2 horas"`).
  * Picks the largest fitting unit (minutos → horas → dias → meses → anos).
- * Returns an empty string for missing input.
+ * Returns `fallback` for missing or invalid input; a future date reads as
+ * `"1 minuto"` (the minimum unit).
  *
  * @example
  * formatTimeAgo(dayjs().subtract(3, "day").toISOString()) // "3 dias"
@@ -20,8 +21,14 @@ export function formatTimeAgo(date?: string | null, options: FormatTimeAgoOption
     return fallback;
   }
 
-  const receivedDate = dayjs(date);
+  const parsed = dayjs(date);
+  if (!parsed.isValid()) {
+    return fallback;
+  }
+
   const currentDate = dayjs();
+  // Clamp future dates to "now" so the diffs below never go negative.
+  const receivedDate = parsed.isAfter(currentDate) ? currentDate : parsed;
 
   const formatDiff = (diff: number, unit: string) => `${diff > 0 ? diff : 1} ${unit}`;
 

@@ -10,6 +10,11 @@ describe('buildInstagramUrl', () => {
     expect(buildInstagramUrl('  @julianobazzi ')).toBe('https://instagram.com/julianobazzi');
   });
 
+  it('encodes the handle so it cannot alter the path or query', () => {
+    expect(buildInstagramUrl('foo?x=1#y')).toBe('https://instagram.com/foo%3Fx%3D1%23y');
+    expect(buildInstagramUrl('../../evil')).toBe('https://instagram.com/..%2F..%2Fevil');
+  });
+
   it('returns empty string for missing input', () => {
     expect(buildInstagramUrl()).toBe('');
     expect(buildInstagramUrl('@')).toBe('');

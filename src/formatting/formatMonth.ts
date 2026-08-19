@@ -7,7 +7,7 @@ interface FormatMonthOptions {
 
 /**
  * Format a date string as `MM/YYYY`.
- * Returns an empty string for missing input.
+ * Missing or invalid input → `fallback`.
  *
  * @example
  * formatMonth("2024-01-02") // "01/2024"
@@ -16,5 +16,9 @@ interface FormatMonthOptions {
 export function formatMonth(value?: string | null, options: FormatMonthOptions = {}): string {
   const { fallback = '' } = options;
   if (!value) return fallback;
-  return dayjs(value).format('MM/YYYY');
+
+  const date = dayjs(value);
+  if (!date.isValid()) return fallback;
+
+  return date.format('MM/YYYY');
 }

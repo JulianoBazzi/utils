@@ -6,3 +6,4 @@ coverage
 *.local.md
 .env
 .env.local
+.changeset

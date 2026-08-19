@@ -47,11 +47,13 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 
 ### formatting (formatação)
 
-- `formatDate(value?, { simplified?, fallback? })` — `DD/MM/YY` (ou `DD/MM/YYYY`)
-- `formatDateTime(date?, { simplified?, showSeconds?, fallback? })` — `DD/MM/YY HH:mm` (ano 4 dígitos e/ou `:ss` opcionais)
-- `formatMonth(value?, { fallback? })` — `MM/YYYY`
-- `formatHour(value?, { simplified?, fallback? })` — `HH:mm` (ou `HH:mm:ss`)
-- `formatMinutesToDuration(minutes?, { fallback?, spaced? })` — duração legível, ex.: `1h e 30 min`
+- `formatDate(value?, { simplified?, fallback? })` — `DD/MM/YY` (ou `DD/MM/YYYY`); data inválida → `fallback`
+- `formatDateTime(date?, { simplified?, showSeconds?, fallback? })` — `DD/MM/YY HH:mm` (ano 4 dígitos e/ou `:ss` opcionais); data inválida → `fallback`
+- `formatMonth(value?, { fallback? })` — `MM/YYYY`; data inválida → `fallback`
+- `getMonthName(value?, { short?, fallback?, casing? })` — nome do mês em PT-BR, ex.: `Julho` / `Jul`
+- `getWeekDayName(value?, { short?, fallback?, casing? })` — nome do dia da semana em PT-BR, ex.: `Sábado` / `Sáb`
+- `formatHour(value?, { simplified?, fallback? })` — `HH:mm` (ou `HH:mm:ss`); data inválida → `fallback`
+- `formatMinutesToDuration(minutes?, { fallback?, spaced? })` — duração legível, ex.: `1h e 30 min` (arredonda p/ minutos/segundos inteiros antes; negativos viram positivos)
 - `formatSecondsToDuration(seconds?, { fallback?, spaced? })` — idem, a partir de segundos (≥60s arredonda p/ minutos)
 - `formatDuration(minutes?, { fallback?, spaced? })` — **deprecated**, alias de `formatMinutesToDuration`
 - `formatCurrency(value?, divisor = 100, { fallback? })` — moeda BRL, ex.: `R$ 19,90`
@@ -60,19 +62,19 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatBoolean(value?, { casing? })` — `Sim` / `Não`
 - `formatPhone(phone?, { fallback? })` — máscara de telefone BR (10 ou 11 dígitos)
 - `formatBytes(bytes?, round = false, { casing? })` — tamanho legível, ex.: `1.50 KB`
-- `formatSecondsToTime(value?, showSeconds = true)` — `HH:mm:ss` (ou `HH:mm`)
-- `formatTimeAgo(date?, { fallback?, casing? })` — tempo decorrido em PT, ex.: `5 dias`
+- `formatSecondsToTime(value?, showSeconds = true)` — `HH:mm:ss` (ou `HH:mm`); aritmética pura, horas passam de 24 (`90000` → `25:00:00`)
+- `formatTimeAgo(date?, { fallback?, casing? })` — tempo decorrido em PT, ex.: `5 dias`; data inválida → `fallback`, data futura → `1 minuto`
 - `formatAddress(address, { fallback? })` — monta um endereço em uma linha
 - `formatCityAndState(city?, state?, { fallback?, separator?, casing? })` — `"Cidade - UF"` (vazio quando ambos ausentes)
-- `formatWeekDay(date?, { fallback?, casing?, dateFormat? })` — data + dia da semana abreviado, ex.: `15/6 - Sáb` (`dateFormat` default `D/M`)
+- `formatWeekDay(date?, { fallback?, casing?, dateFormat? })` — data + dia da semana abreviado, ex.: `15/6 - Sáb` (`dateFormat` default `D/M`); data inválida → `fallback`
 - `getAge(birthDate?)` — idade em anos completos (hoje); ausente/inválido/futuro → `0`
 - `formatAge(birthDate?, { fallback? })` — idade em texto PT-BR, ex.: `"36 anos"` / `"1 ano"`
-- `formatCPF(value?, { fallback? })` — `000.000.000-00`
+- `formatCPF(value?, { fallback? })` — `000.000.000-00` (completa com zeros; > 11 dígitos → só dígitos)
 - `formatCNPJ(value?, { fallback? })` — `00.000.000/0000-00` (suporta CNPJ alfanumérico)
 - `formatDocument(value?, { fallback? })` — formata como CPF ou CNPJ conforme o tamanho
-- `formatPostalCode(value?, { fallback? })` — CEP `00000-000`
+- `formatPostalCode(value?, { fallback? })` — CEP `00000-000` (> 8 dígitos → só dígitos)
 - `formatPlate(value?, { fallback? })` — placa BR: antiga → `ABC-1234`, Mercosul mantém `ABC1D23`
-- `formatPIS(value?, { fallback? })` — PIS/PASEP `000.00000.00-0`
+- `formatPIS(value?, { fallback? })` — PIS/PASEP `000.00000.00-0` (> 11 dígitos → só dígitos)
 - `formatLongDate(value?, { fallback?, casing? })` — data por extenso, ex.: `1º de julho de 2026`
 - `numberToWords(value?, { fallback? })` — inteiro por extenso até trilhões, ex.: `mil duzentos e trinta e quatro`
 - `currencyToWords(value?, divisor = 100, { fallback? })` — valor BRL por extenso (espelha `formatCurrency`), ex.: `dezenove reais e noventa centavos`
@@ -84,17 +86,31 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatWithPattern(value?, pattern?)` — máscara char-agnostic (`#` = próximo char), ex.: `'12345678900'` + `'###.###.###-##'` → `123.456.789-00`
 - `truncate(value?, length = 40)` — corta o texto e adiciona `...`
 - `getLastCharacter(value?)` — último caractere de uma string
-- `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normaliza: `"JOAO SILVA"` → `"Joao S."`)
-- `joinByKey(values, key, dividerOrOptions?)` — junta uma propriedade de cada objeto; 3º arg é string (divider) ou `{ divider?, sort? }`, onde `sort` (`true | "asc" | "desc"`) ordena por `key` antes
-- `maskSecret(value?, { visibleStart = 5, visibleEnd = 5, mask = '••••••' })` — mascara parcialmente um segredo, mantendo as pontas visíveis, ex.: `$2y$1••••••lMnOp` (valores curtos → só a máscara)
+- `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normaliza: `"JOAO SILVA"` → `"Joao S."`; entrada em branco → `""`)
+- `joinByKey(values, key, dividerOrOptions?)` — junta uma propriedade de cada objeto, ignorando valores vazios; 3º arg é string (divider) ou `{ divider?, sort?, unique? }`, onde `sort` (`true | "asc" | "desc"`) ordena por `key` antes e `unique` remove duplicados
+- `maskSecret(value?, { visibleStart = 5, visibleEnd = 5, mask = '••••••' })` — mascara parcialmente um segredo, mantendo as pontas visíveis, ex.: `$2y$1••••••lMnOp` (valores curtos → só a máscara; `visibleStart`/`visibleEnd` são limitados a ≥ 0, então `0` esconde aquele lado por completo)
 - `slugify(value?)` — slug URL-safe (sem acento, minúsculo, hifenizado), ex.: `"São Paulo"` → `sao-paulo`
 - `sanitizeSpreadsheetCell(value?)` — protege contra injeção de fórmula em CSV/Excel: prefixa `'` quando o valor começa com `= + - @` (tab/CR)
 - `buildWhatsAppUrl(phone?, message?, { countryCode = '55', fallback? })` — link `wa.me`; `countryCode` aceita `null` para omitir, ex.: `https://wa.me/5511987654321?text=...`
 - `buildPhoneUrl(phone?, { countryCode = '55', fallback? })` — link `tel:`, ex.: `tel:+5511987654321` (`countryCode: null` → `tel:11987654321`)
-- `buildEmailUrl(email?, { subject?, body?, fallback? })` — link `mailto:` com `subject`/`body` opcionais (encodados)
-- `buildInstagramUrl(username?, { fallback? })` — `https://instagram.com/<handle>` (remove `@` inicial)
-- `buildFacebookUrl(username?, { fallback? })` — `https://facebook.com/<handle>` (remove `@` inicial)
-- `buildLinkedInUrl(handle?, { type = 'profile', fallback? })` — `https://linkedin.com/in/...` ou `/company/...` (via `type`)
+- `buildEmailUrl(email?, { subject?, body?, fallback? })` — link `mailto:` com `subject`/`body` opcionais (encodados); o endereço também é encodado (sem injeção de cabeçalhos via `?`/`&`)
+- `buildInstagramUrl(username?, { fallback? })` — `https://instagram.com/<handle>` (remove `@` inicial; handle é encodado)
+- `buildFacebookUrl(username?, { fallback? })` — `https://facebook.com/<handle>` (remove `@` inicial; handle é encodado)
+- `buildLinkedInUrl(handle?, { type = 'profile', fallback? })` — `https://linkedin.com/in/...` ou `/company/...` (via `type`; handle é encodado)
+- `formatEnvironment(value?)` — normaliza uma string de `NODE_ENV` para `production | homologation | development | test` (desconhecido → `production`)
+
+### date (datas)
+
+Helpers de janela de datas para filtros e seletores. Entrada e saída em `YYYY-MM-DD`; os intervalos são inclusivos nas duas pontas.
+
+- `getDateRange(days, { reference?, offset? })` — janela de `days` dias terminando em `reference` (default hoje), ex.: `getDateRange(7)` → últimos 7 dias; `offset` desloca para trás (`{ offset: 1 }` termina ontem)
+- `getMonthRange(month, { reference? })` — intervalo completo de um mês `YYYY-MM`; mês em andamento é limitado a `reference` em vez de um último dia no futuro
+- `getMonthOptions({ count = 12, reference?, min? })` — lista para seletor de mês, do mais recente ao mais antigo, como `{ id: 'YYYY-MM', name: 'Julho/2026' }` (funciona com `findOptionById` / `getLabelById`); `min` corta os meses anteriores
+
+### url
+
+- `buildQueryParams(params?, { ignore?, prefix? })` — serializa um objeto em query string; ignora `null`/`undefined`, expande arrays em chaves repetidas, retorna `""` quando vazio, ex.: `{ id: [1, 2] }` → `?id=1&id=2`
+- `parseQueryParams(value?)` — o inverso; chaves repetidas viram array (o que `Object.fromEntries(new URLSearchParams(...))` perde). Aceita a string com ou sem `?` inicial; chaves de protótipo (`__proto__`, `constructor`, `prototype`) são ignoradas
 
 ### mask (constantes)
 
@@ -120,11 +136,14 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `isDateTimeString(value?)` — `true` para data-hora (separador `T` ou espaço, `HH:mm[:ss]`)
 - `isValidPhone(value?)` — `true` para telefone BR válido (fixo ou celular)
 - `isBirthday(value?)` — `true` se a data cai no dia/mês de hoje
+- `isWeekend(value?)` — `true` se a data cai no fim de semana (sábado ou domingo)
+- `isWeekday(value?)` — `true` se a data cai em dia útil (segunda a sexta)
+- `isSunday(value?)`, `isMonday(value?)`, `isTuesday(value?)`, `isWednesday(value?)`, `isThursday(value?)`, `isFriday(value?)`, `isSaturday(value?)` — `true` se a data cai naquele dia da semana (aceita string ISO ou `Date`)
 - `isValidCPF(value?)` — `true` para CPF com dígitos verificadores válidos
 - `isValidCNPJ(value?)` — `true` para CNPJ válido (numérico ou alfanumérico)
 - `isValidDocument(value?)` — valida como CPF ou CNPJ conforme o tamanho
 - `isValidPostalCode(value?)` — `true` para CEP de 8 dígitos
-- `isValidEmail(value?)` — `true` para email válido
+- `isValidEmail(value?)` — `true` para email válido (TLDs de 2–63 letras)
 - `isValidUF(value?)` — `true` para sigla de estado BR válida (case-insensitive)
 - `isValidPlate(value?)` — `true` para placa BR (antiga `AAA9999` ou Mercosul `AAA9A99`)
 - `isValidPIS(value?)` — `true` para PIS/PASEP com dígito verificador válido
@@ -135,7 +154,7 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 
 ### number (números)
 
-- `precisionRound(value?, precision = 2)` — arredonda para N casas decimais
+- `precisionRound(value?, precision = 2)` — arredonda para N casas decimais sem surpresas de ponto flutuante (`1.005` → `1.01`)
 - `formatInteger(value?, { fallback? })` — arredonda para o inteiro mais próximo
 - `toPositive(value?)` — limita a um valor não negativo
 - `getRandomInt(min = 1, max = 100)` — inteiro aleatório no intervalo (inclusivo)
@@ -155,7 +174,7 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 
 ### parse (conversão)
 
-- `parseIds(...ids)` — strings de ids separadas por vírgula → `number[]`
+- `parseIds(...ids)` — strings de ids separadas por vírgula → `number[]` (com trim; entradas vazias e não inteiras são descartadas, então `"1,,2"` → `[1, 2]`)
 - `resolveIdsToObjects(ids?, resolver, params?)` — resolve uma lista de ids em objetos via resolver async (em paralelo)
 - `resolveList(value?, resolver, params?)` — `parseIds` + `resolveIdsToObjects`; aceita string ou array de strings
 - `resolveId(value?, resolver, params?)` — resolve o 1º id válido em objeto, ou `null`
@@ -169,8 +188,9 @@ Transforms dependency-free no formato `(value, originalValue) => string` (igual 
 
 ### generate (geradores p/ testes/seeds)
 
-Todos os geradores produzem valores aleatórios que passam no validador correspondente.
+Todos os geradores produzem valores aleatórios que passam no validador correspondente. Usam `Math.random` e servem para testes e seeds — **exceto `generateOTP`**, que sorteia via Web Crypto e é seguro para uso em produção.
 
+- `generateOTP({ length? })` — código numérico de uso único (default 6 dígitos), preservando zeros à esquerda; criptograficamente seguro, funciona no Node e no browser
 - `generateCPF({ formatted? })` — CPF válido; `formatted: true` → `000.000.000-00`
 - `generateCNPJ({ formatted?, alphanumeric? })` — CNPJ válido (filial `0001`); `alphanumeric: true` → formato 2026
 - `generatePIS({ formatted? })` — PIS/PASEP válido; `formatted: true` → `000.00000.00-0`
@@ -179,15 +199,18 @@ Todos os geradores produzem valores aleatórios que passam no validador correspo
 - `generateVoterId()` — título de eleitor válido (UF aleatória 01–28)
 - `generatePlate({ mercosul?, formatted? })` — placa válida; Mercosul por default, `mercosul: false` → antiga
 - `generateBarcode({ length? })` — código EAN/GTIN válido (8/12/13/14 dígitos, default EAN-13)
+- `generateBoleto({ type?, formatted? })` — linha digitável de boleto válida; bancária por default (47 dígitos), `type: 'collection'` → arrecadação (48 dígitos)
 - `generatePhone({ mobile?, formatted? })` — telefone BR válido; celular por default, `mobile: false` → fixo
 - `generatePostalCode({ formatted? })` — CEP de 8 dígitos; `formatted: true` → `00000-000`
+- `generateUF()` — sigla de estado aleatória entre as 27 unidades federativas, ex.: `SP`
+- `generateEmail({ domain?, length? })` — e-mail válido; default no domínio `example.com`, reservado pela RFC 2606 e que nunca roteia
 
 ### browser (somente DOM)
 
 - `loadImageFromBlob(blob)` — `Promise<HTMLImageElement>`
 - `getImageDimensions(file)` — `Promise<{ width, height, extension }>`
 - `isPhotoLandscape(fileOrUrl)` — `Promise<boolean>` (largura > altura)
-- `isNotificationsSupported()` — verifica suporte a web push
+- `isNotificationsSupported()` — verifica suporte a web push (`false` em SSR)
 
 ## Scripts
 

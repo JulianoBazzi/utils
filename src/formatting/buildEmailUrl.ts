@@ -8,8 +8,10 @@ interface BuildEmailUrlOptions {
 }
 
 /**
- * Build a `mailto:` link. Trims the address; appends `subject`/`body` as
- * URL-encoded query params when provided. Empty email → `fallback`.
+ * Build a `mailto:` link. Trims and URL-encodes the address (so a crafted
+ * value like `"a@b.com?bcc=x"` can't inject extra header fields); appends
+ * `subject`/`body` as URL-encoded query params when provided. Empty email →
+ * `fallback`.
  *
  * @example
  * buildEmailUrl("foo@bar.com") // "mailto:foo@bar.com"
@@ -31,5 +33,8 @@ export function buildEmailUrl(email?: string | null, options: BuildEmailUrlOptio
     params.push(`body=${encodeURIComponent(body)}`);
   }
 
-  return params.length ? `mailto:${address}?${params.join('&')}` : `mailto:${address}`;
+  // RFC 6068 allows percent-encoding in the addr-spec; `@` is kept literal for readability.
+  const encoded = encodeURIComponent(address).replace(/%40/g, '@');
+
+  return params.length ? `mailto:${encoded}?${params.join('&')}` : `mailto:${encoded}`;
 }

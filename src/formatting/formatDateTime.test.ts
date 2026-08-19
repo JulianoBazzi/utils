@@ -23,4 +23,9 @@ describe('formatDateTime', () => {
     expect(formatDateTime('')).toBe('');
     expect(formatDateTime(null, { fallback: 'Não Informado' })).toBe('Não Informado');
   });
+
+  it('returns the fallback for an invalid date', () => {
+    expect(formatDateTime('not-a-date')).toBe('');
+    expect(formatDateTime('not-a-date', { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });

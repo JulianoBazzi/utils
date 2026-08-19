@@ -39,6 +39,15 @@ describe('formatTimeAgo', () => {
     expect(formatTimeAgo(dayjs().subtract(400, 'day').toISOString())).toBe('1 ano');
   });
 
+  it('returns the fallback for an invalid date', () => {
+    expect(formatTimeAgo('not-a-date')).toBe('');
+    expect(formatTimeAgo('not-a-date', { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
+
+  it('clamps future dates to the minimum unit', () => {
+    expect(formatTimeAgo(dayjs().add(3, 'day').toISOString())).toBe('1 minuto');
+  });
+
   it('returns empty string for missing input', () => {
     expect(formatTimeAgo()).toBe('');
     expect(formatTimeAgo(null)).toBe('');

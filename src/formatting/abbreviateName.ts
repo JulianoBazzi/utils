@@ -18,7 +18,7 @@ function normalizeTitleCase(value: string): string {
 
 /**
  * Abbreviate a full name to first name + last initial (e.g. `"John S."`).
- * Single-word names are returned unchanged. Empty/missing input → `""`.
+ * Single-word names are returned unchanged. Empty/blank/missing input → `""`.
  *
  * @example
  * abbreviateName("John Smith") // "John S."
@@ -26,7 +26,7 @@ function normalizeTitleCase(value: string): string {
  * abbreviateName("JOAO SILVA", { casing: "titlecase" }) // "Joao S."
  */
 export function abbreviateName(name?: string | null, options: AbbreviateNameOptions = {}): string {
-  if (!name) {
+  if (!name?.trim()) {
     return '';
   }
 

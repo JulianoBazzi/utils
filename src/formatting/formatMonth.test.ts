@@ -15,4 +15,9 @@ describe('formatMonth', () => {
   it('returns the fallback for missing input', () => {
     expect(formatMonth(null, { fallback: 'Não Informado' })).toBe('Não Informado');
   });
+
+  it('returns the fallback for an invalid date', () => {
+    expect(formatMonth('not-a-date')).toBe('');
+    expect(formatMonth('not-a-date', { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });

@@ -14,7 +14,7 @@ interface FormatWeekDayOptions {
 /**
  * Format a date as `"<date> - Ddd"` with a capitalized Portuguese weekday
  * abbreviation (e.g. `"15/6 - Sáb"`). The date part format is configurable via
- * `dateFormat`. Returns an empty string for missing input.
+ * `dateFormat`. Missing or invalid input → `fallback`.
  *
  * The pt-br locale is applied per-instance, so it never mutates the consumer's
  * global dayjs configuration.
@@ -30,6 +30,8 @@ export function formatWeekDay(date?: string | null, options: FormatWeekDayOption
   if (!date) return fallback;
 
   const instance = dayjs(date).locale('pt-br');
+  if (!instance.isValid()) return fallback;
+
   const datePart = instance.format(dateFormat);
   const weekday = instance.format('ddd');
   const weekdayCap = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)}`;

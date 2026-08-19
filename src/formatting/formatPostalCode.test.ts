@@ -6,6 +6,10 @@ describe('formatPostalCode', () => {
     expect(formatPostalCode('01310100')).toBe('01310-100');
   });
 
+  it('returns plain digits when longer than 8 digits', () => {
+    expect(formatPostalCode('123456789')).toBe('123456789');
+  });
+
   it('returns empty string for missing input', () => {
     expect(formatPostalCode()).toBe('');
     expect(formatPostalCode('')).toBe('');

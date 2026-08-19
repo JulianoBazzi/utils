@@ -11,7 +11,8 @@ interface FormatDateTimeOptions {
 
 /**
  * Format a date string as `DD/MM/YY HH:mm`. `simplified: false` switches to a
- * 4-digit year; `showSeconds: true` appends seconds.
+ * 4-digit year; `showSeconds: true` appends seconds. Missing or invalid
+ * input → `fallback`.
  *
  * @example
  * formatDateTime("2024-01-02T13:45:30") // "02/01/24 13:45"
@@ -23,7 +24,10 @@ export function formatDateTime(date?: string | null, options: FormatDateTimeOpti
   const { simplified = true, showSeconds = false, fallback = '' } = options;
   if (!date) return fallback;
 
+  const parsed = dayjs(date);
+  if (!parsed.isValid()) return fallback;
+
   const year = simplified ? 'YY' : 'YYYY';
   const time = showSeconds ? 'HH:mm:ss' : 'HH:mm';
-  return dayjs(date).format(`DD/MM/${year} ${time}`);
+  return parsed.format(`DD/MM/${year} ${time}`);
 }

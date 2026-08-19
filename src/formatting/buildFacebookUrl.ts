@@ -4,7 +4,8 @@ interface BuildFacebookUrlOptions {
 }
 
 /**
- * Build a Facebook profile URL from a username. Trims and strips a leading `@`.
+ * Build a Facebook profile URL from a username. Trims, strips a leading `@`
+ * and URL-encodes the handle (so `?`, `#` or `/` can't alter the target path).
  * Empty username → `fallback`.
  *
  * @example
@@ -21,5 +22,5 @@ export function buildFacebookUrl(
     return fallback;
   }
 
-  return `https://facebook.com/${handle}`;
+  return `https://facebook.com/${encodeURIComponent(handle)}`;
 }

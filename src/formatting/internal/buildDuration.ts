@@ -7,7 +7,10 @@ export interface BuildDurationOptions {
 
 /**
  * Shared core for the duration formatters. Receives a value in minutes and
- * renders a human-readable string. Not exported from the package barrel.
+ * renders a human-readable string. Negative values are treated as positive;
+ * the value is rounded to whole seconds (< 1 min) or whole minutes before
+ * being split, so `119.6` reads as `"2h"` rather than `"1h e 60 min"`.
+ * Not exported from the package barrel.
  */
 export function buildDuration(minutes?: number | null, options: BuildDurationOptions = {}): string {
   const { fallback = '', spaced = false } = options;
@@ -16,13 +19,16 @@ export function buildDuration(minutes?: number | null, options: BuildDurationOpt
   }
 
   const gap = spaced ? ' ' : '';
+  const total = Math.abs(minutes);
 
-  if (minutes < 1) {
-    return `${minutes * 60}${gap}s`;
+  const seconds = Math.round(total * 60);
+  if (seconds < 60) {
+    return `${seconds}${gap}s`;
   }
 
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = Math.round(minutes % 60);
+  const rounded = Math.round(total);
+  const hours = Math.floor(rounded / 60);
+  const remainingMinutes = rounded % 60;
 
   if (hours > 0 && remainingMinutes > 0) {
     return `${hours}${gap}h e ${remainingMinutes} min`;

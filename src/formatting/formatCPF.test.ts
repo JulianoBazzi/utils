@@ -10,6 +10,10 @@ describe('formatCPF', () => {
     expect(formatCPF('1')).toBe('000.000.000-01');
   });
 
+  it('returns plain digits when longer than 11 digits', () => {
+    expect(formatCPF('123456789012')).toBe('123456789012');
+  });
+
   it('returns empty string for missing input', () => {
     expect(formatCPF()).toBe('');
     expect(formatCPF('')).toBe('');

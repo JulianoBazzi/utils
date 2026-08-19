@@ -17,6 +17,17 @@ describe('maskSecret', () => {
     );
   });
 
+  it('never leaks the value when a visible side is zero or negative', () => {
+    const secret = 'supersecretvalue1234';
+    expect(maskSecret(secret, { visibleStart: 2, visibleEnd: 0, mask: '***' })).toBe('su***');
+    expect(maskSecret(secret, { visibleStart: 0, visibleEnd: 2, mask: '***' })).toBe('***34');
+    expect(maskSecret(secret, { visibleStart: 0, visibleEnd: 0, mask: '***' })).toBe('***');
+    expect(maskSecret(secret, { visibleStart: -3, visibleEnd: -2, mask: '***' })).toBe('***');
+    expect(maskSecret(secret, { visibleStart: 2.9, visibleEnd: Number.NaN, mask: '***' })).toBe(
+      'su***',
+    );
+  });
+
   it('returns an empty string for missing input', () => {
     expect(maskSecret()).toBe('');
     expect(maskSecret(null)).toBe('');

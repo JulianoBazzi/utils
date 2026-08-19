@@ -28,4 +28,8 @@ describe('abbreviateName', () => {
     expect(abbreviateName('john smith', { casing: 'uppercase' })).toBe('JOHN S.');
     expect(abbreviateName('John Smith', { casing: 'lowercase' })).toBe('john s.');
   });
+
+  it('returns an empty string for blank input', () => {
+    expect(abbreviateName('   ')).toBe('');
+  });
 });

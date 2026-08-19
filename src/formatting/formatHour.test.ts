@@ -16,4 +16,9 @@ describe('formatHour', () => {
     expect(formatHour('')).toBe('');
     expect(formatHour(null, { fallback: 'Não Informado' })).toBe('Não Informado');
   });
+
+  it('returns the fallback for an invalid date', () => {
+    expect(formatHour('not-a-date')).toBe('');
+    expect(formatHour('not-a-date', { fallback: 'Não Informado' })).toBe('Não Informado');
+  });
 });

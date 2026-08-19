@@ -10,6 +10,10 @@ describe('buildFacebookUrl', () => {
     expect(buildFacebookUrl('  @julianobazzi ')).toBe('https://facebook.com/julianobazzi');
   });
 
+  it('encodes the handle so it cannot alter the path or query', () => {
+    expect(buildFacebookUrl('foo?x=1#y')).toBe('https://facebook.com/foo%3Fx%3D1%23y');
+  });
+
   it('returns empty string for missing input', () => {
     expect(buildFacebookUrl()).toBe('');
     expect(buildFacebookUrl('@')).toBe('');

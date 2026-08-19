@@ -5,7 +5,7 @@
 ## Visão geral para IA
 
 - Todas as funções são **named exports planos** a partir da raiz do pacote (`@julianobazzi/utils`). Não há default export.
-- Internamente agrupadas por: `formatting`, `mask`, `validation`, `number`, `object`, `parse`, `transform`, `browser`, `generate`. O consumidor importa tudo do root.
+- Internamente agrupadas por: `formatting`, `date`, `url`, `mask`, `validation`, `number`, `object`, `parse`, `transform`, `browser`, `generate`. O consumidor importa tudo do root.
 - Convenções: funções de formatação retornam `string` e dão `""` (ou um fallback documentado) para entrada vazia/nula; validações retornam `boolean`; quase todos os parâmetros de entrada são opcionais e aceitam `undefined`/`null`.
 - Padrão de options (último parâmetro, objeto): `fallback?: string` (retorno quando entrada vazia/ausente, default `""`), `separator?: string` (junção), e `casing?: LetterCasing` onde `LetterCasing = 'lowercase' | 'uppercase' | 'titlecase'` (titlecase põe a 1ª letra de cada palavra em maiúscula preservando o resto, ex.: `"KB"`). Cada função expõe só as options que fazem sentido.
 - Funções do grupo `browser` dependem de APIs DOM (`Image`, `FileReader`, `URL`, `window`) — só funcionam no navegador.
@@ -23,13 +23,13 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 
 ## API — formatting
 
-- `abbreviateName(name?: string | null, options?: { casing?: LetterCasing }): string` — primeiro nome + inicial do sobrenome. `"John Smith"` → `"John S."`. `casing: 'titlecase'` normaliza (lowercase antes): `"JOAO SILVA"` → `"Joao S."`.
+- `abbreviateName(name?: string | null, options?: { casing?: LetterCasing }): string` — primeiro nome + inicial do sobrenome. `"John Smith"` → `"John S."`. `casing: 'titlecase'` normaliza (lowercase antes): `"JOAO SILVA"` → `"Joao S."`. Vazio ou só espaços → `""`.
 - `appendValue(base?: string | null, value?: string | null, options?: { separator?: string; fallback?: string; casing?: LetterCasing }): string` — junta dois textos preservando o presente; faz trim em cada lado antes; ambos → `"base; value"` (separator default `"; "`); ambos vazios → `fallback`. `"a", "b"` → `"a; b"`.
 - `applyCasing(value: string, casing?: LetterCasing): string` — aplica caixa ao texto. `"são paulo"` → `uppercase` `"SÃO PAULO"` / `titlecase` `"São Paulo"`; titlecase preserva o resto da palavra (`"1.50 KB"` intacto). Sem `casing` → inalterado.
 - `formatAddress(address: { state?: string; city?: string; zipcode?: string; address?: string; district?: string; number?: string }, options?: { fallback?: string }): string` — monta endereço em uma linha; o `zipcode` é formatado como CEP (via `formatPostalCode`). Vazio (ou `fallback`) se sem rua/cidade/estado/bairro.
 - `formatBoolean(value?: boolean | null, options?: { casing?: LetterCasing }): string` — `true` → `"Sim"`, senão `"Não"`.
 - `formatBytes(bytes?: number | null, round = false, options?: { casing?: LetterCasing }): string` — tamanho legível. `1536` → `"1.50 KB"`; `round` arredonda.
-- `formatCPF(value?: string | null, options?: { fallback?: string }): string` — `"52998224725"` → `"529.982.247-25"`. Faz strip de não-dígitos e pad.
+- `formatCPF(value?: string | null, options?: { fallback?: string }): string` — `"52998224725"` → `"529.982.247-25"`. Faz strip de não-dígitos e pad com zeros; mais de 11 dígitos → devolve só os dígitos (sem máscara parcial).
 - `formatCNPJ(value?: string | null, options?: { fallback?: string }): string` — `"11222333000181"` → `"11.222.333/0001-81"`. Suporta CNPJ alfanumérico: `"12ABC34501DE35"` → `"12.ABC.345/01DE-35"`.
 - `formatDocument(value?: string | null, options?: { fallback?: string }): string` — formata como CPF (≤11 chars) ou CNPJ (senão).
 - `formatCityAndState(city?: string | null, state?: string | null, options?: { fallback?: string; separator?: string; casing?: LetterCasing }): string` — `"São Paulo", "SP"` → `"São Paulo - SP"`. Só um → sem separador. `separator` default `" - "`. Ambos vazios → `fallback` (default `""`).
@@ -37,21 +37,23 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `currencyToWords(value?: number | null, divisor = 100, options?: { fallback?: string }): string` — valor BRL por extenso em pt-BR; espelha `formatCurrency` (centavos por default). `123456` → `"mil duzentos e trinta e quatro reais e cinquenta e seis centavos"`; `currencyToWords(1234.56, 1)` idem; milhões redondos → `"um milhão de reais"`; `0` → `"zero reais"`; negativo → prefixo `"menos"`. Ausente/inválido → `fallback` (default `""`).
 - `numberToWords(value?: number | null, options?: { fallback?: string }): string` — inteiro por extenso em pt-BR até trilhões (decimais ignorados; use `currencyToWords` p/ dinheiro). `1234` → `"mil duzentos e trinta e quatro"`; `1100` → `"mil e cem"`; `-42` → `"menos quarenta e dois"`; `0` → `"zero"`. Ausente/inválido/≥1e15 → `fallback` (default `""`).
 - `formatCompactNumber(value?: number | null, options?: { decimals?: number; fallback?: string }): string` — notação compacta via `Intl` locale `en`. `1500000` → `"1.5M"`; `100000` → `"100K"`; `decimals` default 1; `0` → `"0"`; ausente → `fallback` (default `""`).
-- `formatDate(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"2024-01-02"` → `"02/01/24"`; `{ simplified: false }` → `"02/01/2024"`; `{ fallback }` p/ vazio.
-- `formatDateTime(date?: string | null, options?: { simplified?: boolean; showSeconds?: boolean; fallback?: string }): string` — `"02/01/24 13:45"`; `{ simplified: false }` → ano 4 dígitos; `{ showSeconds: true }` → `"...13:45:30"`.
-- `formatHour(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"13:45"` (ou `"13:45:30"` via `{ simplified: false }`).
-- `formatMonth(value?: string | null, options?: { fallback?: string }): string` — `"2024-01-02"` → `"01/2024"`.
-- `formatWeekDay(date?: string | null, options?: { fallback?: string; casing?: LetterCasing; dateFormat?: string }): string` — `"2024-06-15"` → `"15/6 - Sáb"` (pt-BR, por instância, sem mutar dayjs global). `dateFormat` (default `'D/M'`) muda a parte da data, ex.: `{ dateFormat: 'DD/MM/YY' }` → `"15/06/24 - Sáb"`.
-- `formatSecondsToTime(value?: number | null, showSeconds = true): string` — segundos → `"01:01:01"` (ou `"01:01"`). Negativos tratados como positivos.
-- `formatTimeAgo(date?: string | null, options?: { fallback?: string; casing?: LetterCasing }): string` — tempo decorrido em pt-BR: `"5 dias"`, `"2 horas"`. Escolhe a maior unidade que cabe.
-- `formatMinutesToDuration(minutes?: number | null, options?: { fallback?: string; spaced?: boolean }): string` — minutos → `"1h e 30 min"`, `"2h"`, `"45 min"`; `<1` → segundos (`"30s"`). `spaced` separa unidade colada (`"1 h"`, `"30 s"`).
+- `formatDate(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"2024-01-02"` → `"02/01/24"`; `{ simplified: false }` → `"02/01/2024"`; `{ fallback }` p/ vazio ou data inválida (nunca retorna `"Invalid Date"`).
+- `formatDateTime(date?: string | null, options?: { simplified?: boolean; showSeconds?: boolean; fallback?: string }): string` — `"02/01/24 13:45"`; `{ simplified: false }` → ano 4 dígitos; `{ showSeconds: true }` → `"...13:45:30"`. Vazio/inválido → `fallback`.
+- `formatHour(value?: string | null, options?: { simplified?: boolean; fallback?: string }): string` — `"13:45"` (ou `"13:45:30"` via `{ simplified: false }`). Vazio/inválido → `fallback`.
+- `formatMonth(value?: string | null, options?: { fallback?: string }): string` — `"2024-01-02"` → `"01/2024"`. Vazio/inválido → `fallback`.
+- `getMonthName(value?: string | Date | null, options?: { short?: boolean; fallback?: string; casing?: LetterCasing }): string` — nome do mês em pt-BR, primeira letra maiúscula por default. Aceita `"YYYY-MM"`, data completa ou `Date`. `"2026-07-15"` → `"Julho"`; `{ short: true }` → `"Jul"`; `{ short: true, casing: "lowercase" }` → `"jul"`. Vazio/inválido → `fallback` (default `""`).
+- `getWeekDayName(value?: string | Date | null, options?: { short?: boolean; fallback?: string; casing?: LetterCasing }): string` — nome do dia da semana em pt-BR, isolado (diferente de `formatWeekDay`, que devolve `"15/6 - Sáb"`). `"2026-07-11"` → `"Sábado"`; `{ short: true }` → `"Sáb"`. Vazio/inválido → `fallback` (default `""`).
+- `formatWeekDay(date?: string | null, options?: { fallback?: string; casing?: LetterCasing; dateFormat?: string }): string` — `"2024-06-15"` → `"15/6 - Sáb"` (pt-BR, por instância, sem mutar dayjs global). `dateFormat` (default `'D/M'`) muda a parte da data, ex.: `{ dateFormat: 'DD/MM/YY' }` → `"15/06/24 - Sáb"`. Vazio/inválido → `fallback`.
+- `formatSecondsToTime(value?: number | null, showSeconds = true): string` — segundos → `"01:01:01"` (ou `"01:01"`). Aritmética pura (sem relógio/fuso): negativos tratados como positivos, frações arredondadas, horas passam de 24 (`90000` → `"25:00:00"`); não-finito → `"00:00:00"`.
+- `formatTimeAgo(date?: string | null, options?: { fallback?: string; casing?: LetterCasing }): string` — tempo decorrido em pt-BR: `"5 dias"`, `"2 horas"`. Escolhe a maior unidade que cabe. Data inválida → `fallback`; data futura → `"1 minuto"` (mínimo).
+- `formatMinutesToDuration(minutes?: number | null, options?: { fallback?: string; spaced?: boolean }): string` — minutos → `"1h e 30 min"`, `"2h"`, `"45 min"`; `<1` → segundos (`"30s"`). Arredonda para segundos/minutos inteiros antes de separar (`119.6` → `"2h"`, nunca `"1h e 60 min"`); negativos tratados como positivos. `spaced` separa unidade colada (`"1 h"`, `"30 s"`).
 - `formatSecondsToDuration(seconds?: number | null, options?: { fallback?: string; spaced?: boolean }): string` — igual, a partir de segundos. `30` → `"30s"`; `≥60` arredonda p/ minutos (`90` → `"2 min"`).
 - `formatDuration(minutes?: number | null, options?: { fallback?: string; spaced?: boolean }): string` — **deprecated**, alias de `formatMinutesToDuration`.
 - `formatPercentage(value?: number | null, round = false, options?: { fallback?: string }): string` — `12.5` → `"12,50%"`; `round` → `"13%"`. Zero/ausente → `fallback` (default `"0%"`).
 - `formatPhone(phone?: string | null, options?: { fallback?: string }): string` — máscara BR. Faz strip antes. `"11912345678"` → `"(11) 91234-5678"`; 10 dígitos → `"(11) 1234-5678"`.
-- `formatPostalCode(value?: string | null, options?: { fallback?: string }): string` — CEP `"01310100"` → `"01310-100"`.
+- `formatPostalCode(value?: string | null, options?: { fallback?: string }): string` — CEP `"01310100"` → `"01310-100"`. Pad com zeros; mais de 8 dígitos → só os dígitos.
 - `formatPlate(value?: string | null, options?: { fallback?: string }): string` — placa BR. Antiga → `"ABC-1234"`; Mercosul mantém layout oficial sem separador (`"abc1d23"` → `"ABC1D23"`); outros valores → limpos e uppercase. Vazio → `fallback` (default `""`).
-- `formatPIS(value?: string | null, options?: { fallback?: string }): string` — PIS/PASEP `"12012345672"` → `"120.12345.67-2"`. Faz strip e pad com zeros.
+- `formatPIS(value?: string | null, options?: { fallback?: string }): string` — PIS/PASEP `"12012345672"` → `"120.12345.67-2"`. Faz strip e pad com zeros; mais de 11 dígitos → só os dígitos.
 - `formatLongDate(value?: string | Date | null, options?: { fallback?: string; casing?: LetterCasing }): string` — data por extenso pt-BR: `"2026-07-01"` → `"1º de julho de 2026"` (dia 1 com `º`). Locale pt-br do dayjs por instância (não muta a config global).
 - `getAge(birthDate?: Date | string | null): number` — idade em anos completos (hoje), via dayjs; strings `YYYY-MM-DD` são parseadas como data **local** (sem off-by-one de UTC). Ausente/inválido/futuro → `0`.
 - `formatAge(birthDate?: Date | string | null, options?: { fallback?: string }): string` — idade formatada em pt-BR via `getAge`. `"1990-07-01"` → `"36 anos"` (singular `"1 ano"`). Ausente → `fallback` (default `""`); inválido/futuro cai em `getAge` → `"0 anos"`.
@@ -61,16 +63,31 @@ const { formatCPF, isValidEmail } = require("@julianobazzi/utils");
 - `removeAccents(value?: string | null): string` — remove acentos (NFD). `"João Coração"` → `"Joao Coracao"`.
 - `truncate(value?: string | null, length = 40): string` — corta e adiciona `"..."` se exceder `length`.
 - `getLastCharacter(value?: string | null): string` — último caractere. `"hello"` → `"o"`.
-- `joinByKey<T, K extends keyof T>(values: T[], key: K, dividerOrOptions?: string | { divider?: string; sort?: boolean | "asc" | "desc" }): string` — junta uma propriedade de cada objeto. 3º arg aceita string (divider) ou options. `sort` ordena por `key` antes de juntar (imutável; numérico p/ números, `localeCompare` pt-BR p/ strings). `[{name:"a"},{name:"b"}], "name"` → `"a | b"`. `[{name:"b"},{name:"a"}], "name", {sort:true}` → `"a | b"`.
-- `maskSecret(value?: string | null, options?: { visibleStart?: number; visibleEnd?: number; mask?: string }): string` — mascara parcialmente, mantendo `visibleStart` (default 5) primeiros e `visibleEnd` (default 5) últimos chars, com `mask` (default `"••••••"`) no miolo. `"$2y$10$AbCdEfGhIjKlMnOp"` → `"$2y$1••••••lMnOp"`. Se `length <= visibleStart + visibleEnd`, retorna só a máscara (`"short"` → `"••••••"`). Vazio/ausente → `""`.
+- `joinByKey<T, K extends keyof T>(values: T[], key: K, dividerOrOptions?: string | { divider?: string; sort?: boolean | "asc" | "desc"; unique?: boolean }): string` — junta uma propriedade de cada objeto, ignorando valores `null`/`undefined`/vazios. 3º arg aceita string (divider) ou options. `sort` ordena por `key` antes de juntar (imutável; numérico p/ números, `localeCompare` pt-BR p/ strings); `unique` remove duplicados preservando a primeira ocorrência. `[{name:"a"},{name:"b"}], "name"` → `"a | b"`. `[{name:"b"},{name:"a"}], "name", {sort:true}` → `"a | b"`. `[{name:"a"},{name:"a"}], "name", {unique:true}` → `"a"`.
+- `maskSecret(value?: string | null, options?: { visibleStart?: number; visibleEnd?: number; mask?: string }): string` — mascara parcialmente, mantendo `visibleStart` (default 5) primeiros e `visibleEnd` (default 5) últimos chars, com `mask` (default `"••••••"`) no miolo. `"$2y$10$AbCdEfGhIjKlMnOp"` → `"$2y$1••••••lMnOp"`. Se `length <= visibleStart + visibleEnd`, retorna só a máscara (`"short"` → `"••••••"`). `visibleStart`/`visibleEnd` são truncados e limitados a ≥ 0 — `0` (ou negativo) esconde aquele lado por completo (`{ visibleStart: 2, visibleEnd: 0 }` → `"ab••••••"`), nunca vaza o valor. Vazio/ausente → `""`.
 - `slugify(value?: string | null): string` — slug URL-safe: remove acentos (via `removeAccents`), minúscula, troca sequências de não-alfanuméricos por `-` e apara hífens das pontas. `"São Paulo"` → `"sao-paulo"`; `"Relatório 2026!"` → `"relatorio-2026"`. Vazio → `""`.
 - `sanitizeSpreadsheetCell(value?: string | null): string` — anti-injeção de fórmula em CSV/Excel: prefixa `'` se o valor começa com `=`, `+`, `-`, `@`, tab ou CR; senão inalterado. `"=SUM(A1)"` → `"'=SUM(A1)"`; `"João"` → `"João"`. Vazio → `""`.
 - `buildWhatsAppUrl(phone?: string | null, message?: string | null, options?: { countryCode?: string | null; fallback?: string }): string` — link `wa.me`. Faz strip de não-dígitos; `countryCode` default `"55"` (`null`/`""` omite); `message` encodada em `?text=`. `"(11) 98765-4321", "Olá!"` → `"https://wa.me/5511987654321?text=Ol%C3%A1!"`. Vazio → `fallback` (default `""`).
 - `buildPhoneUrl(phone?: string | null, options?: { countryCode?: string | null; fallback?: string }): string` — link `tel:`. `countryCode` default `"55"` → `tel:+<cc><digits>`; `null`/`""` → `tel:<digits>`. `"(11) 98765-4321"` → `"tel:+5511987654321"`. Vazio → `fallback` (default `""`).
-- `buildEmailUrl(email?: string | null, options?: { subject?: string; body?: string; fallback?: string }): string` — link `mailto:`. Faz trim do endereço; `subject`/`body` opcionais encodados via `encodeURIComponent`. `"foo@bar.com", { subject: "Oi" }` → `"mailto:foo@bar.com?subject=Oi"`. Vazio → `fallback` (default `""`).
-- `buildInstagramUrl(username?: string | null, options?: { fallback?: string }): string` — perfil Instagram; trim + remove `@` inicial. `"@julianobazzi"` → `"https://instagram.com/julianobazzi"`. Vazio → `fallback` (default `""`).
-- `buildFacebookUrl(username?: string | null, options?: { fallback?: string }): string` — perfil Facebook; trim + remove `@` inicial. `"julianobazzi"` → `"https://facebook.com/julianobazzi"`. Vazio → `fallback` (default `""`).
-- `buildLinkedInUrl(handle?: string | null, options?: { type?: 'profile' | 'company'; fallback?: string }): string` — link LinkedIn; trim + remove `@` inicial. `type` default `'profile'` → `/in/`; `'company'` → `/company/`. `"bazzi-solutions", { type: "company" }` → `"https://linkedin.com/company/bazzi-solutions"`. Vazio → `fallback` (default `""`).
+- `buildEmailUrl(email?: string | null, options?: { subject?: string; body?: string; fallback?: string }): string` — link `mailto:`. Faz trim e encoda o endereço via `encodeURIComponent` (mantendo `@` literal), então `?`/`&` no e-mail não injetam campos extras; `subject`/`body` opcionais também encodados. `"foo@bar.com", { subject: "Oi" }` → `"mailto:foo@bar.com?subject=Oi"`. Vazio → `fallback` (default `""`).
+- `buildInstagramUrl(username?: string | null, options?: { fallback?: string }): string` — perfil Instagram; trim + remove `@` inicial + `encodeURIComponent` no handle (`?`, `#`, `/` não alteram o caminho). `"@julianobazzi"` → `"https://instagram.com/julianobazzi"`. Vazio → `fallback` (default `""`).
+- `buildFacebookUrl(username?: string | null, options?: { fallback?: string }): string` — perfil Facebook; trim + remove `@` inicial + `encodeURIComponent` no handle. `"julianobazzi"` → `"https://facebook.com/julianobazzi"`. Vazio → `fallback` (default `""`).
+- `buildLinkedInUrl(handle?: string | null, options?: { type?: 'profile' | 'company'; fallback?: string }): string` — link LinkedIn; trim + remove `@` inicial + `encodeURIComponent` no handle. `type` default `'profile'` → `/in/`; `'company'` → `/company/`. `"bazzi-solutions", { type: "company" }` → `"https://linkedin.com/company/bazzi-solutions"`. Vazio → `fallback` (default `""`).
+
+- `formatEnvironment(value?: string | null): NodeEnv` — normaliza uma string de ambiente (trim + lowercase) para `NodeEnv = 'production' | 'homologation' | 'development' | 'test'`. Desconhecido, vazio ou ausente → `'production'` (um deploy mal configurado nunca se comporta como desenvolvimento). `" Homologation "` → `"homologation"`; `"staging"` → `"production"`.
+
+## API — date (janelas de datas)
+
+Helpers de cálculo (não de formatação) para filtros e seletores. Saída sempre `YYYY-MM-DD`; intervalos inclusivos nas duas pontas. `DateRange = { startDate: string; endDate: string }`.
+
+- `getDateRange(days: number, options?: { reference?: string | Date | null; offset?: number }): DateRange` — janela de `days` dias terminando em `reference` (default hoje). `offset` desloca a janela para o passado. `days <= 1` → um único dia. `getDateRange(7, { reference: "2026-07-21" })` → `{ startDate: "2026-07-15", endDate: "2026-07-21" }`. `getDateRange(1, { reference: "2026-07-21", offset: 1 })` → ontem em ambas as pontas.
+- `getMonthRange(month: string, options?: { reference?: string | Date | null }): DateRange` — intervalo do mês. Aceita `"YYYY-MM"` ou qualquer data dentro do mês. Mês em andamento tem `endDate` limitado a `reference` (default hoje) em vez do último dia futuro. `getMonthRange("2026-07", { reference: "2026-07-21" })` → `{ startDate: "2026-07-01", endDate: "2026-07-21" }`.
+- `getMonthOptions(options?: { count?: number; reference?: string | Date | null; min?: string }): MonthOption[]` — lista `MonthOption = { id: string; name: string }` do mais recente ao mais antigo a partir de `reference`. `count` default `12`; `min` (`"YYYY-MM"`) descarta meses anteriores. O shape `{ id, name }` é o mesmo aceito por `findOptionById`/`getLabelById`. `getMonthOptions({ count: 2, reference: "2026-07-21" })` → `[{ id: "2026-07", name: "Julho/2026" }, { id: "2026-06", name: "Junho/2026" }]`.
+
+## API — url (query string)
+
+- `buildQueryParams(params?: Record<string, unknown> | null, options?: { ignore?: string[]; prefix?: boolean }): string` — serializa um objeto em query string. Ignora `null`/`undefined` (inclusive dentro de arrays), expande arrays em chaves repetidas, mantém falsy significativo (`0`, `false`, `""`). `ignore` lista chaves a omitir; `prefix` (default `true`) controla o `?` inicial. Nada a codificar → `""`. `{ id: [1, 2] }` → `"?id=1&id=2"`.
+- `parseQueryParams(value?: string | null): Record<string, string | string[]>` — inverso de `buildQueryParams`. Chaves repetidas viram array — o que `Object.fromEntries(new URLSearchParams(...))` perde (mantém só o último valor). Aceita a string com ou sem `?` inicial; vazio/ausente → `{}`. `"id=1&id=2"` → `{ id: ["1", "2"] }`. Seguro contra prototype pollution: chaves `__proto__`/`constructor`/`prototype` são ignoradas e membros herdados (`hasOwnProperty`, `toString`) não são confundidos com valores existentes.
 
 ## API — mask (constantes)
 
@@ -93,7 +110,7 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `isValidCPF(value?: string | null): boolean` — CPF via dígitos verificadores (aceita com/sem máscara).
 - `isValidCNPJ(value?: string | null): boolean` — CNPJ numérico legado **e** alfanumérico (2026).
 - `isValidDocument(value?: string | null): boolean` — valida como CPF (11) ou CNPJ (14).
-- `isValidEmail(value?: string | null): boolean` — email (regex padrão WHATWG).
+- `isValidEmail(value?: string | null): boolean` — email (regex estilo WHATWG; TLD de 2–63 letras, aceita `.photography`, `.international`).
 - `isValidJson(value?: string | null): boolean` — string é JSON parseável.
 - `isValidPhone(value?: string | null): boolean` — telefone BR (fixo/celular): tamanho, DDD ≠ 0, dígito inicial.
 - `isValidPostalCode(value?: string | null): boolean` — CEP de 8 dígitos (formato; CEP não tem dígito verificador).
@@ -101,6 +118,9 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `isValidUrl(value?: string | null): boolean` — URL `http`/`https` válida.
 - `isDateString(value?: string | null): boolean` — data ISO `YYYY-MM-DD` sem hora. `"2026-06-25"` → `true`; `"2026-06-25 11:04:23"` → `false`.
 - `isDateTimeString(value?: string | null): boolean` — data-hora `YYYY-MM-DD` + `T` ou espaço + `HH:mm` (`:ss` opcional). `"2026-06-25T11:04:23"` e `"2026-06-25 11:04"` → `true`; `"2026-06-25"` → `false`.
+- `isSunday(value?: Date | string | null): boolean` — data cai num domingo. Idem `isMonday`, `isTuesday`, `isWednesday`, `isThursday`, `isFriday`, `isSaturday` para os demais dias. `"2026-07-05"` → `isSunday` `true`; inválido/nulo/ausente → `false`.
+- `isWeekend(value?: Date | string | null): boolean` — data cai no fim de semana (sábado ou domingo). `"2026-07-11"` → `true`; inválido/nulo → `false`.
+- `isWeekday(value?: Date | string | null): boolean` — data cai em dia útil (segunda a sexta). `"2026-07-06"` → `true`; sábado/domingo ou inválido/nulo → `false`.
 - `isValidPlate(value?: string | null): boolean` — placa BR antiga (`AAA9999`) ou Mercosul (`AAA9A99`), com/sem separador, case-insensitive.
 - `isValidPIS(value?: string | null): boolean` — PIS/PASEP (11 díg) via dígito verificador mod-11.
 - `isValidRenavam(value?: string | null): boolean` — RENAVAM via dígito verificador; aceita 11 dígitos atuais e legado 9–10 (pad com zeros).
@@ -112,7 +132,7 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 
 - `formatInteger(value?: number | null, options?: { fallback?: number }): number` — arredonda ao inteiro mais próximo. Zero/ausente → `fallback` (default `0`).
 - `getRandomInt(min = 1, max = 100): number` — inteiro aleatório no intervalo inclusivo (usa `Math.random`, não criptográfico).
-- `precisionRound(value?: number | null, precision = 2): number` — arredonda a N casas decimais.
+- `precisionRound(value?: number | null, precision = 2): number` — arredonda a N casas decimais via notação exponencial, sem surpresas de ponto flutuante (`1.005` → `1.01`, `8.345` → `8.35`). Zero/ausente/não-finito → `0`.
 - `safeDivide(value1: number, value2?: number | null): number` — divide; `0` quando divisor é ausente, zero ou negativo.
 - `toPositive(value?: number | null): number` — limita a não-negativo (negativo/zero/ausente → `0`).
 - `toCents(value?: number | null): number` — valor → centavos inteiros (`Math.round(value*100)`); inverso de `formatCurrency`. `19.9` → `1990`. Zero/ausente → `0`.
@@ -130,7 +150,7 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 
 ## API — parse
 
-- `parseIds(...ids: Array<string | undefined | null>): number[]` — strings CSV → números. `"1,2", "3"` → `[1, 2, 3]`. Descarta não-numéricos.
+- `parseIds(...ids: Array<string | undefined | null>): number[]` — strings CSV → inteiros. `"1,2", "3"` → `[1, 2, 3]`. Faz trim de cada entrada e descarta vazias e não inteiras em base 10 (`"abc"`, `"1e3"`, `"0x10"`, `"1.5"`), então `"1,,2"` → `[1, 2]` (nunca `0` fantasma).
 - `resolveIdsToObjects<T, P = void>(ids: number[] | undefined, resolver: (id: number, params?: P) => Promise<T>, params?: P): Promise<T[]>` — resolve ids em objetos via resolver async (Promise.all). Lista vazia/ausente → `[]`. `params` repassado a cada chamada.
 - `resolveList<T, P = void>(value: string | Array<string | null | undefined> | null | undefined, resolver: (id: number, params?: P) => Promise<T>, params?: P): Promise<T[]>` — `parseIds` + `resolveIdsToObjects`; aceita string CSV ou array (tolera undefined/null nos elementos).
 - `resolveId<T, P = void>(value: string | Array<string | null | undefined> | null | undefined, resolver: (id: number, params?: P) => Promise<T>, params?: P): Promise<T | null>` — resolve o 1º id válido (via `parseIds`), ou `null`.
@@ -143,7 +163,8 @@ Transforms dependency-free com assinatura `(value, originalValue) => string` (fo
 
 ## API — generate (geradores p/ testes/seeds)
 
-Todos geram valores aleatórios que **passam nos validadores correspondentes** da lib.
+Todos geram valores aleatórios que **passam nos validadores correspondentes** da lib. Sorteiam via `Math.random` e servem para testes/seeds — **exceto `generateOTP`**, que usa Web Crypto e é apto a produção.
+- `generateOTP(options?: { length?: number }): string` — código numérico de uso único, default 6 dígitos, com zeros à esquerda preservados (é string, não número). Sorteia por `globalThis.crypto.getRandomValues` com rejection sampling (descarta bytes ≥ 250, que enviesariam os dígitos 0-5), então é criptograficamente seguro e serve para OTP de autenticação em produção; funciona no Node (≥20) e no browser, sem `node:crypto`. `length <= 0`, `NaN` ou `Infinity` → `""`. Ex.: `"048273"`.
 - `generateCPF(options?: { formatted?: boolean }): string` — CPF válido. `formatted: true` → `"000.000.000-00"`.
 - `generateCNPJ(options?: { formatted?: boolean; alphanumeric?: boolean }): string` — CNPJ válido (filial `0001`). `alphanumeric: true` → formato 2026 (raiz alfanumérica + DVs numéricos). `formatted: true` → `"00.000.000/0000-00"`.
 - `generatePIS(options?: { formatted?: boolean }): string` — PIS/PASEP válido. `formatted: true` → `"000.00000.00-0"`.
@@ -154,13 +175,16 @@ Todos geram valores aleatórios que **passam nos validadores correspondentes** d
 - `generateBarcode(options?: { length?: 8 | 12 | 13 | 14 }): string` — código EAN/GTIN com DV mod-10 válido (default EAN-13).
 - `generatePhone(options?: { mobile?: boolean; formatted?: boolean }): string` — telefone BR válido. `mobile` default `true` (11 díg iniciando com `9`); `false` → fixo (10 díg). `formatted` → `"(00) 00000-0000"`.
 - `generatePostalCode(options?: { formatted?: boolean }): string` — CEP de 8 dígitos. `formatted: true` → `"00000-000"`.
+- `generateBoleto(options?: { type?: 'bank' | 'collection'; formatted?: boolean }): string` — linha digitável válida em `isValidBoleto`. `type` default `'bank'` → 47 dígitos (moeda `9`, três DVs mod-10 de campo + DV geral mod-11); `'collection'` → arrecadação de 48 dígitos iniciando com `8` (quatro blocos de 11 + DV, mod-10 p/ moeda 6-7 e mod-11 p/ 8-9). `formatted: true` aplica os separadores usuais (`"00190.50095 40144.816069 06809.350314 3 37370000000100"`), que continuam válidos porque `isValidBoleto` normaliza via `onlyNumbers`.
+- `generateUF(): string` — sigla de estado aleatória entre as 27 unidades federativas (26 estados + DF). Tipada como a união literal das siglas. Ex.: `"SP"`.
+- `generateEmail(options?: { domain?: string; length?: number }): string` — e-mail válido em `isValidEmail`. Local part alfanumérico minúsculo sempre iniciando por letra, `length` default `12`; `domain` default `"example.com"` (reservado pela RFC 2606, nunca roteia — evita envio real acidental em teste). Ex.: `"k3p9xz1qw8ab@example.com"`.
 
 ## API — browser (somente DOM)
 
 - `loadImageFromBlob(blob: Blob): Promise<HTMLImageElement>` — carrega Blob em `<img>`; revoga o object URL.
 - `getImageDimensions(file: File): Promise<{ width: number; height: number; extension: string }>` — dimensões + extensão de um arquivo de imagem.
 - `isPhotoLandscape(img: File | string): Promise<boolean>` — `true` se largura > altura. Aceita `File` ou URL. Erro → `false`.
-- `isNotificationsSupported(): boolean` — suporte do navegador a `Notification` + `serviceWorker` + `PushManager`.
+- `isNotificationsSupported(): boolean` — suporte do navegador a `Notification` + `serviceWorker` + `PushManager`. Seguro em SSR: sem `window`/`navigator` retorna `false` (não lança).
 
 ## Notas
 

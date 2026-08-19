@@ -18,6 +18,18 @@ describe('formatMinutesToDuration', () => {
     expect(formatMinutesToDuration(0.5, { spaced: true })).toBe('30 s');
   });
 
+  it('rounds before splitting into hours and minutes', () => {
+    expect(formatMinutesToDuration(119.6)).toBe('2h');
+    expect(formatMinutesToDuration(89.4)).toBe('1h e 29 min');
+    expect(formatMinutesToDuration(0.333)).toBe('20s');
+    expect(formatMinutesToDuration(0.999)).toBe('1 min');
+  });
+
+  it('treats negative values as positive', () => {
+    expect(formatMinutesToDuration(-5)).toBe('5 min');
+    expect(formatMinutesToDuration(-0.5)).toBe('30s');
+  });
+
   it('returns the fallback for missing input', () => {
     expect(formatMinutesToDuration()).toBe('');
     expect(formatMinutesToDuration(null, { fallback: 'Não Informado' })).toBe('Não Informado');

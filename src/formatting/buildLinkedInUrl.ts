@@ -6,9 +6,10 @@ interface BuildLinkedInUrlOptions {
 }
 
 /**
- * Build a LinkedIn URL from a handle. Trims and strips a leading `@`. `type`
- * selects a personal profile (`/in/`) or a company page (`/company/`). Empty
- * handle → `fallback`.
+ * Build a LinkedIn URL from a handle. Trims, strips a leading `@` and
+ * URL-encodes the handle (so `?`, `#` or `/` can't alter the target path).
+ * `type` selects a personal profile (`/in/`) or a company page (`/company/`).
+ * Empty handle → `fallback`.
  *
  * @example
  * buildLinkedInUrl("julianobazzi") // "https://linkedin.com/in/julianobazzi"
@@ -25,5 +26,5 @@ export function buildLinkedInUrl(
     return fallback;
   }
 
-  return `https://linkedin.com/${type === 'company' ? 'company' : 'in'}/${slug}`;
+  return `https://linkedin.com/${type === 'company' ? 'company' : 'in'}/${encodeURIComponent(slug)}`;
 }

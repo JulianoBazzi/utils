@@ -1,8 +1,9 @@
 const EMAIL =
-  /^[\w!#$%&'*+/=?`{|}~^-]+(?:\.[\w!#$%&'*+/=?`{|}~^-]+)*@(?:[A-Z0-9-]+\.)+[A-Z]{2,10}$/i;
+  /^[\w!#$%&'*+/=?`{|}~^-]+(?:\.[\w!#$%&'*+/=?`{|}~^-]+)*@(?:[A-Z0-9-]+\.)+[A-Z]{2,63}$/i;
 
 /**
- * Check whether a string is a valid email address.
+ * Check whether a string is a valid email address. Accepts any TLD from 2 to
+ * 63 letters (so `.photography` / `.international` pass).
  * Returns `false` for missing input.
  *
  * @example

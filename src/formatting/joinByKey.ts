@@ -5,20 +5,25 @@ export interface JoinByKeyOptions {
   divider?: string;
   /** Sort entries by `key` before joining. `true` = ascending. Defaults to no sorting. */
   sort?: boolean | 'asc' | 'desc';
+  /** Drop duplicate values, keeping the first occurrence. Defaults to `false`. */
+  unique?: boolean;
 }
 
 /**
  * Join a single property of each object in an array into a string.
- * Skips falsy entries. Returns an empty string for an empty/missing array.
+ * Skips falsy entries and empty values. Returns an empty string for an
+ * empty/missing array.
  *
  * Pass `sort` to order entries by `key` before joining (immutable: the input
  * array is not mutated). Numbers compare numerically, otherwise localeCompare (pt-BR).
+ * Pass `unique` to collapse repeated values.
  *
  * @example
  * joinByKey([{ name: "a" }, { name: "b" }], "name") // "a | b"
  * joinByKey([{ id: 1 }, { id: 2 }], "id", ", ") // "1, 2"
  * joinByKey([{ name: "b" }, { name: "a" }], "name", { sort: true }) // "a | b"
  * joinByKey([{ id: 1 }, { id: 2 }], "id", { sort: "desc", divider: ", " }) // "2, 1"
+ * joinByKey([{ name: "a" }, { name: "a" }], "name", { unique: true }) // "a"
  */
 export function joinByKey<T, K extends keyof T>(
   values: T[],
@@ -27,8 +32,11 @@ export function joinByKey<T, K extends keyof T>(
 ): string {
   if (!values?.length) return '';
 
-  const { divider = ' | ', sort = false } =
-    typeof dividerOrOptions === 'string' ? { divider: dividerOrOptions } : dividerOrOptions;
+  const {
+    divider = ' | ',
+    sort = false,
+    unique = false,
+  } = typeof dividerOrOptions === 'string' ? { divider: dividerOrOptions } : dividerOrOptions;
 
   let entries = values.filter((value): value is T => Boolean(value));
 
@@ -44,5 +52,14 @@ export function joinByKey<T, K extends keyof T>(
     });
   }
 
-  return entries.map((value) => String(getProperty(value, key))).join(divider);
+  let labels = entries
+    .map((value) => getProperty(value, key))
+    .filter((value) => value != null && String(value) !== '')
+    .map(String);
+
+  if (unique) {
+    labels = [...new Set(labels)];
+  }
+
+  return labels.join(divider);
 }

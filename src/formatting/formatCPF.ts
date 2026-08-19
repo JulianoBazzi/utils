@@ -6,8 +6,9 @@ interface FormatCPFOptions {
 }
 
 /**
- * Format a CPF as `000.000.000-00`. Pads with leading zeros.
- * Returns an empty string for missing input.
+ * Format a CPF as `000.000.000-00`. Pads with leading zeros; values with
+ * more than 11 digits are returned as plain digits (nothing to mask).
+ * Returns `fallback` for missing input.
  *
  * @example
  * formatCPF("52998224725") // "529.982.247-25"
@@ -18,5 +19,5 @@ export function formatCPF(value?: string | null, options: FormatCPFOptions = {})
   const cpf = onlyNumbers(value);
   if (!cpf) return fallback;
 
-  return cpf.padStart(11, '0').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  return cpf.padStart(11, '0').replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
 }

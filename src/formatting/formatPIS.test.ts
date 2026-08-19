@@ -10,6 +10,10 @@ describe('formatPIS', () => {
     expect(formatPIS('1')).toBe('000.00000.00-1');
   });
 
+  it('returns plain digits when longer than 11 digits', () => {
+    expect(formatPIS('123456789012')).toBe('123456789012');
+  });
+
   it('returns empty string or the fallback for missing input', () => {
     expect(formatPIS()).toBe('');
     expect(formatPIS('', { fallback: 'Não Informado' })).toBe('Não Informado');
