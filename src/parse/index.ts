@@ -1,4 +1,7 @@
 export * from './getFileExtension.js';
+export * from './getFileKind.js';
+export * from './getMimeType.js';
+export * from './hasExtension.js';
 export * from './parseIds.js';
 export * from './parseInlineMarkup.js';
 export * from './parseJson.js';

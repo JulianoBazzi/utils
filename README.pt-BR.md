@@ -242,6 +242,10 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `resolveId(value?, resolver, params?)` — resolve o 1º id válido em objeto, ou `null`
 - `parseJson<T>(value?)` — `JSON.parse` que devolve `undefined` em vez de lançar (`"null"` parseado continua `null`)
 - `toArray(value?)` — embrulha um valor único num array ou copia um array, descartando `null`/`undefined` (`toArray(undefined)` → `[]`, diferente do `castArray` do lodash)
+- `getMimeType(fileName?, fallback = 'application/octet-stream')` — MIME type pela extensão (imagens incl. webp/bmp/avif, documentos, Office, áudio, vídeo); ignora `?query`/`#hash`
+- `getFileKind(fileName?)` — `'image' | 'pdf' | 'audio' | 'video' | 'office' | 'email' | 'markdown' | 'text' | 'other'`; ignora `?query`/`#hash`
+- `hasExtension(fileName?, extensions)` — checagem de extensão sem diferenciar maiúsculas (com ou sem ponto); ignora `?query`/`#hash`
+
 - `toStringArray(value, { wrap? })` — reduz um valor desconhecido a `string[]`, descartando entradas de outros tipos; não-array → `[]` (`wrap: true` transforma `"a"` em `["a"]`)
 - `getFileExtension(value?)` — extensão de um caminho/URL sem o ponto; ignora `?query`/`#hash` e host com ponto, dotfiles → `""`
 - `parseInlineMarkup(value?, { boldMarker?, italicMarker? })` — markup estilo WhatsApp `*negrito*`/`_itálico_` (aninhável) → `{ text, bold?, italic? }[]`
@@ -250,6 +254,8 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 
 - `diffLines(before?, after?)` — diff linha a linha (maior subsequência comum) devolvendo `{ beforeLines, afterLines }`, com cada linha marcada em `changed`
 - `stripInlineMarkup(value?, { boldMarker?, italicMarker? })` — texto puro sem os marcadores `*`/`_`, pronto p/ `truncate`, meta tags ou e-mail
+- `bytesToBase64(bytes)` — base64 de um `Uint8Array`, em blocos (seguro para buffers grandes)
+- `toDataUrl(mimeType, bytesOrBase64)` — `data:<mime>;base64,...`
 
 Os demais são transforms dependency-free no formato `(value, originalValue) => …` (igual ao `yup.transform`); embrulham as funções base.
 
@@ -317,6 +323,10 @@ Helpers puros para `getServerSideProps`, Server Components e route handlers — 
 - `openInNewTab(url?, { target?, features? })` — `window.open` com `noopener,noreferrer` sempre aplicado; devolve `null` em SSR e, por causa do `noopener`, normalmente mesmo quando a aba abriu
 - `downloadBlob(blob, fileName)` — dispara o download de um arquivo e revoga o object URL 1 s depois (seguro no Safari)
 - `downloadJson(data, fileName, { space? })` — serializa em JSON e baixa (indentado por default)
+- `resizeImage(file, { maxEdge, quality = 0.9, mimeType = 'image/jpeg', output = 'blob' | 'dataUrl' })` — reduz uma imagem para a maior borda caber em `maxEdge` (nunca amplia); sempre termina (rejeita se falhar ao decodificar/codificar)
+- `captureVideoFrame(video, { maxEdge?, quality = 0.75, mimeType?, mirror? })` — frame atual de um `<video>` como `data:` URL (lança erro sem frame)
+- `stopMediaStream(stream?)` — para todas as tracks de um stream de câmera/microfone
+- `getNetworkInfo()` — `{ isOnline, connectionType, effectiveType, downlink, rtt, saveData }` da Network Information API; seguro em SSR
 
 ## Scripts
 
