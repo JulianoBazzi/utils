@@ -19,8 +19,30 @@ describe('formatCurrency', () => {
     expect(normalize(formatCurrency(0))).toBe('R$ 0,00');
   });
 
-  it('uses a custom fallback for zero/missing input', () => {
+  it('uses a custom fallback for missing input only — zero is formatted', () => {
     expect(formatCurrency(null, 100, { fallback: '—' })).toBe('—');
-    expect(formatCurrency(0, 100, { fallback: '—' })).toBe('—');
+    expect(normalize(formatCurrency(0, 100, { fallback: '—' }))).toBe('R$ 0,00');
+  });
+});
+
+describe('formatCurrency — 1.3 additions', () => {
+  it('accepts an options object', () => {
+    expect(normalize(formatCurrency(19.9, { divisor: 1 }))).toBe('R$ 19,90');
+    expect(formatCurrency(undefined, { fallback: '-' })).toBe('-');
+  });
+
+  it('uses the same non-breaking space in the default fallback and in values', () => {
+    expect(formatCurrency(null)).toBe(formatCurrency(0));
+    expect(formatCurrency(0)).toContain('\u00a0');
+  });
+
+  it('returns the fallback for non-finite input or a zero divisor', () => {
+    expect(formatCurrency(Number.NaN, { fallback: '-' })).toBe('-');
+    expect(formatCurrency(100, 0, { fallback: '-' })).toBe('-');
+    expect(formatCurrency(100, { divisor: Number.POSITIVE_INFINITY, fallback: '-' })).toBe('-');
+  });
+
+  it('never renders a negative zero', () => {
+    expect(normalize(formatCurrency(-0.001, { divisor: 1 }))).toBe('R$ 0,00');
   });
 });

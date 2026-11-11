@@ -1,7 +1,14 @@
-interface FormatCompactNumberOptions {
+import { presentNumber } from '../number/internal/presentNumber.js';
+
+export interface FormatCompactNumberOptions {
   /** Maximum fraction digits. Defaults to `1`. */
   decimals?: number;
-  /** Returned when the input is missing (`null`/`undefined`). Defaults to `""`. */
+  /**
+   * Locale of the compact notation (`"pt-BR"` → `"1,5 mil"`). Defaults to
+   * `"en"` (`"1.5K"`); the default becomes `"pt-BR"` in 2.0.
+   */
+  locale?: string;
+  /** Returned for missing or non-finite input (`null`, `undefined`, `NaN`, `±Infinity`). Defaults to `""`. */
   fallback?: string;
 }
 
@@ -14,18 +21,20 @@ interface FormatCompactNumberOptions {
  * formatCompactNumber(1500000) // "1.5M"
  * formatCompactNumber(100000) // "100K"
  * formatCompactNumber(1234, { decimals: 2 }) // "1.23K"
+ * formatCompactNumber(1500, { locale: "pt-BR" }) // "1,5 mil"
  * formatCompactNumber(null, { fallback: "—" }) // "—"
  */
 export function formatCompactNumber(
   value?: number | null,
   options: FormatCompactNumberOptions = {},
 ): string {
-  const { decimals = 1, fallback = '' } = options;
-  if (value == null) {
+  const { decimals = 1, locale = 'en', fallback = '' } = options;
+  const number = presentNumber(value);
+  if (number === undefined) {
     return fallback;
   }
 
-  return value.toLocaleString('en', {
+  return number.toLocaleString(locale, {
     notation: 'compact',
     maximumFractionDigits: decimals,
   });

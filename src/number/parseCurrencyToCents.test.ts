@@ -20,3 +20,20 @@ describe('parseCurrencyToCents', () => {
     expect(parseCurrencyToCents()).toBe(0);
   });
 });
+
+describe('parseCurrencyToCents — 1.3 additions', () => {
+  it('detects the decimal separator', () => {
+    expect(parseCurrencyToCents('1.5')).toBe(150);
+    expect(parseCurrencyToCents('1,5')).toBe(150);
+    expect(parseCurrencyToCents('1.500')).toBe(150000);
+    expect(parseCurrencyToCents('1,234.56')).toBe(123456);
+    expect(parseCurrencyToCents('1.234.567')).toBe(123456700);
+    expect(parseCurrencyToCents('1,234,567')).toBe(123456700);
+    expect(parseCurrencyToCents('R$ 10')).toBe(1000);
+  });
+
+  it('rounds cents exactly', () => {
+    expect(parseCurrencyToCents('1,005')).toBe(100500);
+    expect(parseCurrencyToCents('1,0051')).toBe(101);
+  });
+});

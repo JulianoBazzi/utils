@@ -17,3 +17,15 @@ describe('toCents', () => {
     expect(toCents(null)).toBe(0);
   });
 });
+
+describe('toCents — 1.3 additions', () => {
+  it('rounds exactly', () => {
+    expect(toCents(1.005)).toBe(101);
+    expect(toCents(0.285)).toBe(29);
+    expect(toCents(-1.005)).toBe(-101);
+  });
+
+  it('returns 0 for non-finite input', () => {
+    expect(toCents(Number.NaN)).toBe(0);
+  });
+});

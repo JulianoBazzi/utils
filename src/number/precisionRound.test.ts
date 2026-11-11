@@ -15,7 +15,7 @@ describe('precisionRound', () => {
     expect(precisionRound(1.005)).toBe(1.01);
     expect(precisionRound(8.345)).toBe(8.35);
     expect(precisionRound(1.255, 2)).toBe(1.26);
-    expect(precisionRound(-1.005)).toBe(-1);
+    expect(precisionRound(-1.005)).toBe(-1.01);
   });
 
   it('handles values already in exponential notation', () => {
@@ -31,5 +31,12 @@ describe('precisionRound', () => {
   it('returns 0 for zero/missing input', () => {
     expect(precisionRound()).toBe(0);
     expect(precisionRound(0)).toBe(0);
+  });
+});
+
+describe('precisionRound — 1.3 additions', () => {
+  it('rounds halves away from zero for negatives too', () => {
+    expect(precisionRound(-2.5, 0)).toBe(-3);
+    expect(Object.is(precisionRound(-0.001), 0)).toBe(true);
   });
 });

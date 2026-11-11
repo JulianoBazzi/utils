@@ -23,3 +23,15 @@ describe('formatCompactNumber', () => {
     expect(formatCompactNumber(undefined, { fallback: '—' })).toBe('—');
   });
 });
+
+describe('formatCompactNumber — 1.3 additions', () => {
+  it('accepts a locale', () => {
+    // Intl separates the compact unit with a non-breaking space.
+    expect(formatCompactNumber(1500, { locale: 'pt-BR' })).toBe('1,5\u00a0mil');
+  });
+
+  it('returns the fallback for non-finite input', () => {
+    expect(formatCompactNumber(Number.NaN, { fallback: '-' })).toBe('-');
+    expect(formatCompactNumber(Number.POSITIVE_INFINITY)).toBe('');
+  });
+});

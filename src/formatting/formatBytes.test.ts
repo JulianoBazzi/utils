@@ -24,3 +24,23 @@ describe('formatBytes', () => {
     expect(formatBytes(0)).toBe('0 Bytes');
   });
 });
+
+describe('formatBytes — 1.3 additions', () => {
+  it('accepts an options object', () => {
+    expect(formatBytes(1536, { round: true })).toBe('2 KB');
+    expect(formatBytes(1536, { locale: 'pt-BR' })).toBe('1,50 KB');
+    expect(formatBytes(1536, { locale: 'pt-BR', round: true })).toBe('2 KB');
+    expect(formatBytes(1536, { casing: 'lowercase' })).toBe('1.50 kb');
+    expect(formatBytes(512, { casing: 'uppercase' })).toBe('512 BYTES');
+  });
+
+  it('keeps the sign of negatives', () => {
+    expect(formatBytes(-1536)).toBe('-1.50 KB');
+    expect(formatBytes(-5)).toBe('-5 Bytes');
+  });
+
+  it('returns the fallback for missing or non-finite input', () => {
+    expect(formatBytes(null, { fallback: '-' })).toBe('-');
+    expect(formatBytes(Number.NaN)).toBe('0 Bytes');
+  });
+});

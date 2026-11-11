@@ -58,13 +58,13 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatMinutesToDuration(minutes?, { fallback?, spaced? })` — duração legível, ex.: `1h e 30 min` (arredonda p/ minutos/segundos inteiros antes; negativos viram positivos)
 - `formatSecondsToDuration(seconds?, { fallback?, spaced? })` — idem, a partir de segundos (≥60s arredonda p/ minutos)
 - `formatDuration(minutes?, { fallback?, spaced? })` — **deprecated**, alias de `formatMinutesToDuration`
-- `formatCurrency(value?, divisor = 100, { fallback? })` — moeda BRL, ex.: `R$ 19,90`
-- `formatCompactNumber(value?, { decimals?, fallback? })` — notação compacta (EN), ex.: `1.5M`, `100K`
-- `formatPercentage(value?, round = false, { fallback? })` — porcentagem, ex.: `12,50%`
+- `formatCurrency(value?, { divisor = 100, fallback? })` — moeda BRL, ex.: `R$ 19,90`; `0` é formatado, `fallback` só para ausente/não finito (posicional `(value, divisor, { fallback })` continua aceito)
+- `formatCompactNumber(value?, { decimals?, locale?, fallback? })` — notação compacta, ex.: `1.5M`, `100K` (`locale: 'pt-BR'` → `1,5 mil`; padrão `en` até a 2.0)
+- `formatPercentage(value?, { round?, decimals?, rounding?, fallback? })` — porcentagem pt-BR, ex.: `12,50%`, `1.234,50%`; `0` → `0,00%`; `rounding: 'floor'` mantém 99,6 em `99%` (posicional `(value, round, { fallback })` continua aceito)
 - `formatBoolean(value?, { casing? })` — `Sim` / `Não`
 - `formatPhone(phone?, { fallback? })` — máscara de telefone BR (10 ou 11 dígitos)
-- `formatBytes(bytes?, round = false, { casing? })` — tamanho legível, ex.: `1.50 KB`
-- `formatSecondsToTime(value?, showSeconds = true)` — `HH:mm:ss` (ou `HH:mm`); aritmética pura, horas passam de 24 (`90000` → `25:00:00`)
+- `formatBytes(bytes?, { round?, locale?, casing?, fallback? })` — tamanho legível, ex.: `1.50 KB` (`locale: 'pt-BR'` → `1,50 KB`); negativo mantém o sinal (posicional `round` continua aceito)
+- `formatSecondsToTime(value?, { seconds?, signed?, fallback? })` — `HH:mm:ss` (ou `HH:mm`); aritmética pura, horas passam de 24 (`90000` → `25:00:00`); `signed: 'negative'` mantém o sinal de menos (posicional `showSeconds` continua aceito)
 - `formatTimeAgo(date?, { fallback? })` — tempo decorrido em PT, ex.: `5 dias`; data inválida → `fallback`, data futura → `1 minuto`
 - `formatAddress(address, { fallback? })` — monta um endereço em uma linha
 - `formatCityAndState(city?, state?, { fallback?, separator?, casing? })` — `"Cidade - UF"` (vazio quando ambos ausentes)
@@ -79,14 +79,14 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatPIS(value?, { fallback? })` — PIS/PASEP `000.00000.00-0` (> 11 dígitos → só dígitos)
 - `formatLongDate(value?, { fallback?, casing?, timeZone? })` — data por extenso, ex.: `1º de julho de 2026`
 - `numberToWords(value?, { fallback? })` — inteiro por extenso até trilhões, ex.: `mil duzentos e trinta e quatro`
-- `currencyToWords(value?, divisor = 100, { fallback? })` — valor BRL por extenso (espelha `formatCurrency`), ex.: `dezenove reais e noventa centavos`
+- `currencyToWords(value?, { divisor = 100, fallback? })` — valor BRL por extenso (espelha `formatCurrency`), ex.: `dezenove reais e noventa centavos`
 - `appendValue(base?, value?, { separator?, fallback?, casing? })` — junta dois textos (cada um com trim), ex.: `"a; b"`
 - `applyCasing(value, casing?)` — `lowercase` / `uppercase` / `titlecase` (titlecase preserva o resto de cada palavra, ex.: `"KB"`)
 - `removeAccents(value?)` — remove acentos, ex.: `João` → `Joao`
 - `onlyNumbers(value?)` — remove tudo que não for dígito
 - `onlyAlphanumeric(value?)` — remove não-alfanuméricos + uppercase (`"12.abc"` → `"12ABC"`)
 - `formatWithPattern(value?, pattern?)` — máscara char-agnostic (`#` = próximo char), ex.: `'12345678900'` + `'###.###.###-##'` → `123.456.789-00`
-- `truncate(value?, length = 40)` — corta o texto e adiciona `...`
+- `truncate(value?, { length = 40, suffix = '...' })` — corta em `length` code points e adiciona `suffix` (posicional `length` continua aceito)
 - `getLastCharacter(value?)` — último caractere de uma string
 - `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normaliza: `"JOAO SILVA"` → `"Joao S."`; entrada em branco → `""`)
 - `getFirstAndLastWord(value?, { fallback?, casing? })` — mantém só a primeira e a última palavra: `"Analista de Sistemas"` → `"Analista Sistemas"`
@@ -177,13 +177,14 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 
 ### number (números)
 
-- `precisionRound(value?, precision = 2)` — arredonda para N casas decimais sem surpresas de ponto flutuante (`1.005` → `1.01`)
-- `formatInteger(value?, { fallback? })` — arredonda para o inteiro mais próximo
+- `precisionRound(value?, precision = 2)` — arredonda para N casas decimais sem surpresas de ponto flutuante (`1.005` → `1.01`), simétrico nos negativos (`-1.005` → `-1.01`)
+- `roundInteger(value?, { fallback? })` — arredonda para o inteiro mais próximo; `0` é valor, `fallback` só para ausente/não finito
+- `formatInteger(...)` — nome legado do `roundInteger` (sai na 2.0)
 - `toPositive(value?)` — limita a um valor não negativo
 - `getRandomInt(min = 1, max = 100)` — inteiro aleatório no intervalo (inclusivo)
-- `safeDivide(value1, value2?)` — divide; 0 quando o divisor é ≤ 0 ou ausente
-- `toCents(value?)` — valor → centavos inteiros, ex.: `19.9` → `1990` (inverso de `formatCurrency`)
-- `parseCurrencyToCents(value?)` — string BRL → centavos inteiros, ex.: `"R$ 1.234,56"` → `123456`
+- `safeDivide(value1?, value2?, { allowNegativeDivisor?, fallback? })` — divide; `fallback` (0) quando o divisor é ≤ 0 ou ausente, ou o numerador é ausente/não finito
+- `toCents(value?)` — valor → centavos inteiros, ex.: `19.9` → `1990`, `1.005` → `101` (inverso de `formatCurrency`)
+- `parseCurrencyToCents(value?)` — string de moeda → centavos inteiros, detectando o separador decimal, ex.: `"R$ 1.234,56"` → `123456`, `"1.5"` → `150`, `"1.500"` → `150000`
 
 ### object (objetos)
 
@@ -193,7 +194,7 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `getListIds(list?)` — mapeia uma lista de entidades para seus `id`s
 - `findOptionById(options?, value?)` — acha a opção cujo id casa com `value` (compara como string), ou `null`
 - `findOptionsByIds(options?, value?)` — mapeia cada id de `value` p/ sua opção, descartando sem match
-- `getLabelById(options?, value?, key = "name", fallback = "")` — campo da opção como string pelo id, ou `fallback`
+- `getLabelById(options?, value?, { key = "name", fallback = "" })` — campo da opção como string pelo id, ou `fallback` (posicional `key, fallback` continua aceito)
 - `maskFields(value, fields, { mask? })` — clona em profundidade mascarando os campos string listados, em qualquer nível (default `maskSecret`)
 - `isEqualIgnoringKeys(a, b, keys)` — comparação estrutural ignorando `keys` em qualquer profundidade (ordem de chave irrelevante, ordem de array significativa)
 - `swapAtIndex(list, index, offset)` — troca dois itens de forma imutável; fora dos limites devolve a mesma referência

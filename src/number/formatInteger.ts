@@ -1,21 +1,13 @@
-interface FormatIntegerOptions {
-  /** Returned for zero/missing input. Defaults to `0`. */
-  fallback?: number;
-}
+import { type RoundIntegerOptions, roundInteger } from './roundInteger.js';
+
+/** Options of {@link formatInteger}; same as {@link RoundIntegerOptions}. */
+export type FormatIntegerOptions = RoundIntegerOptions;
 
 /**
- * Round a number to the nearest integer. Returns 0 for zero/missing input.
+ * Legacy name of {@link roundInteger} (it returns a number, it does not
+ * format), kept for compatibility. It will be removed in 2.0.
  *
  * @example
  * formatInteger(1.6) // 2
- * formatInteger(1.4) // 1
- * formatInteger(null, { fallback: -1 }) // -1
  */
-export function formatInteger(value?: number | null, options: FormatIntegerOptions = {}): number {
-  const { fallback = 0 } = options;
-  if (!value) {
-    return fallback;
-  }
-
-  return Math.round(value);
-}
+export const formatInteger: typeof roundInteger = roundInteger;

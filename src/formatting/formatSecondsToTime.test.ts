@@ -30,3 +30,24 @@ describe('formatSecondsToTime', () => {
     expect(formatSecondsToTime(0, false)).toBe('00:00');
   });
 });
+
+describe('formatSecondsToTime — 1.3 additions', () => {
+  it('accepts an options object', () => {
+    expect(formatSecondsToTime(3661, { seconds: false })).toBe('01:01');
+    expect(formatSecondsToTime(3661, { showSeconds: false })).toBe('01:01');
+    expect(formatSecondsToTime(3661, { seconds: true, showSeconds: false })).toBe('01:01:01');
+  });
+
+  it('shows the sign when asked', () => {
+    expect(formatSecondsToTime(-3600, { signed: 'negative' })).toBe('-01:00:00');
+    expect(formatSecondsToTime(3600, { signed: 'negative' })).toBe('01:00:00');
+    expect(formatSecondsToTime(3600, { signed: 'always' })).toBe('+01:00:00');
+    expect(formatSecondsToTime(0, { signed: 'always' })).toBe('00:00:00');
+    expect(formatSecondsToTime(null, { signed: 'always' })).toBe('00:00:00');
+  });
+
+  it('returns the fallback for missing input when given', () => {
+    expect(formatSecondsToTime(null, { fallback: '-' })).toBe('-');
+    expect(formatSecondsToTime(0, { fallback: '-' })).toBe('00:00:00');
+  });
+});

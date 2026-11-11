@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatInteger } from './formatInteger.js';
+import { roundInteger } from './roundInteger.js';
 
 describe('formatInteger', () => {
   it('rounds to the nearest integer', () => {
@@ -16,8 +17,13 @@ describe('formatInteger', () => {
     expect(formatInteger()).toBe(0);
   });
 
-  it('uses a custom fallback for zero/missing input', () => {
+  it('uses a custom fallback for missing input only — zero is a value', () => {
     expect(formatInteger(null, { fallback: -1 })).toBe(-1);
-    expect(formatInteger(0, { fallback: -1 })).toBe(-1);
+    expect(formatInteger(Number.NaN, { fallback: -1 })).toBe(-1);
+    expect(formatInteger(0, { fallback: -1 })).toBe(0);
+  });
+
+  it('is an alias of roundInteger', () => {
+    expect(formatInteger).toBe(roundInteger);
   });
 });

@@ -46,3 +46,20 @@ describe('currencyToWords', () => {
     expect(currencyToWords(1e17, 100, { fallback: '—' })).toBe('—');
   });
 });
+
+describe('currencyToWords — 1.3 additions', () => {
+  it('accepts an options object', () => {
+    expect(currencyToWords(1234.56, { divisor: 1 })).toBe(
+      'mil duzentos e trinta e quatro reais e cinquenta e seis centavos',
+    );
+    expect(currencyToWords(null, { fallback: '-' })).toBe('-');
+  });
+
+  it('rounds cents exactly', () => {
+    expect(currencyToWords(1.005, 1)).toBe('um real e um centavo');
+  });
+
+  it('returns the fallback for a zero divisor', () => {
+    expect(currencyToWords(100, { divisor: 0, fallback: '-' })).toBe('-');
+  });
+});

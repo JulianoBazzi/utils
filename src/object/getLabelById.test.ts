@@ -24,3 +24,13 @@ describe('getLabelById', () => {
     expect(getLabelById(options, undefined, 'name', '—')).toBe('—');
   });
 });
+
+describe('getLabelById — 1.3 additions', () => {
+  const options = [{ id: 1, name: 'A', code: 'X' }];
+
+  it('accepts an options object', () => {
+    expect(getLabelById(options, '1', { key: 'code' })).toBe('X');
+    expect(getLabelById(options, '9', { fallback: '—' })).toBe('—');
+    expect(getLabelById(options, '1', {})).toBe('A');
+  });
+});
