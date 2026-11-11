@@ -71,3 +71,19 @@ describe('getDateRange', () => {
     });
   });
 });
+
+describe('getDateRange — 1.3 additions', () => {
+  it('returns empty strings for an invalid reference', () => {
+    expect(getDateRange(7, { reference: '2026-02-30' })).toEqual({ startDate: '', endDate: '' });
+  });
+
+  it('reads today in the given time zone', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-22T02:00:00Z'));
+    expect(getDateRange(1, { timeZone: 'America/Sao_Paulo' })).toEqual({
+      startDate: '2026-07-21',
+      endDate: '2026-07-21',
+    });
+    vi.useRealTimers();
+  });
+});

@@ -21,3 +21,18 @@ describe('isWeekday', () => {
     expect(isWeekday()).toBe(false);
   });
 });
+
+describe('isWeekday — 1.3 additions', () => {
+  it('works with .filter (the index is ignored)', () => {
+    expect(['2026-07-05', '2026-07-06', '2026-07-07'].filter(isWeekday)).toEqual([
+      '2026-07-06',
+      '2026-07-07',
+    ]);
+  });
+
+  it('reads instants in the given time zone', () => {
+    // 02:00 UTC on Monday is still Sunday evening in São Paulo.
+    expect(isWeekday('2026-07-06T02:00:00Z', { timeZone: 'UTC' })).toBe(true);
+    expect(isWeekday('2026-07-06T02:00:00Z', { timeZone: 'America/Sao_Paulo' })).toBe(false);
+  });
+});

@@ -1,4 +1,6 @@
-import dayjs from 'dayjs';
+import { parseDate } from './internal/parseDate.js';
+import { nowIn } from './internal/timeZone.js';
+import type { DateInput, TimeZoneOptions } from './types.js';
 
 /** An inclusive date window, both ends formatted as `YYYY-MM-DD`. */
 export interface DateRange {
@@ -6,9 +8,9 @@ export interface DateRange {
   endDate: string;
 }
 
-export interface GetDateRangeOptions {
-  /** Date the window ends at. Defaults to today. */
-  reference?: string | Date | null;
+export interface GetDateRangeOptions extends TimeZoneOptions {
+  /** Date the window ends at. Defaults to today (in `timeZone` when given). */
+  reference?: DateInput;
   /** Shift the end of the window back by this many days. Defaults to `0`. */
   offset?: number;
 }
@@ -18,18 +20,24 @@ export interface GetDateRangeOptions {
  * date-shortcut filters ("last 7 days") need. Both ends come out as `YYYY-MM-DD`.
  *
  * Use `offset` to move the whole window into the past: `{ offset: 1 }` ends it
- * yesterday instead of today. An unparseable `reference` yields
- * `"Invalid Date"` in both fields — validate upstream (e.g. `isDateString`).
+ * yesterday instead of today. An unparseable `reference` yields empty strings
+ * in both fields (never `"Invalid Date"`).
  *
  * @example
  * getDateRange(1, { reference: "2026-07-21" }) // { startDate: "2026-07-21", endDate: "2026-07-21" }
  * getDateRange(7, { reference: "2026-07-21" }) // { startDate: "2026-07-15", endDate: "2026-07-21" }
  * getDateRange(1, { reference: "2026-07-21", offset: 1 }) // { startDate: "2026-07-20", endDate: "2026-07-20" }
+ * getDateRange(7, { timeZone: "America/Sao_Paulo" }) // last 7 days, "today" read in São Paulo
  */
 export function getDateRange(days: number, options: GetDateRangeOptions = {}): DateRange {
-  const { reference, offset = 0 } = options;
+  const { reference, offset = 0, timeZone } = options;
 
-  const end = (reference ? dayjs(reference) : dayjs()).subtract(offset, 'day');
+  const base = reference ? parseDate(reference, { timeZone }) : nowIn(timeZone);
+  if (!base) {
+    return { startDate: '', endDate: '' };
+  }
+
+  const end = base.subtract(offset, 'day');
   const span = days > 1 ? days - 1 : 0;
 
   return {

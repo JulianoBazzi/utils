@@ -1,9 +1,10 @@
-import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br.js';
+import { parseDate } from '../date/internal/parseDate.js';
+import type { DateInput, TimeZoneOptions } from '../date/types.js';
 import { applyCasing, type LetterCasing } from './applyCasing.js';
 import { capitalize } from './internal/casing.js';
 
-interface GetMonthNameOptions {
+export interface GetMonthNameOptions extends TimeZoneOptions {
   /** Use the 3-letter abbreviation (`"Jul"`) instead of the full name. Defaults to `false`. */
   short?: boolean;
   /** Returned when the input is empty/invalid. Defaults to `""`. */
@@ -26,15 +27,12 @@ interface GetMonthNameOptions {
  * getMonthName("2026-07-15", { short: true, casing: "lowercase" }) // "jul"
  * getMonthName(null, { fallback: "Não Informado" }) // "Não Informado"
  */
-export function getMonthName(
-  value?: string | Date | null,
-  options: GetMonthNameOptions = {},
-): string {
-  const { short = false, fallback = '', casing } = options;
-  if (!value) return fallback;
+export function getMonthName(value?: DateInput, options: GetMonthNameOptions = {}): string {
+  const { short = false, fallback = '', casing, timeZone } = options;
+  const parsed = parseDate(value, { timeZone });
+  if (!parsed) return fallback;
 
-  const date = dayjs(value).locale('pt-br');
-  if (!date.isValid()) return fallback;
+  const date = parsed.locale('pt-br');
 
   const name = date.format(short ? 'MMM' : 'MMMM');
   return applyCasing(capitalize(name), casing);

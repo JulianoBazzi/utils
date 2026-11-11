@@ -57,3 +57,10 @@ describe('formatTimeAgo', () => {
     expect(formatTimeAgo(null, { fallback: 'Não Informado' })).toBe('Não Informado');
   });
 });
+
+describe('formatTimeAgo — 1.3 additions', () => {
+  it('accepts Date input and rejects impossible dates', () => {
+    expect(formatTimeAgo(dayjs().subtract(2, 'hour').toDate())).toBe('2 horas');
+    expect(formatTimeAgo('2024-02-30', { fallback: '-' })).toBe('-');
+  });
+});

@@ -31,3 +31,26 @@ describe('getAge', () => {
     expect(getAge('2030-01-01')).toBe(0);
   });
 });
+
+describe('getAge — 1.3 additions', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('reads "today" in the given time zone', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-01T02:00:00Z')); // still June 30 in São Paulo
+    expect(getAge('1990-07-01', { timeZone: 'UTC' })).toBe(36);
+    expect(getAge('1990-07-01', { timeZone: 'America/Sao_Paulo' })).toBe(35);
+  });
+
+  it('can be passed straight to .map (the index is ignored)', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 6, 1));
+    expect(['1990-07-01', '2000-07-02'].map(getAge)).toEqual([36, 25]);
+  });
+
+  it('rejects impossible dates', () => {
+    expect(getAge('1990-02-30')).toBe(0);
+  });
+});

@@ -21,3 +21,10 @@ describe('formatMonth', () => {
     expect(formatMonth('not-a-date', { fallback: 'Não Informado' })).toBe('Não Informado');
   });
 });
+
+describe('formatMonth — 1.3 additions', () => {
+  it('accepts YYYY-MM and rejects impossible dates', () => {
+    expect(formatMonth('2024-01')).toBe('01/2024');
+    expect(formatMonth('2024-02-30', { fallback: '-' })).toBe('-');
+  });
+});

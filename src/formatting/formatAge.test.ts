@@ -33,3 +33,19 @@ describe('formatAge', () => {
     expect(formatAge('2030-01-01')).toBe('0 anos');
   });
 });
+
+describe('formatAge — 1.3 additions', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('forwards the time zone to getAge', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-01T02:00:00Z'));
+    expect(formatAge('1990-07-01', { timeZone: 'America/Sao_Paulo' })).toBe('35 anos');
+  });
+
+  it('returns the fallback for an empty string', () => {
+    expect(formatAge('', { fallback: '-' })).toBe('-');
+  });
+});

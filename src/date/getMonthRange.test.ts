@@ -52,3 +52,30 @@ describe('getMonthRange', () => {
     });
   });
 });
+
+describe('getMonthRange — 1.3 additions', () => {
+  it('returns a future month whole instead of an inverted range', () => {
+    expect(getMonthRange('2026-09', { reference: '2026-07-21' })).toEqual({
+      startDate: '2026-09-01',
+      endDate: '2026-09-30',
+    });
+  });
+
+  it('returns empty strings for input that is not a real date', () => {
+    expect(getMonthRange('2026-13')).toEqual({ startDate: '', endDate: '' });
+    expect(getMonthRange('2026-07', { reference: 'nope' })).toEqual({ startDate: '', endDate: '' });
+  });
+
+  it('accepts Date input and a time zone', () => {
+    expect(getMonthRange(new Date(2026, 5, 15), { reference: '2026-07-21' })).toEqual({
+      startDate: '2026-06-01',
+      endDate: '2026-06-30',
+    });
+    expect(
+      getMonthRange('2026-07', {
+        reference: '2026-07-21T02:00:00Z',
+        timeZone: 'America/Sao_Paulo',
+      }),
+    ).toEqual({ startDate: '2026-07-01', endDate: '2026-07-20' });
+  });
+});

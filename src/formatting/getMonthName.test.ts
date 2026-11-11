@@ -34,3 +34,10 @@ describe('getMonthName', () => {
     expect(getMonthName('not-a-date', { fallback: 'Não Informado' })).toBe('Não Informado');
   });
 });
+
+describe('getMonthName — 1.3 additions', () => {
+  it('accepts a time zone and rejects impossible months', () => {
+    expect(getMonthName('2026-08-01T02:00:00Z', { timeZone: 'America/Sao_Paulo' })).toBe('Julho');
+    expect(getMonthName('2026-13', { fallback: '-' })).toBe('-');
+  });
+});

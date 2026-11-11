@@ -1,5 +1,7 @@
-import dayjs from 'dayjs';
 import { getMonthName } from '../formatting/getMonthName.js';
+import { parseDate } from './internal/parseDate.js';
+import { nowIn } from './internal/timeZone.js';
+import type { DateInput, TimeZoneOptions } from './types.js';
 
 /** A `{ id, name }` pair, the shape accepted by `findOptionById` / `getLabelById`. */
 export interface MonthOption {
@@ -9,11 +11,11 @@ export interface MonthOption {
   name: string;
 }
 
-export interface GetMonthOptionsOptions {
+export interface GetMonthOptionsOptions extends TimeZoneOptions {
   /** How many months to generate. Defaults to `12`. */
   count?: number;
-  /** Most recent month in the list. Defaults to today. */
-  reference?: string | Date | null;
+  /** Most recent month in the list. Defaults to today (in `timeZone` when given). */
+  reference?: DateInput;
   /** Drop months earlier than this `YYYY-MM` — e.g. the month the system went live. */
   min?: string;
 }
@@ -21,7 +23,7 @@ export interface GetMonthOptionsOptions {
 /**
  * Build a month picker list, newest first, walking back from `reference`.
  * Ideal for "select a month" filters; the `{ id, name }` shape plugs straight
- * into `findOptionById` and `getLabelById`.
+ * into `findOptionById` and `getLabelById`. An unparseable `reference` yields `[]`.
  *
  * @example
  * getMonthOptions({ count: 3, reference: "2026-07-21" })
@@ -31,16 +33,17 @@ export interface GetMonthOptionsOptions {
  * // [{ id: "2026-07", name: "Julho/2026" }, { id: "2026-06", name: "Junho/2026" }]
  */
 export function getMonthOptions(options: GetMonthOptionsOptions = {}): MonthOption[] {
-  const { count = 12, reference, min } = options;
+  const { count = 12, reference, min, timeZone } = options;
 
-  const start = (reference ? dayjs(reference) : dayjs()).startOf('month');
+  const base = reference ? parseDate(reference, { timeZone }) : nowIn(timeZone);
+  if (!base) {
+    return [];
+  }
+  const start = base.startOf('month');
 
   return Array.from({ length: Math.max(count, 0) }, (_, index) => {
-    const month = start.subtract(index, 'month');
-
-    return {
-      id: month.format('YYYY-MM'),
-      name: `${getMonthName(month.toDate())}/${month.format('YYYY')}`,
-    };
+    const id = start.subtract(index, 'month').format('YYYY-MM');
+    // Pass the naive `YYYY-MM` string so the zone is never applied twice.
+    return { id, name: `${getMonthName(id)}/${id.slice(0, 4)}` };
   }).filter((option) => !min || option.id >= min);
 }

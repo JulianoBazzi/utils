@@ -1,27 +1,14 @@
-import dayjs from 'dayjs';
+import { type FormatTimeOptions, formatTime } from './formatTime.js';
 
-interface FormatHourOptions {
-  /** Drop seconds (`HH:mm`) when true (default); include them (`HH:mm:ss`) when false. */
-  simplified?: boolean;
-  /** Returned when the input is empty/missing. Defaults to `""`. */
-  fallback?: string;
-}
+/** Options of {@link formatHour}; same as {@link FormatTimeOptions}. */
+export type FormatHourOptions = FormatTimeOptions;
 
 /**
- * Format a date string as `HH:mm` (or `HH:mm:ss` when not simplified).
- * Missing or invalid input → `fallback`.
+ * Legacy name of {@link formatTime}, kept for compatibility. It will be
+ * removed in 2.0; prefer `formatTime`.
  *
  * @example
  * formatHour("2024-01-02T13:45:30") // "13:45"
- * formatHour("2024-01-02T13:45:30", { simplified: false }) // "13:45:30"
- * formatHour(null, { fallback: "Não Informado" }) // "Não Informado"
+ * formatHour("13:45:00") // "13:45"
  */
-export function formatHour(value?: string | null, options: FormatHourOptions = {}): string {
-  const { simplified = true, fallback = '' } = options;
-  if (!value) return fallback;
-
-  const date = dayjs(value);
-  if (!date.isValid()) return fallback;
-
-  return date.format(simplified ? 'HH:mm' : 'HH:mm:ss');
-}
+export const formatHour: typeof formatTime = formatTime;

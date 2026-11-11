@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
+import { parseDate } from '../date/internal/parseDate.js';
+import type { DateInput } from '../date/types.js';
 import { countLabel } from './internal/pluralize.js';
 
-interface FormatTimeAgoOptions {
+export interface FormatTimeAgoOptions {
   /** Returned when the input is empty/missing. Defaults to `""`. */
   fallback?: string;
 }
@@ -10,20 +12,17 @@ interface FormatTimeAgoOptions {
  * Format how long ago a date was, in Portuguese (e.g. `"5 dias"`, `"2 horas"`).
  * Picks the largest fitting unit (minutos → horas → dias → meses → anos).
  * Returns `fallback` for missing or invalid input; a future date reads as
- * `"1 minuto"` (the minimum unit).
+ * `"1 minuto"` (the minimum unit). It measures the gap between two instants, so
+ * the time zone does not matter and there is no `timeZone` option.
  *
  * @example
  * formatTimeAgo(dayjs().subtract(3, "day").toISOString()) // "3 dias"
  * formatTimeAgo(null, { fallback: "Não Informado" }) // "Não Informado"
  */
-export function formatTimeAgo(date?: string | null, options: FormatTimeAgoOptions = {}): string {
+export function formatTimeAgo(date?: DateInput, options: FormatTimeAgoOptions = {}): string {
   const { fallback = '' } = options;
-  if (!date) {
-    return fallback;
-  }
-
-  const parsed = dayjs(date);
-  if (!parsed.isValid()) {
+  const parsed = parseDate(date);
+  if (!parsed) {
     return fallback;
   }
 

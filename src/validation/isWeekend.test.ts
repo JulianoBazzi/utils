@@ -20,3 +20,9 @@ describe('isWeekend', () => {
     expect(isWeekend()).toBe(false);
   });
 });
+
+describe('isWeekend — 1.3 additions', () => {
+  it('reads instants in the given time zone', () => {
+    expect(isWeekend('2026-07-06T02:00:00Z', { timeZone: 'America/Sao_Paulo' })).toBe(true);
+  });
+});

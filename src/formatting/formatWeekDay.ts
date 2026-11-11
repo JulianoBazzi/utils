@@ -1,9 +1,10 @@
-import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br.js';
+import { parseDate } from '../date/internal/parseDate.js';
+import type { DateInput, TimeZoneOptions } from '../date/types.js';
 import { applyCasing, type LetterCasing } from './applyCasing.js';
 import { capitalize } from './internal/casing.js';
 
-interface FormatWeekDayOptions {
+export interface FormatWeekDayOptions extends TimeZoneOptions {
   /** Returned when the input is empty/missing. Defaults to `""`. */
   fallback?: string;
   /** Letter casing of the output. Defaults to no transformation. */
@@ -26,12 +27,12 @@ interface FormatWeekDayOptions {
  * formatWeekDay("", { fallback: "Não Informado" }) // "Não Informado"
  * formatWeekDay("2024-06-15", { casing: "uppercase" }) // "15/6 - SÁB"
  */
-export function formatWeekDay(date?: string | null, options: FormatWeekDayOptions = {}): string {
-  const { fallback = '', casing, dateFormat = 'D/M' } = options;
-  if (!date) return fallback;
+export function formatWeekDay(date?: DateInput, options: FormatWeekDayOptions = {}): string {
+  const { fallback = '', casing, dateFormat = 'D/M', timeZone } = options;
+  const parsed = parseDate(date, { timeZone });
+  if (!parsed) return fallback;
 
-  const instance = dayjs(date).locale('pt-br');
-  if (!instance.isValid()) return fallback;
+  const instance = parsed.locale('pt-br');
 
   const datePart = instance.format(dateFormat);
   const weekday = instance.format('ddd');

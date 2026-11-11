@@ -47,12 +47,14 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 
 ### formatting (formatação)
 
-- `formatDate(value?, { simplified?, fallback? })` — `DD/MM/YY` (ou `DD/MM/YYYY`); data inválida → `fallback`
-- `formatDateTime(date?, { simplified?, showSeconds?, fallback? })` — `DD/MM/YY HH:mm` (ano 4 dígitos e/ou `:ss` opcionais); data inválida → `fallback`
-- `formatMonth(value?, { fallback? })` — `MM/YYYY`; data inválida → `fallback`
-- `getMonthName(value?, { short?, fallback?, casing? })` — nome do mês em PT-BR, ex.: `Julho` / `Jul`
-- `getWeekDayName(value?, { short?, fallback?, casing? })` — nome do dia da semana em PT-BR, ex.: `Sábado` / `Sáb`
-- `formatHour(value?, { simplified?, fallback? })` — `HH:mm` (ou `HH:mm:ss`); data inválida → `fallback`
+- `formatDate(value?, { year?, simplified?, fallback?, timeZone? })` — `DD/MM/YY`; `year: 'numeric'` → `DD/MM/YYYY`, `year: false` → `DD/MM`; data impossível (`2024-02-30`) → `fallback`
+- `formatDateTime(date?, { year?, seconds?, simplified?, showSeconds?, fallback?, timeZone? })` — `DD/MM/YY HH:mm`; `year` como no `formatDate`, `seconds: true` acrescenta `:ss`; data inválida → `fallback`
+- `formatMonth(value?, { fallback?, timeZone? })` — `MM/YYYY`; data inválida → `fallback`
+- `getMonthName(value?, { short?, fallback?, casing?, timeZone? })` — nome do mês em PT-BR, ex.: `Julho` / `Jul`
+- `getWeekDayName(value?, { short?, fallback?, casing?, timeZone? })` — nome do dia da semana em PT-BR, ex.: `Sábado` / `Sáb`
+- `formatTime(value?, { seconds?, simplified?, fallback?, timeZone? })` — `HH:mm` (ou `HH:mm:ss`); também aceita hora pura (`"13:45:00"`); inválido → `fallback`
+- `formatHour(...)` — nome legado do `formatTime` (sai na 2.0)
+- `formatDateRange(start?, end?, { separator?, openEnd?, year?, fallback?, timeZone? })` — `01/01/24 a 31/01/24`; mesmo dia aparece uma vez; sem fim → texto de `openEnd` ou `fallback`
 - `formatMinutesToDuration(minutes?, { fallback?, spaced? })` — duração legível, ex.: `1h e 30 min` (arredonda p/ minutos/segundos inteiros antes; negativos viram positivos)
 - `formatSecondsToDuration(seconds?, { fallback?, spaced? })` — idem, a partir de segundos (≥60s arredonda p/ minutos)
 - `formatDuration(minutes?, { fallback?, spaced? })` — **deprecated**, alias de `formatMinutesToDuration`
@@ -63,19 +65,19 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `formatPhone(phone?, { fallback? })` — máscara de telefone BR (10 ou 11 dígitos)
 - `formatBytes(bytes?, round = false, { casing? })` — tamanho legível, ex.: `1.50 KB`
 - `formatSecondsToTime(value?, showSeconds = true)` — `HH:mm:ss` (ou `HH:mm`); aritmética pura, horas passam de 24 (`90000` → `25:00:00`)
-- `formatTimeAgo(date?, { fallback?, casing? })` — tempo decorrido em PT, ex.: `5 dias`; data inválida → `fallback`, data futura → `1 minuto`
+- `formatTimeAgo(date?, { fallback? })` — tempo decorrido em PT, ex.: `5 dias`; data inválida → `fallback`, data futura → `1 minuto`
 - `formatAddress(address, { fallback? })` — monta um endereço em uma linha
 - `formatCityAndState(city?, state?, { fallback?, separator?, casing? })` — `"Cidade - UF"` (vazio quando ambos ausentes)
-- `formatWeekDay(date?, { fallback?, casing?, dateFormat? })` — data + dia da semana abreviado, ex.: `15/6 - Sáb` (`dateFormat` default `D/M`); data inválida → `fallback`
-- `getAge(birthDate?)` — idade em anos completos (hoje); ausente/inválido/futuro → `0`
-- `formatAge(birthDate?, { fallback? })` — idade em texto PT-BR, ex.: `"36 anos"` / `"1 ano"`
+- `formatWeekDay(date?, { fallback?, casing?, dateFormat?, timeZone? })` — data + dia da semana abreviado, ex.: `15/6 - Sáb` (`dateFormat` default `D/M`); data inválida → `fallback`
+- `getAge(birthDate?, { timeZone? })` — idade em anos completos (hoje); ausente/inválido/futuro → `0`
+- `formatAge(birthDate?, { fallback?, timeZone? })` — idade em texto PT-BR, ex.: `"36 anos"` / `"1 ano"`
 - `formatCPF(value?, { fallback? })` — `000.000.000-00` (completa com zeros; > 11 dígitos → só dígitos)
 - `formatCNPJ(value?, { fallback? })` — `00.000.000/0000-00` (suporta CNPJ alfanumérico)
 - `formatDocument(value?, { fallback? })` — formata como CPF ou CNPJ conforme o tamanho
 - `formatPostalCode(value?, { fallback? })` — CEP `00000-000` (> 8 dígitos → só dígitos)
 - `formatPlate(value?, { fallback? })` — placa BR: antiga → `ABC-1234`, Mercosul mantém `ABC1D23`
 - `formatPIS(value?, { fallback? })` — PIS/PASEP `000.00000.00-0` (> 11 dígitos → só dígitos)
-- `formatLongDate(value?, { fallback?, casing? })` — data por extenso, ex.: `1º de julho de 2026`
+- `formatLongDate(value?, { fallback?, casing?, timeZone? })` — data por extenso, ex.: `1º de julho de 2026`
 - `numberToWords(value?, { fallback? })` — inteiro por extenso até trilhões, ex.: `mil duzentos e trinta e quatro`
 - `currencyToWords(value?, divisor = 100, { fallback? })` — valor BRL por extenso (espelha `formatCurrency`), ex.: `dezenove reais e noventa centavos`
 - `appendValue(base?, value?, { separator?, fallback?, casing? })` — junta dois textos (cada um com trim), ex.: `"a; b"`
@@ -102,11 +104,26 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 
 ### date (datas)
 
-Helpers de janela de datas para filtros e seletores. Entrada e saída em `YYYY-MM-DD`; os intervalos são inclusivos nas duas pontas.
+Helpers de janela de datas para filtros e seletores. Entrada e saída em `YYYY-MM-DD`; os intervalos são inclusivos nas duas pontas. Entrada inválida dá `{ startDate: '', endDate: '' }` (nunca `"Invalid Date"`).
 
-- `getDateRange(days, { reference?, offset? })` — janela de `days` dias terminando em `reference` (default hoje), ex.: `getDateRange(7)` → últimos 7 dias; `offset` desloca para trás (`{ offset: 1 }` termina ontem)
-- `getMonthRange(month, { reference? })` — intervalo completo de um mês `YYYY-MM`; mês em andamento é limitado a `reference` em vez de um último dia no futuro
-- `getMonthOptions({ count = 12, reference?, min? })` — lista para seletor de mês, do mais recente ao mais antigo, como `{ id: 'YYYY-MM', name: 'Julho/2026' }` (funciona com `findOptionById` / `getLabelById`); `min` corta os meses anteriores
+- `getToday({ timeZone? })` — hoje como `YYYY-MM-DD`, ex.: a data do Brasil num servidor em UTC
+- `getCurrentMonth({ timeZone? })` — mês atual como `YYYY-MM`
+
+- `getDateRange(days, { reference?, offset?, timeZone? })` — janela de `days` dias terminando em `reference` (default hoje), ex.: `getDateRange(7)` → últimos 7 dias; `offset` desloca para trás (`{ offset: 1 }` termina ontem)
+- `getMonthRange(month, { reference?, timeZone? })` — intervalo completo de um mês `YYYY-MM`; mês em andamento é limitado a `reference` em vez de um último dia no futuro; mês futuro volta completo (nunca invertido)
+- `getMonthOptions({ count = 12, reference?, min?, timeZone? })` — lista para seletor de mês, do mais recente ao mais antigo, como `{ id: 'YYYY-MM', name: 'Julho/2026' }` (funciona com `findOptionById` / `getLabelById`); `min` corta os meses anteriores
+- `normalizeDateRange(range, { min?, max? })` — troca pontas invertidas e limita a `[min, max]`; nunca devolve `startDate > endDate`
+
+#### Fuso horário
+
+Toda função de data aceita `timeZone` (nome IANA, como `"America/Sao_Paulo"`). Ele só se aplica a valores que carregam um instante — `Date`, número (epoch), `Dayjs` e strings ISO com `Z` ou offset — e ao "hoje". Strings ingênuas (`"2024-01-02"`, `"2024-01-02 13:45"`) já são horário de parede e nunca são deslocadas. Sem `timeZone`, vale o fuso do runtime, como antes. Não precisa de plugin do dayjs; fuso inválido lança `RangeError` (cheque com `isValidTimeZone`).
+
+```ts
+// Servidor em UTC, 02:00 UTC de 2/jan = 23:00 de 1/jan em São Paulo
+formatDate("2024-01-02T02:00:00Z", { timeZone: "America/Sao_Paulo" }); // "01/01/24"
+getToday({ timeZone: "America/Sao_Paulo" }); // "2024-01-01"
+formatDate("2024-01-02", { timeZone: "Asia/Tokyo" }); // "02/01/24" (ingênua: não desloca)
+```
 
 ### url
 
@@ -133,13 +150,18 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `isValidJson(value?)` — `true` se a string é um JSON válido
 - `isValidBarcode(value)` — `true` para dígito verificador EAN/GTIN válido
 - `isValidUrl(value)` — `true` para URL `http`/`https` válida
-- `isDateString(value?)` — `true` para data ISO `YYYY-MM-DD` (sem hora)
-- `isDateTimeString(value?)` — `true` para data-hora (separador `T` ou espaço, `HH:mm[:ss]`)
+- `isDateString(value?)` — `true` para o formato `YYYY-MM-DD` (só o formato: `2024-02-30` passa)
+- `isValidDateString(value?)` — `YYYY-MM-DD` **e** data real do calendário (type guard)
+- `isDateTimeString(value?)` — `true` para data-hora (separador `T` ou espaço, `HH:mm[:ss[.fff]]`, `Z`/offset opcional); texto sobrando e data impossível → `false`
+- `isMonthString(value?, { min?, max? })` — `YYYY-MM` com mês válido, opcionalmente dentro de `[min, max]`
+- `isPastOrToday(value?, { reference?, timeZone? })` — `true` se o dia é igual ou anterior a `reference` (default hoje)
+- `isValidTimeZone(value?)` — `true` para fuso aceito pelo `Intl` (valida fuso vindo do usuário)
 - `isValidPhone(value?)` — `true` para telefone BR válido (fixo ou celular)
-- `isBirthday(value?)` — `true` se a data cai no dia/mês de hoje
-- `isWeekend(value?)` — `true` se a data cai no fim de semana (sábado ou domingo)
-- `isWeekday(value?)` — `true` se a data cai em dia útil (segunda a sexta)
-- `isSunday(value?)`, `isMonday(value?)`, `isTuesday(value?)`, `isWednesday(value?)`, `isThursday(value?)`, `isFriday(value?)`, `isSaturday(value?)` — `true` se a data cai naquele dia da semana (aceita string ISO ou `Date`)
+- `isBirthday(value?, { timeZone? })` — `true` se a data cai no dia/mês de hoje (29/02 → 28/02 em ano não bissexto)
+- `isWeekend(value?, { timeZone? })` — `true` se a data cai no fim de semana (sábado ou domingo)
+- `isWeekday(value?, { timeZone? })` — `true` se a data cai em dia útil (segunda a sexta)
+- `isDayOfWeek(value, day, { timeZone? })` — `true` se a data cai em `day` (`0` = domingo … `6` = sábado)
+- `isSunday(value?)`, `isMonday(value?)`, `isTuesday(value?)`, `isWednesday(value?)`, `isThursday(value?)`, `isFriday(value?)`, `isSaturday(value?)` — atalhos para `isDayOfWeek` (incorporados a ele na 2.0)
 - `isValidCPF(value?)` — `true` para CPF com dígitos verificadores válidos
 - `isValidCNPJ(value?)` — `true` para CNPJ válido (numérico ou alfanumérico)
 - `isValidDocument(value?)` — valida como CPF ou CNPJ conforme o tamanho

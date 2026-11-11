@@ -54,3 +54,18 @@ describe('getMonthOptions', () => {
     expect(getMonthOptions()).toHaveLength(12);
   });
 });
+
+describe('getMonthOptions — 1.3 additions', () => {
+  it('returns [] for an invalid reference', () => {
+    expect(getMonthOptions({ reference: 'nope' })).toEqual([]);
+  });
+
+  it('reads the current month in the given time zone', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-01T02:00:00Z')); // still July in São Paulo
+    expect(getMonthOptions({ count: 1, timeZone: 'America/Sao_Paulo' })).toEqual([
+      { id: '2026-07', name: 'Julho/2026' },
+    ]);
+    vi.useRealTimers();
+  });
+});

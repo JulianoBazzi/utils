@@ -1,9 +1,10 @@
-import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br.js';
+import { parseDate } from '../date/internal/parseDate.js';
+import type { DateInput, TimeZoneOptions } from '../date/types.js';
 import { applyCasing, type LetterCasing } from './applyCasing.js';
 import { capitalize } from './internal/casing.js';
 
-interface GetWeekDayNameOptions {
+export interface GetWeekDayNameOptions extends TimeZoneOptions {
   /** Use the short form (`"Sáb"`) instead of the full name. Defaults to `false`. */
   short?: boolean;
   /** Returned when the input is empty/invalid. Defaults to `""`. */
@@ -25,15 +26,12 @@ interface GetWeekDayNameOptions {
  * getWeekDayName("2026-07-11", { short: true, casing: "lowercase" }) // "sáb"
  * getWeekDayName(null, { fallback: "Não Informado" }) // "Não Informado"
  */
-export function getWeekDayName(
-  value?: string | Date | null,
-  options: GetWeekDayNameOptions = {},
-): string {
-  const { short = false, fallback = '', casing } = options;
-  if (!value) return fallback;
+export function getWeekDayName(value?: DateInput, options: GetWeekDayNameOptions = {}): string {
+  const { short = false, fallback = '', casing, timeZone } = options;
+  const parsed = parseDate(value, { timeZone });
+  if (!parsed) return fallback;
 
-  const date = dayjs(value).locale('pt-br');
-  if (!date.isValid()) return fallback;
+  const date = parsed.locale('pt-br');
 
   const name = date.format(short ? 'ddd' : 'dddd');
   return applyCasing(capitalize(name), casing);
