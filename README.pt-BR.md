@@ -93,6 +93,15 @@ Todas as funções são exportadas de forma plana a partir da raiz do pacote, ag
 - `joinByKey(values, key, dividerOrOptions?)` — junta uma propriedade de cada objeto, ignorando valores vazios; 3º arg é string (divider) ou `{ divider?, sort?, unique? }`, onde `sort` (`true | "asc" | "desc"`) ordena por `key` antes e `unique` remove duplicados
 - `maskSecret(value?, { visibleStart = 5, visibleEnd = 5, mask = '••••••' })` — mascara parcialmente um segredo, mantendo as pontas visíveis, ex.: `$2y$1••••••lMnOp` (valores curtos → só a máscara; `visibleStart`/`visibleEnd` são limitados a ≥ 0, então `0` esconde aquele lado por completo)
 - `slugify(value?)` — slug URL-safe (sem acento, minúsculo, hifenizado), ex.: `"São Paulo"` → `sao-paulo`
+- `pluralize(count?, singular, plural | { plural?, showCount?, formatCount? })` — `0` → `"0 tarefas"`, `1` → `"1 tarefa"`; plural irregular pelo 3º arg (`"mês"`, `"meses"`); contagem ausente vale `0`
+- `formatNumber(value?, { decimals?, minDecimals?, locale = 'pt-BR', fallback? })` — número com separadores do locale, ex.: `1234.5` → `1.234,5`
+- `normalizeText(value?, { casing?, collapseWhitespace?, trim?, removeAccents? })` — texto para busca/comparação: `"  São   Paulo "` → `"sao paulo"`
+- `formatList(items?, { limit?, conjunction = 'e', moreLabel?, fallback? })` — `"Ana, Bia e Caio"`; com `limit: 3` → `"a, b, c e mais 2"`
+- `formatMilliseconds(ms?, { decimals = 1, showMinutes?, locale = 'pt-BR', fallback? })` — `2345` → `2,3s`; `showMinutes` → `1m 2,3s`
+- `formatMailbox({ name?, address? }, { fallback? })` — `"Ana <ana@x.com>"` (só um lado quando o outro falta ou é igual)
+- `buildMapsUrl(address?, { fallback? })` — link de busca do Google Maps para um endereço
+- `sanitizeFileName(value?, { maxLength = 255, fallback?, removeAccents?, replacement = '-' })` — nome de arquivo seguro em qualquer SO (caracteres proibidos/de controle, pontos finais, nomes reservados como `CON`)
+- `sanitizeNumeric(value?, { allowDecimal?, allowNegative? })` — mantém dígitos (mais o 1º `.`/`,` e um `-` inicial quando permitidos) para inputs numéricos; `"1.2,3"` → `"1.23"`
 - `sanitizeSpreadsheetCell(value?)` — protege contra injeção de fórmula em CSV/Excel: prefixa `'` quando o valor começa com `= + - @` (também depois de espaços, ou tab/CR); número negativo puro (`-5`) fica como está
 - `buildWhatsAppUrl(phone?, message?, { countryCode = '55', fallback? })` — link `wa.me`, ex.: `https://wa.me/5511987654321?text=...`; DDI já presente no número não é repetido; `countryCode: null` omite
 - `buildPhoneUrl(phone?, { countryCode = '55', fallback? })` — link `tel:`, ex.: `tel:+5511987654321` (`countryCode: null` → `tel:11987654321`; `0800` nunca recebe DDI)
@@ -153,6 +162,11 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `isValidJson(value?)` — `true` se a string é um JSON válido
 - `isValidBarcode(value, { lengths? })` — `true` para dígito verificador EAN/GTIN válido; `lengths` restringe os tamanhos aceitos
 - `isValidUrl(value)` — `true` para URL `http`/`https` válida
+- `isSafeUrl(value?, { protocols?, allowRelative = true })` — `true` quando a URL é segura para um `href`: `http:`, `https:`, `mailto:`, `tel:` ou relativa; rejeita `javascript:`/`data:`, inclusive ofuscados como `java\tscript:`
+- `isPositive(value?)` — `true` para número finito > 0
+- `includesText(text?, search?)` — "contém" sem acento e sem caixa (`"sao"` acha `"São Paulo"`); busca vazia → `true`
+- `isSameText(a?, b?, { ignoreAccents?, ignoreCase?, collapseWhitespace? })` — comparação frouxa para diálogos "digite para confirmar"; lado vazio nunca casa
+- `hasRole(current, allowed?)` — checagem de papel no servidor ou cliente: sem usuário → `false`, sem `allowed` → `true`, `allowed: []` → `false`
 - `isDateString(value?)` — `true` para o formato `YYYY-MM-DD` (só o formato: `2024-02-30` passa)
 - `isValidDateString(value?)` — `YYYY-MM-DD` **e** data real do calendário (type guard)
 - `isDateTimeString(value?)` — `true` para data-hora (separador `T` ou espaço, `HH:mm[:ss[.fff]]`, `Z`/offset opcional); texto sobrando e data impossível → `false`
@@ -185,6 +199,8 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `formatInteger(...)` — nome legado do `roundInteger` (sai na 2.0)
 - `toPositive(value?)` — limita a um valor não negativo
 - `getRandomInt(min = 1, max = 100)` — inteiro aleatório no intervalo (inclusivo)
+- `percentOf(part?, total?, { fallback = 0 })` — `part / total * 100` sem `NaN`/`Infinity`; total ≤ 0 → `fallback`
+- `fitWithin(width, height, maxEdge)` — reduz um tamanho para a maior borda caber, mantendo a proporção (nunca amplia), ex.: `(4000, 3000, 1000)` → `{ width: 1000, height: 750 }`
 - `safeDivide(value1?, value2?, { allowNegativeDivisor?, fallback? })` — divide; `fallback` (0) quando o divisor é ≤ 0 ou ausente, ou o numerador é ausente/não finito
 - `toCents(value?)` — valor → centavos inteiros, ex.: `19.9` → `1990`, `1.005` → `101` (inverso de `formatCurrency`)
 - `parseCurrencyToCents(value?)` — string de moeda → centavos inteiros, detectando o separador decimal, ex.: `"R$ 1.234,56"` → `123456`, `"1.5"` → `150`, `"1.500"` → `150000`
@@ -202,6 +218,7 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `isEqualIgnoringKeys(a, b, keys)` — comparação estrutural ignorando `keys` em qualquer profundidade (ordem de chave irrelevante, ordem de array significativa)
 - `swapAtIndex(list, index, offset)` — troca dois itens de forma imutável; fora dos limites devolve a mesma referência
 - `updateAtIndex(list, index, updater)` — cópia da lista com só o item de `index` substituído
+- `getFirstFieldError(errors)` — primeiro erro aninhado com `message` numa árvore de erros estilo react-hook-form, como `{ name: 'items.0.price', message }` (pronto p/ `setFocus`)
 
 ### parse (conversão)
 
@@ -220,10 +237,11 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `diffLines(before?, after?)` — diff linha a linha (maior subsequência comum) devolvendo `{ beforeLines, afterLines }`, com cada linha marcada em `changed`
 - `stripInlineMarkup(value?, { boldMarker?, italicMarker? })` — texto puro sem os marcadores `*`/`_`, pronto p/ `truncate`, meta tags ou e-mail
 
-Os demais são transforms dependency-free no formato `(value, originalValue) => string` (igual ao `yup.transform`); embrulham as funções base.
+Os demais são transforms dependency-free no formato `(value, originalValue) => …` (igual ao `yup.transform`); embrulham as funções base.
 
 - `onlyNumbersTransform(_value, originalValue)` — embrulha `onlyNumbers`, ex.: `yup.string().transform(onlyNumbersTransform)`
 - `onlyAlphanumericTransform(_value, originalValue)` — embrulha `onlyAlphanumeric`, ex.: `yup.string().transform(onlyAlphanumericTransform)`
+- `currencyTransform(_value, originalValue, { divisor = 100 })` — para inputs em centavos: `"R$ 1.234,56"` → `1234.56`, número `1990` → `19.9`; vazio → `null` (funciona com `.nullable()`/`.required()`); mantém o sinal de menos. Retorna `number | null`.
 
 ### generate (geradores p/ testes/seeds)
 

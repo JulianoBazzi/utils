@@ -95,6 +95,15 @@ All functions are exported flat from the package root, grouped internally by pur
 - `joinByKey(values, key, dividerOrOptions?)` — joins one property from each object, skipping empty values; 3rd arg is a divider string or `{ divider?, sort?, unique? }`, where `sort` (`true | "asc" | "desc"`) orders by `key` first and `unique` drops duplicates
 - `maskSecret(value?, { visibleStart = 5, visibleEnd = 5, mask = '••••••' })` — partially masks a secret, keeping the ends visible, e.g. `$2y$1••••••lMnOp` (short values → mask only; `visibleStart`/`visibleEnd` are clamped to ≥ 0, so `0` hides that side entirely)
 - `slugify(value?)` — URL-safe slug (accent-free, lowercase, hyphenated), e.g. `"São Paulo"` → `sao-paulo`
+- `pluralize(count?, singular, plural | { plural?, showCount?, formatCount? })` — `0` → `"0 tarefas"`, `1` → `"1 tarefa"`; irregular plurals via the 3rd arg (`"mês"`, `"meses"`); a missing count reads as `0`
+- `formatNumber(value?, { decimals?, minDecimals?, locale = 'pt-BR', fallback? })` — locale number, e.g. `1234.5` → `1.234,5`
+- `normalizeText(value?, { casing?, collapseWhitespace?, trim?, removeAccents? })` — text for search/comparison: `"  São   Paulo "` → `"sao paulo"`
+- `formatList(items?, { limit?, conjunction = 'e', moreLabel?, fallback? })` — `"Ana, Bia e Caio"`; with `limit: 3` → `"a, b, c e mais 2"`
+- `formatMilliseconds(ms?, { decimals = 1, showMinutes?, locale = 'pt-BR', fallback? })` — `2345` → `2,3s`; `showMinutes` → `1m 2,3s`
+- `formatMailbox({ name?, address? }, { fallback? })` — `"Ana <ana@x.com>"` (one side when the other is missing or equal)
+- `buildMapsUrl(address?, { fallback? })` — Google Maps search link for an address
+- `sanitizeFileName(value?, { maxLength = 255, fallback?, removeAccents?, replacement = '-' })` — safe file name on every OS (forbidden/control chars, trailing dots, reserved names such as `CON`)
+- `sanitizeNumeric(value?, { allowDecimal?, allowNegative? })` — keeps digits (plus the first `.`/`,` and a leading `-` when allowed) for numeric inputs; `"1.2,3"` → `"1.23"`
 - `sanitizeSpreadsheetCell(value?)` — guards CSV/Excel formula injection: prefixes `'` when the value starts with `= + - @` (also after leading spaces, or tab/CR); plain negative numbers (`-5`) are kept
 - `buildWhatsAppUrl(phone?, message?, { countryCode = '55', fallback? })` — `wa.me` link, e.g. `https://wa.me/5511987654321?text=...`; a country code already in the number is not repeated; `countryCode: null` omits it
 - `buildPhoneUrl(phone?, { countryCode = '55', fallback? })` — `tel:` link, e.g. `tel:+5511987654321` (`countryCode: null` → `tel:11987654321`; `0800` numbers never get a country code)
@@ -155,6 +164,11 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 - `isValidJson(value?)` — `true` if the string is valid JSON
 - `isValidBarcode(value, { lengths? })` — `true` for a valid EAN/GTIN check digit; `lengths` restricts the accepted sizes
 - `isValidUrl(value)` — `true` for a valid `http`/`https` URL
+- `isSafeUrl(value?, { protocols?, allowRelative = true })` — `true` when the URL is safe for an `href`: `http:`, `https:`, `mailto:`, `tel:` or relative; rejects `javascript:`/`data:`, including obfuscated forms like `java\tscript:`
+- `isPositive(value?)` — `true` for a finite number > 0
+- `includesText(text?, search?)` — accent/case-insensitive contains (`"sao"` finds `"São Paulo"`); empty search → `true`
+- `isSameText(a?, b?, { ignoreAccents?, ignoreCase?, collapseWhitespace? })` — loose comparison for "type to confirm" dialogs; an empty side never matches
+- `hasRole(current, allowed?)` — role check for server or client: missing user → `false`, `allowed` omitted → `true`, `allowed: []` → `false`
 - `isDateString(value?)` — `true` for the `YYYY-MM-DD` shape (format only: `2024-02-30` passes)
 - `isValidDateString(value?)` — `YYYY-MM-DD` **and** a real calendar date (type guard)
 - `isDateTimeString(value?)` — `true` for a date-time (`T` or space separator, `HH:mm[:ss[.fff]]`, optional `Z`/offset); trailing text and impossible dates → `false`
@@ -187,6 +201,8 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 - `formatInteger(...)` — legacy name of `roundInteger` (removed in 2.0)
 - `toPositive(value?)` — clamps to a non-negative value
 - `getRandomInt(min = 1, max = 100)` — random integer in range (inclusive)
+- `percentOf(part?, total?, { fallback = 0 })` — `part / total * 100` without `NaN`/`Infinity`; total ≤ 0 → `fallback`
+- `fitWithin(width, height, maxEdge)` — scales a size down so the longer edge fits, keeping the ratio (never upscales), e.g. `(4000, 3000, 1000)` → `{ width: 1000, height: 750 }`
 - `safeDivide(value1?, value2?, { allowNegativeDivisor?, fallback? })` — divides; returns `fallback` (0) when the divisor is ≤ 0 or missing, or the numerator is missing/non-finite
 - `toCents(value?)` — amount → integer cents, e.g. `19.9` → `1990`, `1.005` → `101` (inverse of `formatCurrency`)
 - `parseCurrencyToCents(value?)` — currency string → integer cents, detecting the decimal separator, e.g. `"R$ 1.234,56"` → `123456`, `"1.5"` → `150`, `"1.500"` → `150000`
@@ -204,6 +220,7 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 - `isEqualIgnoringKeys(a, b, keys)` — structural comparison ignoring `keys` at any depth (key order irrelevant, array order significant)
 - `swapAtIndex(list, index, offset)` — swaps two items immutably; out of bounds returns the same reference
 - `updateAtIndex(list, index, updater)` — copy of `list` with only the item at `index` replaced
+- `getFirstFieldError(errors)` — first nested error with a `message` in a react-hook-form-style error tree, as `{ name: 'items.0.price', message }` (ready for `setFocus`)
 
 ### parse
 
@@ -222,10 +239,11 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 - `diffLines(before?, after?)` — line diff (longest common subsequence) returning `{ beforeLines, afterLines }`, each line flagged `changed`
 - `stripInlineMarkup(value?, { boldMarker?, italicMarker? })` — plain text without the `*`/`_` markers, ready for `truncate`, meta tags or e-mail
 
-The rest are dependency-free transforms with the `(value, originalValue) => string` shape (matches `yup.transform`); they wrap the base helpers.
+The rest are dependency-free transforms with the `(value, originalValue) => …` shape (matches `yup.transform`); they wrap the base helpers.
 
 - `onlyNumbersTransform(_value, originalValue)` — wraps `onlyNumbers`, e.g. `yup.string().transform(onlyNumbersTransform)`
 - `onlyAlphanumericTransform(_value, originalValue)` — wraps `onlyAlphanumeric`, e.g. `yup.string().transform(onlyAlphanumericTransform)`
+- `currencyTransform(_value, originalValue, { divisor = 100 })` — for cents inputs: `"R$ 1.234,56"` → `1234.56`, number `1990` → `19.9`; empty → `null` (works with `.nullable()`/`.required()`); keeps a leading minus. Returns `number | null`.
 
 ### generate (test/seed helpers)
 

@@ -1,3 +1,4 @@
+export * from './currencyTransform.js';
 export * from './diffLines.js';
 export * from './onlyAlphanumericTransform.js';
 export * from './onlyNumbersTransform.js';

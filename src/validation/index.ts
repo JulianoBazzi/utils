@@ -1,4 +1,6 @@
 export * from './contains.js';
+export * from './hasRole.js';
+export * from './includesText.js';
 export * from './isBirthday.js';
 export * from './isDateString.js';
 export * from './isDateTimeString.js';
@@ -8,6 +10,9 @@ export * from './isMonday.js';
 export * from './isMonthString.js';
 export * from './isOdd.js';
 export * from './isPastOrToday.js';
+export * from './isPositive.js';
+export * from './isSafeUrl.js';
+export * from './isSameText.js';
 export * from './isSaturday.js';
 export * from './isSunday.js';
 export * from './isThursday.js';
