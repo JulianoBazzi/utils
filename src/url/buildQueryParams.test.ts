@@ -42,3 +42,19 @@ describe('buildQueryParams', () => {
     expect(buildQueryParams()).toBe('');
   });
 });
+
+describe('buildQueryParams — 1.3 additions', () => {
+  it('skips empty strings with skipEmpty', () => {
+    expect(buildQueryParams({ search: '', page: 1 }, { skipEmpty: true })).toBe('?page=1');
+    expect(buildQueryParams({ search: '' })).toBe('?search=');
+    expect(buildQueryParams({ ids: ['', 1] }, { skipEmpty: true })).toBe('?ids=1');
+  });
+
+  it('writes dates as ISO and objects as JSON', () => {
+    expect(buildQueryParams({ d: new Date('2026-01-02T03:04:05Z') })).toBe(
+      '?d=2026-01-02T03%3A04%3A05.000Z',
+    );
+    expect(buildQueryParams({ d: new Date('x') })).toBe('');
+    expect(buildQueryParams({ f: { a: 1 } }, { prefix: false })).toBe('f=%7B%22a%22%3A1%7D');
+  });
+});

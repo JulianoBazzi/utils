@@ -3,7 +3,7 @@ import { checkDigit } from '../validation/internal/checkDigit.js';
 import { isRepeated } from '../validation/internal/digits.js';
 import { randomDigits } from './internal/randomDigits.js';
 
-interface GeneratePISOptions {
+export interface GeneratePISOptions {
   /** Return the PIS masked as `000.00000.00-0`. Defaults to `false`. */
   formatted?: boolean;
 }

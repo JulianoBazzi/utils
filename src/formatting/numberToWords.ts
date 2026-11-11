@@ -72,7 +72,7 @@ function groupToWords(value: number): string {
   return parts.join(' e ');
 }
 
-interface NumberToWordsOptions {
+export interface NumberToWordsOptions {
   /** Returned for missing/invalid input. Defaults to `""`. */
   fallback?: string;
 }

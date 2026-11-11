@@ -3,7 +3,7 @@ import { getRandomInt } from '../number/getRandomInt.js';
 import { isRepeated } from '../validation/internal/digits.js';
 import { randomDigits } from './internal/randomDigits.js';
 
-interface GeneratePhoneOptions {
+export interface GeneratePhoneOptions {
   /** Generate a mobile number (11 digits). Defaults to `true`; `false` → landline (10 digits). */
   mobile?: boolean;
   /** Return the phone masked, e.g. `(11) 98765-4321`. Defaults to `false`. */

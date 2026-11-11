@@ -102,7 +102,8 @@ All functions are exported flat from the package root, grouped internally by pur
 - `buildInstagramUrl(username?, { fallback? })` — `https://instagram.com/<handle>` (strips a leading `@`; handle is URL-encoded)
 - `buildFacebookUrl(username?, { fallback? })` — `https://facebook.com/<handle>` (strips a leading `@`; handle is URL-encoded)
 - `buildLinkedInUrl(handle?, { type = 'profile', fallback? })` — `https://linkedin.com/in/...` or `/company/...` (via `type`; handle is URL-encoded)
-- `formatEnvironment(value?)` — normalizes a `NODE_ENV` string to `production | homologation | development | test` (unknown → `production`)
+- `normalizeEnvironment(value?)` — normalizes a `NODE_ENV` string to `production | homologation | development | test` (unknown → `production`)
+- `formatEnvironment(...)` — legacy name of `normalizeEnvironment` (removed in 2.0)
 
 All `build*Url` helpers return `string | F`: pass `{ fallback: undefined }` to get `undefined` for a missing value (ready for an `href`).
 
@@ -131,7 +132,7 @@ formatDate("2024-01-02", { timeZone: "Asia/Tokyo" }); // "02/01/24" (naive: not 
 
 ### url
 
-- `buildQueryParams(params?, { ignore?, prefix? })` — serializes an object into a query string; skips `null`/`undefined`, expands arrays into repeated keys, returns `""` when empty, e.g. `{ id: [1, 2] }` → `?id=1&id=2`
+- `buildQueryParams(params?, { ignore?, prefix?, skipEmpty? })` — serializes an object into a query string; skips `null`/`undefined` (and `""` with `skipEmpty`), expands arrays into repeated keys, writes `Date` as ISO, returns `""` when empty, e.g. `{ id: [1, 2] }` → `?id=1&id=2`
 - `parseQueryParams(value?)` — the inverse; repeated keys become arrays (which `Object.fromEntries(new URLSearchParams(...))` loses). Accepts the string with or without a leading `?`; prototype keys (`__proto__`, `constructor`, `prototype`) are skipped
 
 ### mask (constants)
@@ -149,10 +150,10 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 
 ### validation
 
-- `contains(value, items)` — `true` if `value` is in `items`
+- `contains(value, items?)` — `true` if `value` is in `items` (readonly arrays and `null` accepted)
 - `isOdd(value)` — `true` for odd numbers (handles negatives)
 - `isValidJson(value?)` — `true` if the string is valid JSON
-- `isValidBarcode(value)` — `true` for a valid EAN/GTIN check digit
+- `isValidBarcode(value, { lengths? })` — `true` for a valid EAN/GTIN check digit; `lengths` restricts the accepted sizes
 - `isValidUrl(value)` — `true` for a valid `http`/`https` URL
 - `isDateString(value?)` — `true` for the `YYYY-MM-DD` shape (format only: `2024-02-30` passes)
 - `isValidDateString(value?)` — `YYYY-MM-DD` **and** a real calendar date (type guard)
@@ -171,7 +172,7 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 - `isValidDocument(value?)` — validates as CPF or CNPJ based on length
 - `isValidPostalCode(value?)` — `true` for an 8-digit CEP
 - `isValidEmail(value?)` — `true` for a valid email (TLDs of 2–63 letters)
-- `isValidUF(value?)` — `true` for a valid BR state abbreviation (case-insensitive)
+- `isValidUF(value?)` — `true` for a valid BR state abbreviation (case-insensitive); the `UF` union type is exported
 - `isValidPlate(value?)` — `true` for a BR license plate (legacy `AAA9999` or Mercosul `AAA9A99`)
 - `isValidPIS(value?)` — `true` for a PIS/PASEP with a valid check digit
 - `isValidRenavam(value?)` — `true` for a valid RENAVAM (11 digits or legacy 9–10)
@@ -196,7 +197,7 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 - `omitFields(obj, keys)` — shallow copy without `keys`
 - `getOptionId(option?)` — extracts the `id` from an option/entity
 - `getListIds(list?)` — maps a list of entities to their `id`s
-- `findOptionById(options?, value?)` — finds the option whose id matches `value` (string compare), or `null`
+- `findOptionById(options?, value?)` — finds the option whose id matches `value` (string compare; numeric ids and `0` accepted), or `null`
 - `findOptionsByIds(options?, value?)` — maps each id in `value` to its option, dropping non-matches
 - `getLabelById(options?, value?, { key = "name", fallback = "" })` — option's field as a string by id, or `fallback` (positional `key, fallback` still accepted)
 - `maskFields(value, fields, { mask? })` — deep-clones a value, masking the string fields listed at any depth (defaults to `maskSecret`)
@@ -206,9 +207,9 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 
 ### parse
 
-- `parseIds(...ids)` — comma-separated id strings → `number[]` (trimmed; empty and non-integer entries dropped, so `"1,,2"` → `[1, 2]`)
+- `parseIds(values[], { positive?, unique? })` / `parseIds(...ids)` — comma-separated id strings → `number[]` (trimmed; empty and non-integer entries dropped, so `"1,,2"` → `[1, 2]`); the array form drops `0`/negatives with `positive` and repeats with `unique`
 - `resolveIdsToObjects(ids?, resolver, params?)` — resolves an id list into objects via an async resolver (in parallel)
-- `resolveList(value?, resolver, params?)` — `parseIds` + `resolveIdsToObjects`; accepts a string or string array
+- `resolveList(value?, resolver, params?, { skipErrors? })` — `parseIds` + `resolveIdsToObjects`; accepts a string or string array; `skipErrors` drops ids whose resolver rejects
 - `resolveId(value?, resolver, params?)` — resolves the first valid id into an object, or `null`
 - `parseJson<T>(value?)` — `JSON.parse` returning `undefined` instead of throwing (a parsed `"null"` stays `null`)
 - `toArray(value?)` — wraps a single value in an array or copies an array, dropping `null`/`undefined` (`toArray(undefined)` → `[]`, unlike lodash `castArray`)
@@ -248,11 +249,12 @@ Every generator produces random values that pass the matching validator. They ar
 ### browser (DOM only)
 
 - `loadImageFromBlob(blob)` — `Promise<HTMLImageElement>`
-- `getImageDimensions(file)` — `Promise<{ width, height, extension }>`
+- `readFileAsDataURL(file)` — `Promise<string>` with the `data:` URL of a `File`/`Blob`
+- `getImageDimensions(file)` — `Promise<{ width, height, extension }>` (extension from the name, else the MIME type, else `jpeg`)
 - `isPhotoLandscape(fileOrUrl)` — `Promise<boolean>` (width > height)
 - `isNotificationsSupported()` — checks web push support (`false` during SSR)
-- `openInNewTab(url?, { target?, features? })` — `window.open` with `noopener,noreferrer` always applied (`null` during SSR or when blocked)
-- `downloadBlob(blob, fileName)` — triggers a file download and revokes the object URL
+- `openInNewTab(url?, { target?, features? })` — `window.open` with `noopener,noreferrer` always applied; returns `null` during SSR and, because of `noopener`, usually even when the tab opened
+- `downloadBlob(blob, fileName)` — triggers a file download and revokes the object URL a second later (safe in Safari)
 - `downloadJson(data, fileName, { space? })` — serializes to JSON and downloads it (indented by default)
 
 ## Scripts

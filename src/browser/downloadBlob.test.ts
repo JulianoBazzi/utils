@@ -46,9 +46,16 @@ describe('downloadBlob', () => {
     expect(document.body.contains(clicked as HTMLAnchorElement)).toBe(false);
   });
 
-  it('revokes the object URL', () => {
-    downloadBlob(new Blob(['a']), 'a.txt');
+  it('revokes the object URL a second later, not right after the click', () => {
+    vi.useFakeTimers();
+    try {
+      downloadBlob(new Blob(['a']), 'a.txt');
+      expect(revokeObjectURL).not.toHaveBeenCalled();
 
-    expect(revokeObjectURL).toHaveBeenCalledWith('blob:mock-url');
+      vi.advanceTimersByTime(1000);
+      expect(revokeObjectURL).toHaveBeenCalledWith('blob:mock-url');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

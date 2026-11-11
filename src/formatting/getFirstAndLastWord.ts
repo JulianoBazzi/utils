@@ -1,6 +1,6 @@
 import { applyCasing, type LetterCasing } from './applyCasing.js';
 
-interface GetFirstAndLastWordOptions {
+export interface GetFirstAndLastWordOptions {
   /** Returned when the input is empty/blank/missing. Defaults to `""`. */
   fallback?: string;
   /** Letter casing applied to the result. Defaults to no transformation. */

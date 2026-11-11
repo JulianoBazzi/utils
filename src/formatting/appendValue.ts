@@ -1,6 +1,6 @@
 import { applyCasing, type LetterCasing } from './applyCasing.js';
 
-interface AppendValueOptions {
+export interface AppendValueOptions {
   /** Joins the two values when both are present. Defaults to `"; "`. */
   separator?: string;
   /** Returned when both values are empty/missing. Defaults to `""`. */

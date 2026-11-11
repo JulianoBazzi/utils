@@ -20,3 +20,10 @@ describe('isValidBarcode', () => {
     expect(isValidBarcode()).toBe(false);
   });
 });
+
+describe('isValidBarcode — 1.3 additions', () => {
+  it('restricts the accepted lengths', () => {
+    expect(isValidBarcode('4006381333931', { lengths: [8, 13] })).toBe(true);
+    expect(isValidBarcode('4006381333931', { lengths: [8] })).toBe(false);
+  });
+});

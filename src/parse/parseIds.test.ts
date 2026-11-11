@@ -29,3 +29,17 @@ describe('parseIds', () => {
     expect(parseIds()).toEqual([]);
   });
 });
+
+describe('parseIds — 1.3 additions', () => {
+  it('accepts an array of strings', () => {
+    expect(parseIds(['1,2', '3', null, undefined])).toEqual([1, 2, 3]);
+  });
+
+  it('keeps only positive ids with positive', () => {
+    expect(parseIds(['1,0,-2,3'], { positive: true })).toEqual([1, 3]);
+  });
+
+  it('drops repeats with unique', () => {
+    expect(parseIds(['1,2', '2,1'], { unique: true })).toEqual([1, 2]);
+  });
+});

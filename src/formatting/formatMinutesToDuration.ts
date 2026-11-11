@@ -1,5 +1,8 @@
 import { type BuildDurationOptions, buildDuration } from './internal/buildDuration.js';
 
+/** Options shared by the duration formatters. */
+export type DurationOptions = BuildDurationOptions;
+
 /**
  * Format a number of minutes as a human-readable duration.
  * Sub-minute values render as seconds, zero as `"0s"`, and negatives keep

@@ -1,6 +1,6 @@
 import { onlyAlphanumeric } from './onlyAlphanumeric.js';
 
-interface FormatPlateOptions {
+export interface FormatPlateOptions {
   /** Returned when the input is empty/missing. Defaults to `""`. */
   fallback?: string;
 }

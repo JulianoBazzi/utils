@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatEnvironment } from './formatEnvironment.js';
+import { normalizeEnvironment } from './normalizeEnvironment.js';
 
 describe('formatEnvironment', () => {
   it('returns each known environment', () => {
@@ -21,5 +22,12 @@ describe('formatEnvironment', () => {
     expect(formatEnvironment(null)).toBe('production');
     expect(formatEnvironment(undefined)).toBe('production');
     expect(formatEnvironment()).toBe('production');
+  });
+});
+
+describe('formatEnvironment — 1.3 additions', () => {
+  it('is an alias of normalizeEnvironment', () => {
+    expect(formatEnvironment).toBe(normalizeEnvironment);
+    expect(normalizeEnvironment(' Test ')).toBe('test');
   });
 });

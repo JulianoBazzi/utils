@@ -3,7 +3,7 @@ import { getRandomInt } from '../number/getRandomInt.js';
 import { boletoMod10, boletoMod11 } from '../validation/internal/boletoDigits.js';
 import { randomDigits } from './internal/randomDigits.js';
 
-interface GenerateBoletoOptions {
+export interface GenerateBoletoOptions {
   /** `bank` = bank slip (47 digits, default); `collection` = arrecadação (48 digits). */
   type?: 'bank' | 'collection';
   /** Return the line with its usual separators. Defaults to `false`. */

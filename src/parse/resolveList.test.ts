@@ -23,3 +23,14 @@ describe('resolveList', () => {
     await expect(resolveList(undefined, resolver)).resolves.toEqual([]);
   });
 });
+
+describe('resolveList — 1.3 additions', () => {
+  it('drops rejected ids with skipErrors', async () => {
+    const resolver = (id: number) =>
+      id === 2 ? Promise.reject(new Error('gone')) : Promise.resolve(id * 10);
+    await expect(resolveList('1,2,3', resolver, undefined, { skipErrors: true })).resolves.toEqual([
+      10, 30,
+    ]);
+    await expect(resolveList('1,2,3', resolver)).rejects.toThrow('gone');
+  });
+});

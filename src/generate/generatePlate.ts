@@ -1,7 +1,7 @@
 import { formatPlate } from '../formatting/formatPlate.js';
 import { getRandomInt } from '../number/getRandomInt.js';
 
-interface GeneratePlateOptions {
+export interface GeneratePlateOptions {
   /** Generate a Mercosul plate (`AAA9A99`). Defaults to `true`; `false` → legacy `AAA9999`. */
   mercosul?: boolean;
   /** Return the plate formatted (legacy gets the `AAA-9999` separator). Defaults to `false`. */

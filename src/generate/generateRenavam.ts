@@ -2,7 +2,7 @@ import { isRepeated } from '../validation/internal/digits.js';
 import { renavamCheckDigit } from '../validation/internal/renavamDigit.js';
 import { randomDigits } from './internal/randomDigits.js';
 
-interface GenerateRenavamOptions {
+export interface GenerateRenavamOptions {
   /** Generate the legacy 9-digit format instead of the current 11-digit one. Defaults to `false`. */
   legacy?: boolean;
 }

@@ -1,4 +1,4 @@
-interface MaskSecretOptions {
+export interface MaskSecretOptions {
   /** Number of leading characters to keep visible. Defaults to `5`. */
   visibleStart?: number;
   /** Number of trailing characters to keep visible. Defaults to `5`. */

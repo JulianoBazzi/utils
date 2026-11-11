@@ -5,7 +5,7 @@ import { randomDigits } from './internal/randomDigits.js';
 
 const ALPHANUMERIC = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-interface GenerateCNPJOptions {
+export interface GenerateCNPJOptions {
   /** Return the CNPJ masked as `00.000.000/0000-00`. Defaults to `false`. */
   formatted?: boolean;
   /** Generate the new (2026) alphanumeric format. Defaults to `false`. */

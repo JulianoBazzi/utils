@@ -1,5 +1,6 @@
 /**
- * Trigger a file download for a `Blob`, revoking the object URL afterwards.
+ * Trigger a file download for a `Blob`, revoking the object URL a second later
+ * (revoking right after `click()` can cancel the download in Safari).
  * The building block behind `downloadJson`, and equally suited to CSV, text,
  * PDF or ZIP payloads.
  *
@@ -20,5 +21,5 @@ export function downloadBlob(blob: Blob, fileName: string): void {
   link.click();
   document.body.removeChild(link);
 
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

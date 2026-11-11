@@ -1,4 +1,4 @@
-interface GenerateOTPOptions {
+export interface GenerateOTPOptions {
   /** Number of digits. Defaults to `6`. */
   length?: number;
 }

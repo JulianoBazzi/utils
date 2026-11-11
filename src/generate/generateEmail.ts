@@ -1,6 +1,6 @@
 import { getRandomInt } from '../number/getRandomInt.js';
 
-interface GenerateEmailOptions {
+export interface GenerateEmailOptions {
   /** Domain part. Defaults to `"example.com"`. */
   domain?: string;
   /** Length of the generated local part. Defaults to `12`. */

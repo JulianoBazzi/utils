@@ -1,7 +1,7 @@
 /** Always sent, so the opened page can never reach back through `window.opener`. */
 const SECURITY_FEATURES = 'noopener,noreferrer';
 
-interface OpenInNewTabOptions {
+export interface OpenInNewTabOptions {
   /** Browsing context name. Defaults to `"_blank"`. */
   target?: string;
   /** Extra `window.open` features, appended after the mandatory security ones. */
@@ -14,8 +14,10 @@ interface OpenInNewTabOptions {
  * reference back through `window.opener`. Pairs with the URL builders
  * (`buildWhatsAppUrl`, `buildEmailUrl`), which only assemble the link.
  *
- * Returns whatever `window.open` returns — `null` when a popup blocker steps
- * in. Safe to call during SSR and with an empty URL: both return `null`.
+ * Returns what `window.open` returns. Because `noopener` is always set, modern
+ * browsers return `null` even when the tab opened, so the result cannot tell a
+ * blocked popup from a successful one. Safe to call during SSR and with an
+ * empty URL: both return `null`.
  *
  * @example
  * openInNewTab(buildWhatsAppUrl("11912345678"))

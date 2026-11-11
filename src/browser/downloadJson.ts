@@ -1,6 +1,6 @@
 import { downloadBlob } from './downloadBlob.js';
 
-interface DownloadJsonOptions {
+export interface DownloadJsonOptions {
   /** Indentation passed to `JSON.stringify`. Defaults to `2`; use `0` to minify. */
   space?: number;
 }

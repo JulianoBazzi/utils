@@ -16,3 +16,10 @@ describe('omitFields', () => {
     expect(obj).toEqual({ a: 1, b: 2 });
   });
 });
+
+describe('omitFields — 1.3 additions', () => {
+  it('accepts a readonly key list', () => {
+    const keys = ['b'] as const;
+    expect(omitFields({ a: 1, b: 2 }, keys)).toEqual({ a: 1 });
+  });
+});

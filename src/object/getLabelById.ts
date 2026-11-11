@@ -19,20 +19,20 @@ export interface GetLabelByIdOptions<O> {
  * getLabelById([{ id: 1, code: "X" }], "1", { key: "code" }) // "X"
  */
 export function getLabelById<O extends IdLike>(
-  options: O[] | undefined | null,
-  value?: string | string[] | null,
+  options: readonly O[] | undefined | null,
+  value?: string | number | readonly (string | number)[] | null,
   config?: GetLabelByIdOptions<O>,
 ): string;
 /** Positional form `(options, value, key, fallback)`, kept for compatibility (legacy, removed in 2.0). */
 export function getLabelById<O extends IdLike>(
-  options: O[] | undefined | null,
-  value?: string | string[] | null,
+  options: readonly O[] | undefined | null,
+  value?: string | number | readonly (string | number)[] | null,
   key?: keyof O,
   fallback?: string,
 ): string;
 export function getLabelById<O extends IdLike>(
-  options: O[] | undefined | null,
-  value?: string | string[] | null,
+  options: readonly O[] | undefined | null,
+  value?: string | number | readonly (string | number)[] | null,
   keyOrConfig?: keyof O | GetLabelByIdOptions<O>,
   positionalFallback = '',
 ): string {

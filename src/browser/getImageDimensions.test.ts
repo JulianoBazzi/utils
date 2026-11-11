@@ -46,10 +46,12 @@ describe('getImageDimensions', () => {
     });
   });
 
-  it('falls back to "jpeg" when the file has no extension', async () => {
-    const file = new File(['image-bytes'], '', { type: 'image/jpeg' });
+  it('falls back to the MIME subtype, then "jpeg"', async () => {
+    const blobNamed = new File(['image-bytes'], 'blob', { type: 'image/png' });
+    await expect(getImageDimensions(blobNamed)).resolves.toMatchObject({ extension: 'png' });
 
-    await expect(getImageDimensions(file)).resolves.toMatchObject({ extension: 'jpeg' });
+    const untyped = new File(['image-bytes'], '', { type: '' });
+    await expect(getImageDimensions(untyped)).resolves.toMatchObject({ extension: 'jpeg' });
   });
 
   it('rejects when the image fails to load', async () => {
@@ -61,13 +63,13 @@ describe('getImageDimensions', () => {
     );
   });
 
-  it('rejects when the reader loads without a target', async () => {
+  it('rejects when the file cannot be read', async () => {
     class FakeFileReader {
-      onload: ((event: { target: null }) => void) | null = null;
+      onload: (() => void) | null = null;
       onerror: (() => void) | null = null;
 
       readAsDataURL(_file: File) {
-        queueMicrotask(() => this.onload?.({ target: null }));
+        queueMicrotask(() => this.onerror?.());
       }
     }
     vi.stubGlobal('FileReader', FakeFileReader);

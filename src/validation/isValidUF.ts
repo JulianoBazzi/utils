@@ -1,5 +1,8 @@
 import { UFS } from './internal/ufs.js';
 
+/** One of the 27 Brazilian federative units (`"AC"` … `"TO"`). */
+export type { UF } from './internal/ufs.js';
+
 const VALID = new Set<string>(UFS);
 
 /**

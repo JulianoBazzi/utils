@@ -1,7 +1,7 @@
 import { formatPostalCode } from '../formatting/formatPostalCode.js';
 import { randomDigits } from './internal/randomDigits.js';
 
-interface GeneratePostalCodeOptions {
+export interface GeneratePostalCodeOptions {
   /** Return the CEP masked as `00000-000`. Defaults to `false`. */
   formatted?: boolean;
 }

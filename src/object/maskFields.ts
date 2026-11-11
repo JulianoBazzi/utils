@@ -1,6 +1,6 @@
 import { maskSecret } from '../formatting/maskSecret.js';
 
-interface MaskFieldsOptions {
+export interface MaskFieldsOptions {
   /** Replaces the value of every matched field. Defaults to `maskSecret`. */
   mask?: (value: string) => string;
 }

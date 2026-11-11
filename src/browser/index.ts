@@ -5,3 +5,4 @@ export * from './isNotificationsSupported.js';
 export * from './isPhotoLandscape.js';
 export * from './loadImageFromBlob.js';
 export * from './openInNewTab.js';
+export * from './readFileAsDataURL.js';

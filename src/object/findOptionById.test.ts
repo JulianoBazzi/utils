@@ -25,3 +25,21 @@ describe('findOptionById', () => {
     expect(findOptionById(undefined, '1')).toBeNull();
   });
 });
+
+describe('findOptionById — 1.3 additions', () => {
+  const options = [
+    { id: 0, name: 'Zero' },
+    { id: 1, name: 'One' },
+  ] as const;
+
+  it('accepts numeric ids, including 0', () => {
+    expect(findOptionById(options, 0)).toEqual({ id: 0, name: 'Zero' });
+    expect(findOptionById(options, '0')).toEqual({ id: 0, name: 'Zero' });
+    expect(findOptionById(options, [1, 0])).toEqual({ id: 1, name: 'One' });
+  });
+
+  it('returns null for an empty id', () => {
+    expect(findOptionById(options, '')).toBeNull();
+    expect(findOptionById(options, [])).toBeNull();
+  });
+});

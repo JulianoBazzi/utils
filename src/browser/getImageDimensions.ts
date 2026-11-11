@@ -1,41 +1,36 @@
-interface ImageDimensions {
+import { getFileExtension } from '../parse/getFileExtension.js';
+import { readFileAsDataURL } from './readFileAsDataURL.js';
+
+export interface ImageDimensions {
   width: number;
   height: number;
+  /** From the file name, else the MIME type (`image/png` → `png`), else `"jpeg"`. */
   extension: string;
 }
 
 /**
- * Read an image `File`'s pixel dimensions and extension.
- * Browser-only — relies on `FileReader` and the DOM `Image` API.
+ * Read the pixel dimensions of an image file, plus its extension. The
+ * extension comes from the file name, falling back to the MIME subtype and
+ * then `"jpeg"`, so a `Blob` named `"blob"` never reports `"blob"`.
+ *
+ * Browser-only — relies on `FileReader` and `Image`.
  *
  * @example
  * const { width, height, extension } = await getImageDimensions(file);
  */
-export function getImageDimensions(file: File): Promise<ImageDimensions> {
-  return new Promise((resolve, reject) => {
-    const fail = () => reject(new Error('Falha ao obter as dimensões da imagem.'));
-    const reader = new FileReader();
-
-    reader.onerror = fail;
-    reader.onload = (e) => {
-      if (!e.target) {
-        fail();
-        return;
-      }
-
-      const img = new Image();
-      img.onload = () => {
-        const extension = file.name.split('.').pop();
-        resolve({
-          width: img.width,
-          height: img.height,
-          extension: extension || 'jpeg',
-        });
-      };
-      img.onerror = fail;
-      img.src = e.target.result as string;
-    };
-
-    reader.readAsDataURL(file);
+export async function getImageDimensions(file: File): Promise<ImageDimensions> {
+  const fail = () => new Error('Falha ao obter as dimensões da imagem.');
+  const src = await readFileAsDataURL(file).catch(() => {
+    throw fail();
   });
+
+  const { width, height } = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(fail());
+    img.src = src;
+  });
+
+  const extension = getFileExtension(file.name) || file.type.split('/')[1] || 'jpeg';
+  return { width, height, extension };
 }

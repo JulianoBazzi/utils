@@ -1,7 +1,7 @@
 import { eanCheckDigit } from '../validation/internal/eanCheckDigit.js';
 import { randomDigits } from './internal/randomDigits.js';
 
-interface GenerateBarcodeOptions {
+export interface GenerateBarcodeOptions {
   /** Barcode length: EAN-8, GTIN-12, EAN-13 (default) or GTIN-14. */
   length?: 8 | 12 | 13 | 14;
 }

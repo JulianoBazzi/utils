@@ -83,3 +83,11 @@ describe('joinByKey', () => {
     expect(values).toEqual([{ id: 2 }, { id: 1 }]);
   });
 });
+
+describe('joinByKey — 1.3 additions', () => {
+  it('accepts readonly arrays and null', () => {
+    const values = [{ name: 'a' }, { name: 'b' }] as const;
+    expect(joinByKey(values, 'name')).toBe('a | b');
+    expect(joinByKey<{ name: string }, 'name'>(null, 'name')).toBe('');
+  });
+});

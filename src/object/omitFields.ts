@@ -4,7 +4,10 @@
  * @example
  * omitFields({ a: 1, b: 2, c: 3 }, ["b"]) // { a: 1, c: 3 }
  */
-export function omitFields<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+export function omitFields<T extends object, K extends keyof T>(
+  obj: T,
+  keys: readonly K[],
+): Omit<T, K> {
   const exclude = new Set<keyof T>(keys);
   const result = {} as Record<keyof T, unknown>;
 

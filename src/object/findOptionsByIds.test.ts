@@ -27,3 +27,10 @@ describe('findOptionsByIds', () => {
     expect(findOptionsByIds(options, [])).toEqual([]);
   });
 });
+
+describe('findOptionsByIds — 1.3 additions', () => {
+  it('accepts numeric ids', () => {
+    expect(findOptionsByIds([{ id: 0 }, { id: 2 }], [0, 2, 3])).toEqual([{ id: 0 }, { id: 2 }]);
+    expect(findOptionsByIds([{ id: 0 }], 0)).toEqual([{ id: 0 }]);
+  });
+});

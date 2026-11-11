@@ -3,7 +3,7 @@ import { checkDigit } from '../validation/internal/checkDigit.js';
 import { isRepeated } from '../validation/internal/digits.js';
 import { randomDigits } from './internal/randomDigits.js';
 
-interface GenerateCPFOptions {
+export interface GenerateCPFOptions {
   /** Return the CPF masked as `000.000.000-00`. Defaults to `false`. */
   formatted?: boolean;
 }

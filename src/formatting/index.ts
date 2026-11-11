@@ -45,6 +45,7 @@ export * from './getMonthName.js';
 export * from './getWeekDayName.js';
 export * from './joinByKey.js';
 export * from './maskSecret.js';
+export * from './normalizeEnvironment.js';
 export * from './numberToWords.js';
 export * from './onlyAlphanumeric.js';
 export * from './onlyNumbers.js';

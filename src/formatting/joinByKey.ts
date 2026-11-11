@@ -27,7 +27,7 @@ export interface JoinByKeyOptions {
  * joinByKey([{ name: "a" }, { name: "a" }], "name", { unique: true }) // "a"
  */
 export function joinByKey<T, K extends keyof T>(
-  values: T[],
+  values: readonly T[] | null | undefined,
   key: K,
   dividerOrOptions: string | JoinByKeyOptions = ' | ',
 ): string {

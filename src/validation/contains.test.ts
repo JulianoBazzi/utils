@@ -24,3 +24,12 @@ describe('contains', () => {
     expect(contains('a', undefined as unknown as string[])).toBe(false);
   });
 });
+
+describe('contains — 1.3 additions', () => {
+  it('accepts readonly arrays and null', () => {
+    const roles = ['admin', 'user'] as const;
+    expect(contains<string>('admin', roles)).toBe(true);
+    expect(contains('x', null)).toBe(false);
+    expect(contains('x')).toBe(false);
+  });
+});
