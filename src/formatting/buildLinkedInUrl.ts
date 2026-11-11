@@ -1,8 +1,13 @@
-interface BuildLinkedInUrlOptions {
+import { readFallback } from './internal/readFallback.js';
+
+export interface BuildLinkedInUrlOptions<F extends string | undefined = string> {
   /** `"profile"` → `/in/`, `"company"` → `/company/`. Defaults to `"profile"`. */
   type?: 'profile' | 'company';
-  /** Returned when the handle is empty/missing. Defaults to `""`. */
-  fallback?: string;
+  /**
+   * Returned when the handle is empty/missing. Defaults to `""`. Pass
+   * `undefined` explicitly to get `undefined` (handy for an `href`).
+   */
+  fallback?: F;
 }
 
 /**
@@ -16,11 +21,12 @@ interface BuildLinkedInUrlOptions {
  * buildLinkedInUrl("bazzi-solutions", { type: "company" }) // "https://linkedin.com/company/bazzi-solutions"
  * buildLinkedInUrl(null) // ""
  */
-export function buildLinkedInUrl(
+export function buildLinkedInUrl<F extends string | undefined = string>(
   handle?: string | null,
-  options: BuildLinkedInUrlOptions = {},
-): string {
-  const { type = 'profile', fallback = '' } = options;
+  options: BuildLinkedInUrlOptions<F> = {},
+): string | F {
+  const { type = 'profile' } = options;
+  const fallback = readFallback(options, '');
   const slug = handle?.trim().replace(/^@+/, '');
   if (!slug) {
     return fallback;

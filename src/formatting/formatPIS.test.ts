@@ -19,3 +19,11 @@ describe('formatPIS', () => {
     expect(formatPIS('', { fallback: 'Não Informado' })).toBe('Não Informado');
   });
 });
+
+describe('formatPIS — 1.3 additions', () => {
+  it('pads by default and leaves incomplete input unmasked with pad: false', () => {
+    expect(formatPIS('1201234567')).toBe('012.01234.56-7');
+    expect(formatPIS('1201234567', { pad: false })).toBe('1201234567');
+    expect(formatPIS('12012345672', { pad: false })).toBe(formatPIS('12012345672'));
+  });
+});

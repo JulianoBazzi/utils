@@ -25,3 +25,21 @@ describe('formatWithPattern', () => {
     expect(formatWithPattern('123', '')).toBe('');
   });
 });
+
+describe('formatWithPattern — 1.3 additions', () => {
+  it('fills the remaining slots with a placeholder', () => {
+    expect(formatWithPattern('119', '(##) #####-####', { placeholder: '_' })).toBe(
+      '(11) 9____-____',
+    );
+    expect(formatWithPattern('', '##/##', { placeholder: '_' })).toBe('__/__');
+    expect(formatWithPattern(null, '##/##', { placeholder: '' })).toBe('/');
+  });
+
+  it('accepts a custom token', () => {
+    expect(formatWithPattern('1234', '99-99', { token: '9' })).toBe('12-34');
+  });
+
+  it('cuts input longer than the pattern', () => {
+    expect(formatWithPattern('123456', '##-##')).toBe('12-34');
+  });
+});

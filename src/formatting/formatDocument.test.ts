@@ -19,3 +19,10 @@ describe('formatDocument', () => {
     expect(formatDocument('', { fallback: 'Não Informado' })).toBe('Não Informado');
   });
 });
+
+describe('formatDocument — 1.3 additions', () => {
+  it('forwards pad', () => {
+    expect(formatDocument('1', { pad: false })).toBe('1');
+    expect(formatDocument('1234567800019', { pad: false })).toBe('1234567800019');
+  });
+});

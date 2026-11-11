@@ -1,10 +1,15 @@
-interface BuildEmailUrlOptions {
+import { readFallback } from './internal/readFallback.js';
+
+export interface BuildEmailUrlOptions<F extends string | undefined = string> {
   /** Optional pre-filled subject (URL-encoded). */
   subject?: string;
   /** Optional pre-filled body (URL-encoded). */
   body?: string;
-  /** Returned when the email is empty/missing. Defaults to `""`. */
-  fallback?: string;
+  /**
+   * Returned when the email is empty/missing. Defaults to `""`. Pass
+   * `undefined` explicitly to get `undefined` (handy for an `href`).
+   */
+  fallback?: F;
 }
 
 /**
@@ -18,8 +23,12 @@ interface BuildEmailUrlOptions {
  * buildEmailUrl("foo@bar.com", { subject: "Oi" }) // "mailto:foo@bar.com?subject=Oi"
  * buildEmailUrl(null) // ""
  */
-export function buildEmailUrl(email?: string | null, options: BuildEmailUrlOptions = {}): string {
-  const { subject, body, fallback = '' } = options;
+export function buildEmailUrl<F extends string | undefined = string>(
+  email?: string | null,
+  options: BuildEmailUrlOptions<F> = {},
+): string | F {
+  const { subject, body } = options;
+  const fallback = readFallback(options, '');
   const address = email?.trim();
   if (!address) {
     return fallback;

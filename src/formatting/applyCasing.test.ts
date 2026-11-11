@@ -22,3 +22,13 @@ describe('applyCasing', () => {
     expect(applyCasing('1.50 KB', 'titlecase')).toBe('1.50 KB');
   });
 });
+
+describe('applyCasing — 1.3 additions', () => {
+  it('keeps lowercaseWords in lowercase with titlecase', () => {
+    const lowercaseWords = ['de', 'da', 'do', 'dos', 'das', 'e'];
+    expect(applyCasing('joão da silva e souza', 'titlecase', { lowercaseWords })).toBe(
+      'João da Silva e Souza',
+    );
+    expect(applyCasing('joão da silva', 'uppercase', { lowercaseWords })).toBe('JOÃO DA SILVA');
+  });
+});

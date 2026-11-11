@@ -32,3 +32,13 @@ describe('buildLinkedInUrl', () => {
     expect(buildLinkedInUrl(null, { fallback: '#' })).toBe('#');
   });
 });
+
+describe('buildLinkedInUrl — 1.3 additions', () => {
+  it('returns undefined when the fallback is explicitly undefined', () => {
+    const href: string | undefined = buildLinkedInUrl(null, { fallback: undefined });
+    expect(href).toBeUndefined();
+    expect(buildLinkedInUrl('bazzi', { fallback: undefined })).toBe(
+      'https://linkedin.com/in/bazzi',
+    );
+  });
+});

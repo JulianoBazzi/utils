@@ -1,6 +1,11 @@
-interface BuildFacebookUrlOptions {
-  /** Returned when the username is empty/missing. Defaults to `""`. */
-  fallback?: string;
+import { readFallback } from './internal/readFallback.js';
+
+export interface BuildFacebookUrlOptions<F extends string | undefined = string> {
+  /**
+   * Returned when the username is empty/missing. Defaults to `""`. Pass
+   * `undefined` explicitly to get `undefined` (handy for an `href`).
+   */
+  fallback?: F;
 }
 
 /**
@@ -12,11 +17,11 @@ interface BuildFacebookUrlOptions {
  * buildFacebookUrl("julianobazzi") // "https://facebook.com/julianobazzi"
  * buildFacebookUrl(null) // ""
  */
-export function buildFacebookUrl(
+export function buildFacebookUrl<F extends string | undefined = string>(
   username?: string | null,
-  options: BuildFacebookUrlOptions = {},
-): string {
-  const { fallback = '' } = options;
+  options: BuildFacebookUrlOptions<F> = {},
+): string | F {
+  const fallback = readFallback(options, '');
   const handle = username?.trim().replace(/^@+/, '');
   if (!handle) {
     return fallback;

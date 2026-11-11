@@ -2,9 +2,11 @@ import { formatCNPJ } from './formatCNPJ.js';
 import { formatCPF } from './formatCPF.js';
 import { onlyAlphanumeric } from './onlyAlphanumeric.js';
 
-interface FormatDocumentOptions {
+export interface FormatDocumentOptions {
   /** Returned when the input is empty/missing. Defaults to `""`. */
   fallback?: string;
+  /** Left-pad short input with zeros before masking. Defaults to `true` (`false` in 2.0). */
+  pad?: boolean;
 }
 
 /**

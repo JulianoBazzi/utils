@@ -18,3 +18,11 @@ describe('formatBoolean', () => {
     expect(formatBoolean(false, { casing: 'uppercase' })).toBe('NÃO');
   });
 });
+
+describe('formatBoolean — 1.3 additions', () => {
+  it('uses the fallback for null/undefined when given', () => {
+    expect(formatBoolean(null, { fallback: '-' })).toBe('-');
+    expect(formatBoolean(undefined)).toBe('Não');
+    expect(formatBoolean(false, { fallback: '-' })).toBe('Não');
+  });
+});

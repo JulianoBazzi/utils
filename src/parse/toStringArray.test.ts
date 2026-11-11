@@ -17,3 +17,11 @@ describe('toStringArray', () => {
     expect(toStringArray({ 0: 'a' })).toEqual([]);
   });
 });
+
+describe('toStringArray — 1.3 additions', () => {
+  it('wraps a non-empty string with wrap', () => {
+    expect(toStringArray('a', { wrap: true })).toEqual(['a']);
+    expect(toStringArray('', { wrap: true })).toEqual([]);
+    expect(toStringArray(['a', 1], { wrap: true })).toEqual(['a']);
+  });
+});

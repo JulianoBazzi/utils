@@ -18,9 +18,9 @@ describe('formatDuration', () => {
     expect(formatDuration(45)).toBe('45 min');
   });
 
-  it('returns empty string for missing input', () => {
+  it('returns empty string for missing input and formats zero', () => {
     expect(formatDuration()).toBe('');
-    expect(formatDuration(0)).toBe('');
+    expect(formatDuration(0)).toBe('0s');
   });
 
   it('returns the fallback for missing input', () => {

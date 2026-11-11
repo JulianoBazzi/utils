@@ -1,6 +1,11 @@
-interface BuildInstagramUrlOptions {
-  /** Returned when the username is empty/missing. Defaults to `""`. */
-  fallback?: string;
+import { readFallback } from './internal/readFallback.js';
+
+export interface BuildInstagramUrlOptions<F extends string | undefined = string> {
+  /**
+   * Returned when the username is empty/missing. Defaults to `""`. Pass
+   * `undefined` explicitly to get `undefined` (handy for an `href`).
+   */
+  fallback?: F;
 }
 
 /**
@@ -12,11 +17,11 @@ interface BuildInstagramUrlOptions {
  * buildInstagramUrl("@julianobazzi") // "https://instagram.com/julianobazzi"
  * buildInstagramUrl(null) // ""
  */
-export function buildInstagramUrl(
+export function buildInstagramUrl<F extends string | undefined = string>(
   username?: string | null,
-  options: BuildInstagramUrlOptions = {},
-): string {
-  const { fallback = '' } = options;
+  options: BuildInstagramUrlOptions<F> = {},
+): string | F {
+  const fallback = readFallback(options, '');
   const handle = username?.trim().replace(/^@+/, '');
   if (!handle) {
     return fallback;

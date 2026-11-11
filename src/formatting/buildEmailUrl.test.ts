@@ -32,3 +32,11 @@ describe('buildEmailUrl', () => {
     expect(buildEmailUrl(null, { fallback: '#' })).toBe('#');
   });
 });
+
+describe('buildEmailUrl — 1.3 additions', () => {
+  it('returns undefined when the fallback is explicitly undefined', () => {
+    const href: string | undefined = buildEmailUrl(null, { fallback: undefined });
+    expect(href).toBeUndefined();
+    expect(buildEmailUrl('a@b.com', { fallback: undefined })).toBe('mailto:a@b.com');
+  });
+});

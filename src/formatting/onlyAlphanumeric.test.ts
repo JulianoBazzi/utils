@@ -13,3 +13,15 @@ describe('onlyAlphanumeric', () => {
     expect(onlyAlphanumeric('')).toBe('');
   });
 });
+
+describe('onlyAlphanumeric — 1.3 additions', () => {
+  it('removes accents before filtering', () => {
+    expect(onlyAlphanumeric('João')).toBe('JOAO');
+    expect(onlyAlphanumeric('Coração 1')).toBe('CORACAO1');
+  });
+
+  it('accepts a casing', () => {
+    expect(onlyAlphanumeric('João-1', { casing: 'none' })).toBe('Joao1');
+    expect(onlyAlphanumeric('ABC', { casing: 'lowercase' })).toBe('abc');
+  });
+});

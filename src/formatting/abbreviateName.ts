@@ -1,7 +1,7 @@
 import { applyCasing, type LetterCasing } from './applyCasing.js';
 import { titleCase } from './internal/casing.js';
 
-interface AbbreviateNameOptions {
+export interface AbbreviateNameOptions {
   /**
    * Letter casing applied to the name before abbreviating. Defaults to no
    * transformation. `titlecase` here *normalizes* (lowercases first), so
@@ -10,31 +10,30 @@ interface AbbreviateNameOptions {
   casing?: LetterCasing;
 }
 
-/** Title-case that normalizes: lowercases everything, then capitalizes each word. */
 /**
- * Abbreviate a full name to first name + last initial (e.g. `"John S."`).
- * Single-word names are returned unchanged. Empty/blank/missing input → `""`.
+ * Abbreviate a full name to first name + initial of the **last** name
+ * (`"Maria de Souza"` → `"Maria S."`). Single-word names come back trimmed.
+ * Empty/blank/missing input → `""`.
  *
  * @example
  * abbreviateName("John Smith") // "John S."
+ * abbreviateName("Maria de Souza") // "Maria S."
  * abbreviateName("John") // "John"
  * abbreviateName("JOAO SILVA", { casing: "titlecase" }) // "Joao S."
  */
 export function abbreviateName(name?: string | null, options: AbbreviateNameOptions = {}): string {
-  if (!name?.trim()) {
+  const trimmed = name?.trim();
+  if (!trimmed) {
     return '';
   }
 
   const { casing } = options;
   const cased =
-    casing === 'titlecase' ? titleCase(name, { normalize: true }) : applyCasing(name, casing);
+    casing === 'titlecase' ? titleCase(trimmed, { normalize: true }) : applyCasing(trimmed, casing);
 
-  const words = cased.trim().split(/\s+/);
-  const [first, second] = words;
+  const words = cased.split(/\s+/);
+  const first = words[0] as string;
+  const last = words.length > 1 ? words.at(-1) : undefined;
 
-  if (second) {
-    return `${first} ${second.charAt(0)}.`;
-  }
-
-  return cased;
+  return last ? `${first} ${last.charAt(0)}.` : first;
 }

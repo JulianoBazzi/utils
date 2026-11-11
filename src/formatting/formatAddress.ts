@@ -1,26 +1,35 @@
 import { formatPostalCode } from './formatPostalCode.js';
 
-interface Address {
-  state?: string;
-  city?: string;
-  zipcode?: string;
-  address?: string;
-  district?: string;
-  number?: string;
+export interface Address {
+  state?: string | null;
+  city?: string | null;
+  zipcode?: string | null;
+  address?: string | null;
+  district?: string | null;
+  number?: string | null;
 }
 
-interface FormatAddressOptions {
+export interface FormatAddressOptions {
   /** Returned when no street/city/state/district is provided. Defaults to `""`. */
   fallback?: string;
 }
 
+const join = (parts: Array<string | null | undefined>, separator: string) =>
+  parts
+    .map((part) => part?.trim())
+    .filter(Boolean)
+    .join(separator);
+
 /**
- * Assemble a single-line address string from its parts.
- * Returns an empty string when no street/city/state/district is provided.
+ * Assemble a single-line address: `"street, number - district, city - UF, CEP"`.
+ * Missing parts are skipped together with their separators, so the result
+ * never starts or ends with `", "` or `" - "`. Returns `fallback` when no
+ * street/city/state/district is provided.
  *
  * @example
  * formatAddress({ address: "Rua A", number: "10", city: "São Paulo", state: "SP" })
  * // "Rua A, 10, São Paulo - SP"
+ * formatAddress({ district: "Centro", city: "Curitiba", state: "PR" }) // "Centro, Curitiba - PR"
  * formatAddress({}, { fallback: "Não Informado" }) // "Não Informado"
  */
 export function formatAddress(
@@ -28,23 +37,11 @@ export function formatAddress(
   options: FormatAddressOptions = {},
 ): string {
   const { fallback = '' } = options;
-  if (!address && !city && !state && !district) {
+  if (![address, district, city, state].some((part) => part?.trim())) {
     return fallback;
   }
 
-  const street = [address, number].filter(Boolean).join(', ');
-  const districtPart = district ? ` - ${district}` : '';
-  const cityState = [city, state].filter(Boolean).join(' - ');
-  const formattedZipcode = formatPostalCode(zipcode);
-  const zipcodePart = formattedZipcode ? `, ${formattedZipcode}` : '';
-
-  let result = `${street}${districtPart}`;
-
-  if (cityState) {
-    result += `, ${cityState}`;
-  }
-
-  result += zipcodePart;
-
-  return result;
+  const street = join([join([address, number], ', '), district], ' - ');
+  const cityState = join([city, state], ' - ');
+  return join([street, cityState, formatPostalCode(zipcode)], ', ');
 }

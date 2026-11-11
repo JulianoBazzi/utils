@@ -57,52 +57,54 @@ All functions are exported flat from the package root, grouped internally by pur
 - `formatTime(value?, { seconds?, simplified?, fallback?, timeZone? })` — `HH:mm` (or `HH:mm:ss`); also accepts a bare time (`"13:45:00"`); invalid → `fallback`
 - `formatHour(...)` — legacy name of `formatTime` (removed in 2.0)
 - `formatDateRange(start?, end?, { separator?, openEnd?, year?, fallback?, timeZone? })` — `01/01/24 a 31/01/24`; same day renders once; missing end → `openEnd` text or `fallback`
-- `formatMinutesToDuration(minutes?, { fallback?, spaced? })` — human-readable duration, e.g. `1h e 30 min` (rounded to whole minutes/seconds first; negatives treated as positive)
+- `formatMinutesToDuration(minutes?, { fallback?, spaced? })` — human-readable duration, e.g. `1h e 30 min` (rounded to whole minutes/seconds first); `0` → `0s`, negatives keep the sign (`-1h e 30 min`)
 - `formatSecondsToDuration(seconds?, { fallback?, spaced? })` — same, from seconds (≥60s rounded to minutes)
 - `formatDuration(minutes?, { fallback?, spaced? })` — **deprecated** alias of `formatMinutesToDuration`
 - `formatCurrency(value?, { divisor = 100, fallback? })` — BRL currency, e.g. `R$ 19,90`; `0` is formatted, `fallback` only for missing/non-finite input (positional `(value, divisor, { fallback })` still accepted)
 - `formatCompactNumber(value?, { decimals?, locale?, fallback? })` — compact notation, e.g. `1.5M`, `100K` (`locale: 'pt-BR'` → `1,5 mil`; default `en` until 2.0)
 - `formatPercentage(value?, { round?, decimals?, rounding?, fallback? })` — pt-BR percentage, e.g. `12,50%`, `1.234,50%`; `0` → `0,00%`; `rounding: 'floor'` keeps 99.6 at `99%` (positional `(value, round, { fallback })` still accepted)
-- `formatBoolean(value?, { casing? })` — `Sim` / `Não` (PT-BR yes/no)
-- `formatPhone(phone?, { fallback? })` — BR phone mask (10 or 11 digits)
+- `formatBoolean(value?, { casing?, fallback? })` — `Sim` / `Não` (PT-BR yes/no); `fallback` covers `null`/`undefined`
+- `formatPhone(phone?, { fallback? })` — BR phone mask (10 or 11 digits); drops a `+55` country code and a trunk `0`; `0800 123 4567` for non-geographic numbers
 - `formatBytes(bytes?, { round?, locale?, casing?, fallback? })` — human-readable size, e.g. `1.50 KB` (`locale: 'pt-BR'` → `1,50 KB`); negatives keep the sign (positional `round` still accepted)
 - `formatSecondsToTime(value?, { seconds?, signed?, fallback? })` — `HH:mm:ss` (or `HH:mm`); pure arithmetic, hours keep counting past 24 (`90000` → `25:00:00`); `signed: 'negative'` keeps the minus sign (positional `showSeconds` still accepted)
 - `formatTimeAgo(date?, { fallback? })` — elapsed time in PT-BR, e.g. `5 dias`; invalid dates → `fallback`, future dates → `1 minuto`
-- `formatAddress(address, { fallback? })` — builds a single-line address
-- `formatCityAndState(city?, state?, { fallback?, separator?, casing? })` — `"City - UF"` (empty when both missing)
+- `formatAddress(address, { fallback? })` — builds a single-line address (`street, number - district, city - UF, CEP`); missing parts never leave a dangling separator
+- `formatCityAndState(city?, state?, { fallback?, separator?, casing? })` — `"City - UF"`; parts are trimmed (empty when both missing)
 - `formatWeekDay(date?, { fallback?, casing?, dateFormat?, timeZone? })` — date + abbreviated weekday, e.g. `15/6 - Sáb` (`dateFormat` default `D/M`); invalid dates → `fallback`
 - `getAge(birthDate?, { timeZone? })` — age in full years (today); missing/invalid/future → `0`
 - `formatAge(birthDate?, { fallback?, timeZone? })` — age as PT-BR text, e.g. `"36 anos"` / `"1 ano"`
-- `formatCPF(value?, { fallback? })` — `000.000.000-00` (pads with zeros; > 11 digits → plain digits)
-- `formatCNPJ(value?, { fallback? })` — `00.000.000/0000-00` (supports alphanumeric CNPJ)
-- `formatDocument(value?, { fallback? })` — formats as CPF or CNPJ based on length
-- `formatPostalCode(value?, { fallback? })` — BR postal code (CEP) `00000-000` (> 8 digits → plain digits)
+- `formatCPF(value?, { fallback?, pad? })` — `000.000.000-00` (pads with zeros unless `pad: false`; > 11 digits → plain digits)
+- `formatCNPJ(value?, { fallback?, pad? })` — `00.000.000/0000-00` (supports alphanumeric CNPJ; `pad: false` leaves incomplete input unmasked)
+- `formatDocument(value?, { fallback?, pad? })` — formats as CPF or CNPJ based on length
+- `formatPostalCode(value?, { fallback?, pad? })` — BR postal code (CEP) `00000-000` (> 8 digits → plain digits)
 - `formatPlate(value?, { fallback? })` — BR license plate: legacy → `ABC-1234`, Mercosul keeps `ABC1D23`
-- `formatPIS(value?, { fallback? })` — PIS/PASEP `000.00000.00-0` (> 11 digits → plain digits)
+- `formatPIS(value?, { fallback?, pad? })` — PIS/PASEP `000.00000.00-0` (> 11 digits → plain digits)
 - `formatLongDate(value?, { fallback?, casing?, timeZone? })` — date in full PT-BR, e.g. `1º de julho de 2026`
 - `numberToWords(value?, { fallback? })` — integer spelled in PT-BR up to the trillions, e.g. `mil duzentos e trinta e quatro`
 - `currencyToWords(value?, { divisor = 100, fallback? })` — BRL amount spelled in PT-BR (mirrors `formatCurrency`), e.g. `dezenove reais e noventa centavos`
 - `appendValue(base?, value?, { separator?, fallback?, casing? })` — joins two texts (each trimmed), e.g. `"a; b"`
-- `applyCasing(value, casing?)` — `lowercase` / `uppercase` / `titlecase` (titlecase keeps the rest of each word, so `"KB"` survives)
+- `applyCasing(value, casing?, { lowercaseWords? })` — `lowercase` / `uppercase` / `titlecase` (titlecase keeps the rest of each word, so `"KB"` survives; `lowercaseWords: ['de', 'da']` → `"João da Silva"`)
 - `removeAccents(value?)` — strips accents, e.g. `João` → `Joao`
 - `onlyNumbers(value?)` — removes everything that is not a digit
-- `onlyAlphanumeric(value?)` — removes non-alphanumerics + uppercase (`"12.abc"` → `"12ABC"`)
-- `formatWithPattern(value?, pattern?)` — char-agnostic mask (`#` = next char), e.g. `'12345678900'` + `'###.###.###-##'` → `123.456.789-00`
+- `onlyAlphanumeric(value?, { casing? })` — removes accents and non-alphanumerics, then uppercases (`"12.abc"` → `"12ABC"`, `"João"` → `"JOAO"`; `casing: 'none'` keeps the case)
+- `formatWithPattern(value?, pattern?, { placeholder?, token? })` — char-agnostic mask (`#` = next char), e.g. `'12345678900'` + `'###.###.###-##'` → `123.456.789-00`; `placeholder: '_'` fills the rest (`(11) 9____-____`)
 - `truncate(value?, { length = 40, suffix = '...' })` — cuts to `length` code points and appends `suffix` (positional `length` still accepted)
 - `getLastCharacter(value?)` — last character of a string
-- `abbreviateName(name?, { casing? })` — `"John Smith"` → `"John S."` (titlecase normalizes: `"JOAO SILVA"` → `"Joao S."`; blank input → `""`)
+- `abbreviateName(name?, { casing? })` — first name + last-name initial: `"Maria de Souza"` → `"Maria S."` (titlecase normalizes: `"JOAO SILVA"` → `"Joao S."`; blank input → `""`)
 - `getFirstAndLastWord(value?, { fallback?, casing? })` — keeps only the first and last word: `"Analista de Sistemas"` → `"Analista Sistemas"`
 - `joinByKey(values, key, dividerOrOptions?)` — joins one property from each object, skipping empty values; 3rd arg is a divider string or `{ divider?, sort?, unique? }`, where `sort` (`true | "asc" | "desc"`) orders by `key` first and `unique` drops duplicates
 - `maskSecret(value?, { visibleStart = 5, visibleEnd = 5, mask = '••••••' })` — partially masks a secret, keeping the ends visible, e.g. `$2y$1••••••lMnOp` (short values → mask only; `visibleStart`/`visibleEnd` are clamped to ≥ 0, so `0` hides that side entirely)
 - `slugify(value?)` — URL-safe slug (accent-free, lowercase, hyphenated), e.g. `"São Paulo"` → `sao-paulo`
-- `sanitizeSpreadsheetCell(value?)` — guards CSV/Excel formula injection: prefixes `'` when the value starts with `= + - @` (tab/CR)
-- `buildWhatsAppUrl(phone?, message?, { countryCode = '55', fallback? })` — `wa.me` link; `countryCode` accepts `null` to omit, e.g. `https://wa.me/5511987654321?text=...`
-- `buildPhoneUrl(phone?, { countryCode = '55', fallback? })` — `tel:` link, e.g. `tel:+5511987654321` (`countryCode: null` → `tel:11987654321`)
+- `sanitizeSpreadsheetCell(value?)` — guards CSV/Excel formula injection: prefixes `'` when the value starts with `= + - @` (also after leading spaces, or tab/CR); plain negative numbers (`-5`) are kept
+- `buildWhatsAppUrl(phone?, message?, { countryCode = '55', fallback? })` — `wa.me` link, e.g. `https://wa.me/5511987654321?text=...`; a country code already in the number is not repeated; `countryCode: null` omits it
+- `buildPhoneUrl(phone?, { countryCode = '55', fallback? })` — `tel:` link, e.g. `tel:+5511987654321` (`countryCode: null` → `tel:11987654321`; `0800` numbers never get a country code)
 - `buildEmailUrl(email?, { subject?, body?, fallback? })` — `mailto:` link with optional encoded `subject`/`body`; the address is URL-encoded too (no header injection via `?`/`&`)
 - `buildInstagramUrl(username?, { fallback? })` — `https://instagram.com/<handle>` (strips a leading `@`; handle is URL-encoded)
 - `buildFacebookUrl(username?, { fallback? })` — `https://facebook.com/<handle>` (strips a leading `@`; handle is URL-encoded)
 - `buildLinkedInUrl(handle?, { type = 'profile', fallback? })` — `https://linkedin.com/in/...` or `/company/...` (via `type`; handle is URL-encoded)
 - `formatEnvironment(value?)` — normalizes a `NODE_ENV` string to `production | homologation | development | test` (unknown → `production`)
+
+All `build*Url` helpers return `string | F`: pass `{ fallback: undefined }` to get `undefined` for a missing value (ready for an `href`).
 
 ### date
 
@@ -210,7 +212,7 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 - `resolveId(value?, resolver, params?)` — resolves the first valid id into an object, or `null`
 - `parseJson<T>(value?)` — `JSON.parse` returning `undefined` instead of throwing (a parsed `"null"` stays `null`)
 - `toArray(value?)` — wraps a single value in an array or copies an array, dropping `null`/`undefined` (`toArray(undefined)` → `[]`, unlike lodash `castArray`)
-- `toStringArray(value)` — narrows an unknown value to `string[]`, dropping entries of other types; non-arrays → `[]`
+- `toStringArray(value, { wrap? })` — narrows an unknown value to `string[]`, dropping entries of other types; non-arrays → `[]` (`wrap: true` turns `"a"` into `["a"]`)
 - `getFileExtension(value?)` — extension of a path/URL without the dot; ignores `?query`/`#hash` and dotted hosts, dotfiles → `""`
 - `parseInlineMarkup(value?, { boldMarker?, italicMarker? })` — WhatsApp-style `*bold*`/`_italic_` (nestable) → `{ text, bold?, italic? }[]`
 

@@ -3,7 +3,8 @@ import { type BuildDurationOptions, buildDuration } from './internal/buildDurati
 /**
  * Format a number of seconds as a human-readable duration.
  * Sub-minute values render as seconds; values >= 60s are rounded to whole
- * minutes (e.g. `90` → `"2 min"`). Returns an empty string for missing input.
+ * minutes (e.g. `90` → `"2 min"`). Zero renders as `"0s"` and negatives keep
+ * their sign. Returns `fallback` (default `""`) for missing input.
  *
  * @example
  * formatSecondsToDuration(30) // "30s"

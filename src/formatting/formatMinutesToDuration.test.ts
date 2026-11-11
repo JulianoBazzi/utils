@@ -25,9 +25,17 @@ describe('formatMinutesToDuration', () => {
     expect(formatMinutesToDuration(0.999)).toBe('1 min');
   });
 
-  it('treats negative values as positive', () => {
-    expect(formatMinutesToDuration(-5)).toBe('5 min');
-    expect(formatMinutesToDuration(-0.5)).toBe('30s');
+  it('keeps the sign of negative values', () => {
+    expect(formatMinutesToDuration(-5)).toBe('-5 min');
+    expect(formatMinutesToDuration(-0.5)).toBe('-30s');
+    expect(formatMinutesToDuration(-90)).toBe('-1h e 30 min');
+    expect(formatMinutesToDuration(-120)).toBe('-2h');
+    expect(formatMinutesToDuration(-0.001)).toBe('0s');
+  });
+
+  it('formats zero and returns the fallback for non-finite input', () => {
+    expect(formatMinutesToDuration(0)).toBe('0s');
+    expect(formatMinutesToDuration(Number.NaN, { fallback: '-' })).toBe('-');
   });
 
   it('returns the fallback for missing input', () => {

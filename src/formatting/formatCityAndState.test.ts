@@ -21,3 +21,15 @@ describe('formatCityAndState', () => {
     expect(formatCityAndState('', '', { fallback: 'Não Informado' })).toBe('Não Informado');
   });
 });
+
+describe('formatCityAndState — 1.3 additions', () => {
+  it('trims both parts', () => {
+    expect(formatCityAndState(' ', 'SP')).toBe('SP');
+    expect(formatCityAndState(' São Paulo ', ' SP ')).toBe('São Paulo - SP');
+    expect(formatCityAndState(' ', ' ', { fallback: '-' })).toBe('-');
+  });
+
+  it('accepts a casing', () => {
+    expect(formatCityAndState('são paulo', 'sp', { casing: 'uppercase' })).toBe('SÃO PAULO - SP');
+  });
+});

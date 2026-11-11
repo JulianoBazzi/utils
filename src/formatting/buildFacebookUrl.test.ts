@@ -23,3 +23,11 @@ describe('buildFacebookUrl', () => {
     expect(buildFacebookUrl(null, { fallback: '#' })).toBe('#');
   });
 });
+
+describe('buildFacebookUrl — 1.3 additions', () => {
+  it('returns undefined when the fallback is explicitly undefined', () => {
+    const href: string | undefined = buildFacebookUrl(null, { fallback: undefined });
+    expect(href).toBeUndefined();
+    expect(buildFacebookUrl('bazzi', { fallback: undefined })).toBe('https://facebook.com/bazzi');
+  });
+});

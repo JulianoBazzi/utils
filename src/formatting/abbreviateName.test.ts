@@ -33,3 +33,15 @@ describe('abbreviateName', () => {
     expect(abbreviateName('   ')).toBe('');
   });
 });
+
+describe('abbreviateName — 1.3 additions', () => {
+  it('uses the initial of the last word', () => {
+    expect(abbreviateName('Maria de Souza')).toBe('Maria S.');
+    expect(abbreviateName('John Paul Smith')).toBe('John S.');
+    expect(abbreviateName('MARIA DE SOUZA', { casing: 'titlecase' })).toBe('Maria S.');
+  });
+
+  it('trims a single word', () => {
+    expect(abbreviateName('  João  ')).toBe('João');
+  });
+});

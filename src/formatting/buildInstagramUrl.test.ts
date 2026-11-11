@@ -24,3 +24,11 @@ describe('buildInstagramUrl', () => {
     expect(buildInstagramUrl(null, { fallback: '#' })).toBe('#');
   });
 });
+
+describe('buildInstagramUrl — 1.3 additions', () => {
+  it('returns undefined when the fallback is explicitly undefined', () => {
+    const href: string | undefined = buildInstagramUrl(null, { fallback: undefined });
+    expect(href).toBeUndefined();
+    expect(buildInstagramUrl('bazzi', { fallback: undefined })).toBe('https://instagram.com/bazzi');
+  });
+});

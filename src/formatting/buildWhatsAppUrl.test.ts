@@ -33,3 +33,24 @@ describe('buildWhatsAppUrl', () => {
     expect(buildWhatsAppUrl(null, 'oi', { fallback: '#' })).toBe('#');
   });
 });
+
+describe('buildWhatsAppUrl — 1.3 additions', () => {
+  it('never doubles the country code', () => {
+    expect(buildWhatsAppUrl('+55 11 98765-4321')).toBe('https://wa.me/5511987654321');
+    expect(buildWhatsAppUrl('5511987654321')).toBe('https://wa.me/5511987654321');
+  });
+
+  it('strips a configured foreign country code too', () => {
+    expect(buildWhatsAppUrl('+351 912 345 678', null, { countryCode: '351' })).toBe(
+      'https://wa.me/351912345678',
+    );
+  });
+
+  it('omits the country code for non-geographic numbers', () => {
+    expect(buildWhatsAppUrl('0800 123 4567')).toBe('https://wa.me/08001234567');
+  });
+
+  it('returns undefined when the fallback is explicitly undefined', () => {
+    expect(buildWhatsAppUrl(null, null, { fallback: undefined })).toBeUndefined();
+  });
+});
