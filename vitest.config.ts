@@ -1,5 +1,10 @@
 import { defineConfig } from 'vitest/config';
 
+// Pin the runtime time zone so date tests never depend on the machine or CI
+// clock. Vitest's forked workers inherit it. Override with `TZ=UTC pnpm test`
+// to check that time-zone-aware helpers really are machine-independent.
+process.env.TZ ??= 'America/Sao_Paulo';
+
 export default defineConfig({
   test: {
     globals: true,

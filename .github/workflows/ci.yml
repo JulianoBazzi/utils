@@ -30,3 +30,6 @@ jobs:
       - run: pnpm run test:coverage
 
       - run: pnpm run build
+
+      # Checks that both the ESM and the CJS entry resolve to the right types.
+      - run: pnpm run check:exports

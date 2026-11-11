@@ -1,6 +1,6 @@
 # @julianobazzi/utils
 
-> Coleção de funções utilitárias TypeScript, pequenas e tree-shakeable, com foco em formatação e validação brasileiras (CPF, CNPJ, CEP, telefone, placa, PIS, RENAVAM, CNH, título de eleitor, boleto, datas, moeda e valor por extenso), além de geradores de dados válidos para testes. Distribuída em ESM + CJS com tipos incluídos. Única dependência de runtime: `dayjs`.
+> Coleção de funções utilitárias TypeScript, pequenas e tree-shakeable, com foco em formatação e validação brasileiras (CPF, CNPJ, CEP, telefone, placa, PIS, RENAVAM, CNH, título de eleitor, boleto, datas, moeda e valor por extenso), além de geradores de dados válidos para testes. Distribuída em ESM + CJS com tipos incluídos. Única dependência de runtime: `dayjs` (`^1.11.23`). Cada entrada tem os próprios tipos: `import` → `index.d.ts`, `require` → `index.d.cts`.
 
 ## Visão geral para IA
 

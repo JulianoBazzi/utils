@@ -237,6 +237,7 @@ Todos os geradores produzem valores aleatórios que passam no validador correspo
 | `npm run test:watch` | Roda os testes em modo watch                       |
 | `npm run test:coverage` | Roda os testes com cobertura (thresholds ativos) |
 | `npm run typecheck`  | Checagem de tipos com `tsc --noEmit`               |
+| `npm run check:exports` | Confere os tipos das entradas ESM/CJS com `attw` (rodar após o `build`) |
 | `npm run lint`       | Lint + checagem de formatação (Biome)              |
 | `npm run lint:fix`   | Aplica correções seguras de lint/formatação        |
 

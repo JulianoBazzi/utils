@@ -239,6 +239,7 @@ Every generator produces random values that pass the matching validator. They ar
 | `npm run test:watch` | Runs the tests in watch mode                        |
 | `npm run test:coverage` | Runs the tests with coverage (thresholds enforced) |
 | `npm run typecheck`  | Type-checks with `tsc --noEmit`                     |
+| `npm run check:exports` | Checks the ESM/CJS type entries with `attw` (run after `build`) |
 | `npm run lint`       | Lint + format check (Biome)                         |
 | `npm run lint:fix`   | Applies safe lint/format fixes                      |
 
