@@ -278,6 +278,37 @@ Every generator produces random values that pass the matching validator. They ar
 - `generateUF()` — random state code from the 27 federative units, e.g. `SP`
 - `generateEmail({ domain?, length? })` — valid email; defaults to the RFC 2606 reserved `example.com`, which never routes
 
+### async
+
+- `sleep(ms, { signal? })` — waits `ms`; an aborted signal rejects at once with `signal.reason`, and the abort listener is always removed
+- `retry(fn, { attempts = 3, delayMs = 0, signal?, shouldRetry?, onRetry? })` — runs `fn({ attempt, signal })` until it succeeds; `delayMs` can be `(attempt, error) => ms`; when every attempt fails, rejects with `RetryError` (`attempts`, `cause`); aborts and errors `shouldRetry` declines are rethrown as is
+- `tryOrNull(fn, { when? })` — resolves `null` instead of rejecting; narrow it with `when` (e.g. only 404s) so outages still surface
+- `settle(promiseOrFn)` — `{ ok: true, value }` or `{ ok: false, error }`, never rejects
+- `onceAsync(fn)` — `{ run, reset }`: every `run()` shares one promise; a failure clears it (without wiping a newer load started after `reset()`)
+
+### http
+
+Structural helpers for API errors — no axios dependency.
+
+- `getHttpStatus(error)` — `error.response.status`, `error.status` or `error.statusCode`, else `undefined`
+- `getErrorMessage(error, { fallback? })` — the API's `response.data.message`, else `error.message`, else the string itself
+- `getValidationErrors(error, { status = 422 })` — Laravel-style `{ message?, errors: { field: string[] } }`, or `null` for other statuses
+- `applyValidationErrors(errors, setError, { fieldMap?, fields?, type = 'server' })` — pushes each field's first message to react-hook-form's `setError` (structural); fields outside `fields` go to `unhandled` and don't count as handled
+- `readResponseWithProgress(response, { signal?, onProgress?, stepBytes? })` — reads a `fetch` body into a `Blob` with progress; `total` is `0` when unknown or exceeded (compressed responses)
+
+### cache
+
+- `createTtlCache({ ttlMs, maxEntries?, now? })` — in-memory cache with expiry: `get`, `set`, `has`, `delete`, `clear` and `getOrSet(key, load)`, which deduplicates loads in flight and caches nothing on failure
+
+### server
+
+Pure helpers for `getServerSideProps`, Server Components and route handlers — structural types, no `next` import.
+
+- `redirectTo(destination, permanent = false)` — `{ redirect: { destination, permanent } }`
+- `getCookie(name, source?)` — reads a cookie from a `Cookie` header string, a request (`IncomingMessage` or `Headers`), or a `cookies()` store; without `source`, `document.cookie` in the browser
+- `readJsonCookie(name, source?)` — `getCookie` + `parseJson`; missing/invalid → `null`
+- `createServerTiming()` — `{ measure(name, fn), header(), apply(res) }` to send a `Server-Timing` header (durations recorded even when `fn` throws)
+
 ### browser (DOM only)
 
 - `loadImageFromBlob(blob)` — `Promise<HTMLImageElement>`

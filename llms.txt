@@ -5,7 +5,7 @@
 ## Visão geral para IA
 
 - Todas as funções são **named exports planos** a partir da raiz do pacote (`@julianobazzi/utils`). Não há default export.
-- Internamente agrupadas por: `formatting`, `date`, `url`, `mask`, `validation`, `number`, `object`, `parse`, `transform`, `browser`, `generate`. O consumidor importa tudo do root.
+- Internamente agrupadas por: `formatting`, `date`, `url`, `mask`, `validation`, `number`, `object`, `parse`, `transform`, `async`, `http`, `cache`, `server`, `browser`, `generate`. O consumidor importa tudo do root.
 - Convenções: funções de formatação retornam `string` e dão `""` (ou um fallback documentado) para entrada vazia/nula; validações retornam `boolean`; quase todos os parâmetros de entrada são opcionais e aceitam `undefined`/`null`.
 - Padrão de options (último parâmetro, objeto): `fallback?: string` (retorno quando entrada vazia/ausente, default `""`), `separator?: string` (junção), e `casing?: LetterCasing` onde `LetterCasing = 'lowercase' | 'uppercase' | 'titlecase'` (titlecase põe a 1ª letra de cada palavra em maiúscula preservando o resto, ex.: `"KB"`). Cada função expõe só as options que fazem sentido.
 - Funções do grupo `browser` dependem de APIs DOM (`Image`, `FileReader`, `URL`, `window`) — só funcionam no navegador.
@@ -247,6 +247,35 @@ Todos geram valores aleatórios que **passam nos validadores correspondentes** d
 - `generateBoleto(options?: { type?: 'bank' | 'collection'; formatted?: boolean }): string` — linha digitável válida em `isValidBoleto`. `type` default `'bank'` → 47 dígitos (moeda `9`, três DVs mod-10 de campo + DV geral mod-11); `'collection'` → arrecadação de 48 dígitos iniciando com `8` (quatro blocos de 11 + DV, mod-10 p/ moeda 6-7 e mod-11 p/ 8-9). `formatted: true` aplica os separadores usuais (`"00190.50095 40144.816069 06809.350314 3 37370000000100"`), que continuam válidos porque `isValidBoleto` normaliza via `onlyNumbers`.
 - `generateUF(): UF` — sigla de estado aleatória entre as 27 unidades federativas (26 estados + DF). `UF` (exportado) é a união literal das siglas. Ex.: `"SP"`.
 - `generateEmail(options?: { domain?: string; length?: number }): string` — e-mail válido em `isValidEmail`. Local part alfanumérico minúsculo sempre iniciando por letra, `length` default `12`; `domain` default `"example.com"` (reservado pela RFC 2606, nunca roteia — evita envio real acidental em teste). Ex.: `"k3p9xz1qw8ab@example.com"`.
+
+## API — async
+
+- `sleep(ms: number, options?: { signal?: AbortSignal }): Promise<void>` — espera `ms` (negativo = 0). Signal já abortado rejeita **na hora** com `signal.reason`; abort durante a espera também; o listener de abort é removido quando o timer dispara (sem vazamento em signal de vida longa).
+- `retry<T>(fn: (context: { attempt: number; signal?: AbortSignal }) => Promise<T> | T, options?: { attempts?: number; delayMs?: number | ((attempt: number, error: unknown) => number); signal?: AbortSignal; shouldRetry?: (error: unknown, attempt: number) => boolean; onRetry?: (error: unknown, attempt: number) => void }): Promise<T>` — tenta até `attempts` (default 3, mínimo 1) vezes, esperando `delayMs` (default 0) entre tentativas via `sleep`. Todas falharam → rejeita com `RetryError` (`name: "RetryError"`, `attempts`, `cause` = último erro). Abort (antes, durante ou na espera) e erro que `shouldRetry` recusa são relançados **como estão**. `onRetry` roda antes de cada nova tentativa.
+- `class RetryError extends Error { readonly attempts: number; cause: unknown }` — exportada para `instanceof`.
+- `tryOrNull<T>(fn: () => Promise<T> | T, options?: { when?: (error: unknown) => boolean }): Promise<T | null>` — erro → `null`. Sem `when`, todo erro vira `null` (semântica de `fetchOrNull`); com `when`, só os que passam no predicado, os outros são relançados — use `when: (e) => getHttpStatus(e) === 404` para não esconder 401/5xx nem o `redirect()`/`notFound()` do Next.
+- `settle<T>(input: Promise<T> | (() => Promise<T> | T)): Promise<Settled<T>>` — `Settled<T> = { ok: true; value: T } | { ok: false; error: unknown }`; nunca rejeita (captura até `throw` síncrono da função).
+- `onceAsync<T>(fn: () => Promise<T> | T): { run(): Promise<T>; reset(): void }` — memoiza uma carga async: chamadas a `run()` compartilham a mesma promise (em andamento ou resolvida). Falha limpa a promise **só se ela ainda for a atual**, então uma falha antiga não apaga uma carga nova iniciada depois de `reset()`.
+
+## API — http (erros de API, sem axios)
+
+- `getHttpStatus(error: unknown): number | undefined` — lê, nesta ordem, `error.response.status` (axios/ky), `error.status` (`Response`) e `error.statusCode`; precisa ser `number`. Erro de rede → `undefined`.
+- `getErrorMessage(error: unknown, options?: { fallback?: string }): string` — `error.response.data.message` (corpo da API), senão `error.message`, senão o próprio erro se for string (strings em branco são ignoradas). Nada → `fallback` (default `""`).
+- `getValidationErrors(error: unknown, options?: { status?: number }): ValidationErrors | null` — `ValidationErrors = { message?: string; errors: Record<string, string[]> }` (formato 422 do Laravel), lido de `response.data` ou `data`. Mensagem solta (string) vira `[string]`; itens não string/vazios e campos vazios são descartados. Status diferente de `status` (default `422`) → `null`. Erro de um campo: `getValidationErrors(e)?.errors.email?.[0]`.
+- `applyValidationErrors<N extends string>(errors: ValidationErrors | null | undefined, setError: (name: N, error: { type: string; message: string }) => void, options?: { fieldMap?: Record<string, N>; fields?: readonly N[]; type?: string }): { handled: boolean; message?: string; unhandled: string[] }` — chama `setError` (o do react-hook-form encaixa estruturalmente) com a **primeira** mensagem de cada campo, renomeado por `fieldMap`. Com `fields`, campo que não existe no formulário vai para `unhandled` e **não** conta como `handled` (assim o chamador ainda mostra o toast). `type` default `"server"`.
+- `readResponseWithProgress(response: Response, options?: { signal?: AbortSignal; onProgress?: (received: number, total: number) => void; stepBytes?: number }): Promise<Blob>` — lê o corpo de um `fetch` em `Blob` (com o `content-type`), chamando `onProgress` a cada `stepBytes` (default 256 KiB) e no fim. `total` vem do `Content-Length`; é `0` quando desconhecido **ou excedido** (resposta comprimida), então a porcentagem nunca passa de 100%. Signal já abortado rejeita na hora; abort cancela o stream; o listener sempre é removido.
+
+## API — cache
+
+- `createTtlCache<K, V>(options: { ttlMs: number; maxEntries?: number; now?: () => number }): TtlCache<K, V>` — cache em memória com expiração. `TtlCache = { get(key): V | undefined; set(key, value): void; has(key): boolean; delete(key): void; clear(): void; getOrSet(key, load: () => Promise<V> | V): Promise<V> }`. Entradas expiram após `ttlMs`; acima de `maxEntries`, sai a mais antiga (regravar move para o fim). `getOrSet` compartilha a mesma carga entre chamadas simultâneas e não guarda nada se ela rejeitar (nem se `delete`/`clear` rodar durante a carga). `now` é para testes. Vive no módulo que o cria (em serverless, por instância).
+
+## API — server (sem importar `next`)
+
+- `redirectTo(destination: string, permanent = false): { redirect: { destination: string; permanent: boolean } }` — o objeto de redirect do `getServerSideProps` (compatível com o `Redirect` do Next).
+- `type CookieSource = string | { headers: { cookie?: string | string[] } | { get(name: string): string | null } } | { get(name: string): { value: string } | undefined }` — header `Cookie` cru, requisição (`IncomingMessage` do gSSP/API routes, ou `Headers` de `NextRequest`/`Request`) ou store do `cookies()` (já com `await`).
+- `getCookie(name: string, source?: CookieSource): string | undefined` — lê um cookie com `decodeURIComponent` protegido (escape malformado → valor cru; aspas em volta removidas). Store `cookies()` → valor como o store devolve (já decodificado). Sem `source`: `document.cookie` no navegador, `undefined` no servidor.
+- `readJsonCookie<T>(name: string, source?: CookieSource): T | null` — `getCookie` + `parseJson`; ausente/JSON inválido → `null`.
+- `createServerTiming(): { measure<T>(name: string, fn: () => T | Promise<T>): Promise<T>; header(): string; apply(res: { setHeader(name: string, value: string): void }): void }` — métricas `Server-Timing`: `measure` cronometra com `performance.now()` e registra mesmo quando `fn` lança (o erro é relançado); nomes sanitizados (`[^\w-]` → `_`, vazio → `metric`); uma casa decimal. `header()` → `"getMe;dur=12.3, entities;dur=40.1"`; `apply(res)` grava o header se houver métricas. No App Router, use `header()` num `NextResponse`.
 
 ## API — browser (somente DOM)
 

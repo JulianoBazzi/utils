@@ -276,6 +276,37 @@ Todos os geradores produzem valores aleatórios que passam no validador correspo
 - `generateUF()` — sigla de estado aleatória entre as 27 unidades federativas, ex.: `SP`
 - `generateEmail({ domain?, length? })` — e-mail válido; default no domínio `example.com`, reservado pela RFC 2606 e que nunca roteia
 
+### async
+
+- `sleep(ms, { signal? })` — espera `ms`; signal abortado rejeita na hora com `signal.reason`, e o listener de abort sempre é removido
+- `retry(fn, { attempts = 3, delayMs = 0, signal?, shouldRetry?, onRetry? })` — roda `fn({ attempt, signal })` até dar certo; `delayMs` pode ser `(attempt, error) => ms`; se todas as tentativas falharem, rejeita com `RetryError` (`attempts`, `cause`); abort e erros recusados por `shouldRetry` são relançados como estão
+- `tryOrNull(fn, { when? })` — devolve `null` em vez de rejeitar; restrinja com `when` (ex.: só 404) para não esconder falhas
+- `settle(promiseOrFn)` — `{ ok: true, value }` ou `{ ok: false, error }`, nunca rejeita
+- `onceAsync(fn)` — `{ run, reset }`: todo `run()` compartilha a mesma promise; falha limpa (sem apagar uma carga nova iniciada depois do `reset()`)
+
+### http
+
+Helpers estruturais para erros de API — sem depender do axios.
+
+- `getHttpStatus(error)` — `error.response.status`, `error.status` ou `error.statusCode`, senão `undefined`
+- `getErrorMessage(error, { fallback? })` — `response.data.message` da API, senão `error.message`, senão a própria string
+- `getValidationErrors(error, { status = 422 })` — `{ message?, errors: { campo: string[] } }` no formato do Laravel, ou `null` para outros status
+- `applyValidationErrors(errors, setError, { fieldMap?, fields?, type = 'server' })` — joga a 1ª mensagem de cada campo no `setError` do react-hook-form (estrutural); campos fora de `fields` vão para `unhandled` e não contam como tratados
+- `readResponseWithProgress(response, { signal?, onProgress?, stepBytes? })` — lê o corpo de um `fetch` em `Blob` com progresso; `total` é `0` quando desconhecido ou excedido (resposta comprimida)
+
+### cache
+
+- `createTtlCache({ ttlMs, maxEntries?, now? })` — cache em memória com expiração: `get`, `set`, `has`, `delete`, `clear` e `getOrSet(key, load)`, que deduplica cargas em andamento e não guarda nada em caso de falha
+
+### server
+
+Helpers puros para `getServerSideProps`, Server Components e route handlers — tipos estruturais, sem importar `next`.
+
+- `redirectTo(destination, permanent = false)` — `{ redirect: { destination, permanent } }`
+- `getCookie(name, source?)` — lê um cookie de uma string de header `Cookie`, de uma requisição (`IncomingMessage` ou `Headers`) ou de um store `cookies()`; sem `source`, `document.cookie` no navegador
+- `readJsonCookie(name, source?)` — `getCookie` + `parseJson`; ausente/inválido → `null`
+- `createServerTiming()` — `{ measure(name, fn), header(), apply(res) }` para enviar o header `Server-Timing` (a duração é registrada mesmo quando `fn` lança)
+
 ### browser (somente DOM)
 
 - `loadImageFromBlob(blob)` — `Promise<HTMLImageElement>`
