@@ -1,5 +1,6 @@
 import { onlyAlphanumeric } from '../formatting/onlyAlphanumeric.js';
 import { checkDigit } from './internal/checkDigit.js';
+import { isRepeated } from './internal/digits.js';
 
 /**
  * Validate a Brazilian CNPJ via its two check digits. Supports both the legacy
@@ -13,7 +14,7 @@ import { checkDigit } from './internal/checkDigit.js';
 export function isValidCNPJ(value?: string | null): boolean {
   const cnpj = onlyAlphanumeric(value);
 
-  if (cnpj.length !== 14 || !/\d{2}$/.test(cnpj) || /^(.)\1{13}$/.test(cnpj)) {
+  if (cnpj.length !== 14 || !/\d{2}$/.test(cnpj) || isRepeated(cnpj)) {
     return false;
   }
 

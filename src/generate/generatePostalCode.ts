@@ -1,5 +1,5 @@
 import { formatPostalCode } from '../formatting/formatPostalCode.js';
-import { getRandomInt } from '../number/getRandomInt.js';
+import { randomDigits } from './internal/randomDigits.js';
 
 interface GeneratePostalCodeOptions {
   /** Return the CEP masked as `00000-000`. Defaults to `false`. */
@@ -17,7 +17,7 @@ interface GeneratePostalCodeOptions {
 export function generatePostalCode(options: GeneratePostalCodeOptions = {}): string {
   const { formatted = false } = options;
 
-  const postalCode = Array.from({ length: 8 }, () => getRandomInt(0, 9)).join('');
+  const postalCode = randomDigits(8);
 
   return formatted ? formatPostalCode(postalCode) : postalCode;
 }

@@ -1,5 +1,6 @@
-import { getRandomInt } from '../number/getRandomInt.js';
 import { cnhCheckDigits } from '../validation/internal/cnhDigits.js';
+import { isRepeated } from '../validation/internal/digits.js';
+import { randomDigits } from './internal/randomDigits.js';
 
 /**
  * Generate a random, valid CNH (driver's license) number — handy for tests
@@ -15,9 +16,9 @@ export function generateCNH(): string {
   // Bases where the discount rule pushes dv2 to 10 have no valid check-digit
   // pair, so they are re-drawn.
   do {
-    base = Array.from({ length: 9 }, () => getRandomInt(0, 9)).join('');
+    base = randomDigits(9);
     digits = cnhCheckDigits(base);
-  } while (/^(\d)\1{8}$/.test(base) || digits.dv2 > 9);
+  } while (isRepeated(base) || digits.dv2 > 9);
 
   return `${base}${digits.dv1}${digits.dv2}`;
 }

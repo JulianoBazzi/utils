@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br.js';
 import { applyCasing, type LetterCasing } from './applyCasing.js';
+import { capitalize } from './internal/casing.js';
 
 interface GetWeekDayNameOptions {
   /** Use the short form (`"Sáb"`) instead of the full name. Defaults to `false`. */
@@ -35,7 +36,5 @@ export function getWeekDayName(
   if (!date.isValid()) return fallback;
 
   const name = date.format(short ? 'ddd' : 'dddd');
-  const capitalized = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
-
-  return applyCasing(capitalized, casing);
+  return applyCasing(capitalize(name), casing);
 }

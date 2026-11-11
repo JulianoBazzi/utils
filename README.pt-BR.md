@@ -184,6 +184,7 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `resolveList(value?, resolver, params?)` — `parseIds` + `resolveIdsToObjects`; aceita string ou array de strings
 - `resolveId(value?, resolver, params?)` — resolve o 1º id válido em objeto, ou `null`
 - `parseJson<T>(value?)` — `JSON.parse` que devolve `undefined` em vez de lançar (`"null"` parseado continua `null`)
+- `toArray(value?)` — embrulha um valor único num array ou copia um array, descartando `null`/`undefined` (`toArray(undefined)` → `[]`, diferente do `castArray` do lodash)
 - `toStringArray(value)` — reduz um valor desconhecido a `string[]`, descartando entradas de outros tipos; não-array → `[]`
 - `getFileExtension(value?)` — extensão de um caminho/URL sem o ponto; ignora `?query`/`#hash` e host com ponto, dotfiles → `""`
 - `parseInlineMarkup(value?, { boldMarker?, italicMarker? })` — markup estilo WhatsApp `*negrito*`/`_itálico_` (aninhável) → `{ text, bold?, italic? }[]`

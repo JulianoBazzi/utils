@@ -1,4 +1,5 @@
 import { onlyNumbers } from '../formatting/onlyNumbers.js';
+import { isRepeated } from './internal/digits.js';
 import { renavamCheckDigit } from './internal/renavamDigit.js';
 
 /**
@@ -20,7 +21,7 @@ export function isValidRenavam(value?: string | null): boolean {
 
   const renavam = digits.padStart(11, '0');
 
-  if (/^(\d)\1{10}$/.test(renavam)) {
+  if (isRepeated(renavam)) {
     return false;
   }
 

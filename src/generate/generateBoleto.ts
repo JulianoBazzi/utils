@@ -1,6 +1,7 @@
 import { formatWithPattern } from '../formatting/formatWithPattern.js';
 import { getRandomInt } from '../number/getRandomInt.js';
 import { boletoMod10, boletoMod11 } from '../validation/internal/boletoDigits.js';
+import { randomDigits } from './internal/randomDigits.js';
 
 interface GenerateBoletoOptions {
   /** `bank` = bank slip (47 digits, default); `collection` = arrecadação (48 digits). */
@@ -12,15 +13,13 @@ interface GenerateBoletoOptions {
 const BANK_MASK = '#####.##### #####.###### #####.###### # ##############';
 const COLLECTION_MASK = '###########-# ###########-# ###########-# ###########-#';
 
-const digits = (count: number) => Array.from({ length: count }, () => getRandomInt(0, 9)).join('');
-
 // Bank slip: bank + currency, a 25-digit free field split across three line
 // fields (each with its own mod-10 digit), the general mod-11 digit, then due
 // factor + amount.
 function generateBankSlip(): string {
-  const bankAndCurrency = `${digits(3)}9`;
-  const freeField = digits(25);
-  const dueFactorAndAmount = digits(14);
+  const bankAndCurrency = `${randomDigits(3)}9`;
+  const freeField = randomDigits(25);
+  const dueFactorAndAmount = randomDigits(14);
 
   const field1 = `${bankAndCurrency}${freeField.slice(0, 5)}`;
   const field2 = freeField.slice(5, 15);
@@ -46,7 +45,7 @@ function generateBankSlip(): string {
 // (6/7) or mod-11 (8/9).
 function generateCollectionSlip(): string {
   const currency = getRandomInt(6, 9);
-  const barcode = `8${digits(1)}${currency}${digits(41)}`;
+  const barcode = `8${randomDigits(1)}${currency}${randomDigits(41)}`;
   const useMod10 = currency === 6 || currency === 7;
 
   let line = '';

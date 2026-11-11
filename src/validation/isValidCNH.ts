@@ -1,5 +1,6 @@
 import { onlyNumbers } from '../formatting/onlyNumbers.js';
 import { cnhCheckDigits } from './internal/cnhDigits.js';
+import { isRepeated } from './internal/digits.js';
 
 /**
  * Validate a Brazilian driver's license (CNH) number via its two check digits
@@ -12,7 +13,7 @@ import { cnhCheckDigits } from './internal/cnhDigits.js';
 export function isValidCNH(value?: string | null): boolean {
   const cnh = onlyNumbers(value);
 
-  if (cnh.length !== 11 || /^(\d)\1{10}$/.test(cnh)) {
+  if (cnh.length !== 11 || isRepeated(cnh)) {
     return false;
   }
 

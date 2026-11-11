@@ -1,4 +1,5 @@
 import { parseIds } from './parseIds.js';
+import { toArray } from './toArray.js';
 
 /**
  * Resolve the first valid id from a value (string, array, or `undefined`) into
@@ -14,8 +15,7 @@ export async function resolveId<T, P = void>(
   resolver: (id: number, params?: P) => Promise<T>,
   params?: P,
 ): Promise<T | null> {
-  const values = Array.isArray(value) ? value : value ? [value] : [];
-  const [id] = parseIds(...values);
+  const [id] = parseIds(...toArray(value));
 
   if (id === undefined) {
     return null;

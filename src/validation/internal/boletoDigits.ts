@@ -1,3 +1,5 @@
+import { digitAt } from './digits.js';
+
 /**
  * Mod-10 check digit (bank slip digitable-line fields and `6`/`7` currency
  * blocks of collection slips). Weights 2,1 alternating from the right;
@@ -9,7 +11,7 @@ export function boletoMod10(value: string): number {
   let sum = 0;
   let weight = 2;
   for (let i = value.length - 1; i >= 0; i -= 1) {
-    const product = (value.charCodeAt(i) - 48) * weight;
+    const product = digitAt(value, i) * weight;
     sum += product > 9 ? product - 9 : product;
     weight = weight === 2 ? 1 : 2;
   }
@@ -28,7 +30,7 @@ export function boletoMod11(value: string, mode: 'bank' | 'collection' = 'bank')
   let sum = 0;
   let weight = 2;
   for (let i = value.length - 1; i >= 0; i -= 1) {
-    sum += (value.charCodeAt(i) - 48) * weight;
+    sum += digitAt(value, i) * weight;
     weight = weight === 9 ? 2 : weight + 1;
   }
 

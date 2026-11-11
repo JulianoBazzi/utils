@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br.js';
 import { applyCasing, type LetterCasing } from './applyCasing.js';
+import { capitalize } from './internal/casing.js';
 
 interface FormatWeekDayOptions {
   /** Returned when the input is empty/missing. Defaults to `""`. */
@@ -34,7 +35,6 @@ export function formatWeekDay(date?: string | null, options: FormatWeekDayOption
 
   const datePart = instance.format(dateFormat);
   const weekday = instance.format('ddd');
-  const weekdayCap = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)}`;
 
-  return applyCasing(`${datePart} - ${weekdayCap}`, casing);
+  return applyCasing(`${datePart} - ${capitalize(weekday)}`, casing);
 }

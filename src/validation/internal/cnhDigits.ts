@@ -1,3 +1,5 @@
+import { digitAt } from './digits.js';
+
 /**
  * Denatran check digits for a CNH, from its 9 base digits — including the
  * discount rule applied to the second digit when the first sum's rest is 10.
@@ -8,7 +10,7 @@ export function cnhCheckDigits(base: string): { dv1: number; dv2: number } {
   let sum1 = 0;
   let sum2 = 0;
   for (let i = 0; i < 9; i += 1) {
-    const digit = base.charCodeAt(i) - 48;
+    const digit = digitAt(base, i);
     sum1 += digit * (9 - i);
     sum2 += digit * (i + 1);
   }

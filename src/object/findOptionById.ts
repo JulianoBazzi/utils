@@ -1,3 +1,5 @@
+import { toArray } from '../parse/toArray.js';
+
 /**
  * Find the option whose id matches `value` (the first id when an array is
  * passed). Compares as strings, so `7` matches `"7"`. Returns `null` when no
@@ -11,7 +13,7 @@ export function findOptionById<O extends { id?: string | number | null }>(
   options: O[] | undefined | null,
   value?: string | string[] | null,
 ): O | null {
-  const id = Array.isArray(value) ? value[0] : value;
+  const [id] = toArray(value);
   if (!id) {
     return null;
   }

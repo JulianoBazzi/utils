@@ -1,6 +1,7 @@
 import { formatCNPJ } from '../formatting/formatCNPJ.js';
 import { getRandomInt } from '../number/getRandomInt.js';
 import { checkDigit } from '../validation/internal/checkDigit.js';
+import { randomDigits } from './internal/randomDigits.js';
 
 const ALPHANUMERIC = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -25,7 +26,7 @@ export function generateCNPJ(options: GenerateCNPJOptions = {}): string {
 
   const root = alphanumeric
     ? Array.from({ length: 8 }, () => ALPHANUMERIC.charAt(getRandomInt(0, 35))).join('')
-    : Array.from({ length: 8 }, () => getRandomInt(0, 9)).join('');
+    : randomDigits(8);
   const base = `${root}0001`;
 
   const dv1 = checkDigit(base, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);

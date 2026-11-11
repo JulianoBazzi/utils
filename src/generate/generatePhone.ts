@@ -1,5 +1,7 @@
 import { formatPhone } from '../formatting/formatPhone.js';
 import { getRandomInt } from '../number/getRandomInt.js';
+import { isRepeated } from '../validation/internal/digits.js';
+import { randomDigits } from './internal/randomDigits.js';
 
 interface GeneratePhoneOptions {
   /** Generate a mobile number (11 digits). Defaults to `true`; `false` → landline (10 digits). */
@@ -7,8 +9,6 @@ interface GeneratePhoneOptions {
   /** Return the phone masked, e.g. `(11) 98765-4321`. Defaults to `false`. */
   formatted?: boolean;
 }
-
-const digits = (count: number) => Array.from({ length: count }, () => getRandomInt(0, 9)).join('');
 
 /**
  * Generate a random, valid Brazilian phone number — handy for tests and
@@ -25,8 +25,8 @@ export function generatePhone(options: GeneratePhoneOptions = {}): string {
   do {
     // DDD digits can't be zero (isValidPhone rule).
     const ddd = `${getRandomInt(1, 9)}${getRandomInt(1, 9)}`;
-    phone = mobile ? `${ddd}9${digits(8)}` : `${ddd}${getRandomInt(2, 8)}${digits(7)}`;
-  } while (/^(\d)\1*$/.test(phone));
+    phone = mobile ? `${ddd}9${randomDigits(8)}` : `${ddd}${getRandomInt(2, 8)}${randomDigits(7)}`;
+  } while (isRepeated(phone));
 
   return formatted ? formatPhone(phone) : phone;
 }

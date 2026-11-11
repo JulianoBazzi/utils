@@ -1,3 +1,5 @@
+import { digitAt } from './digits.js';
+
 /**
  * Mod-10 check digit for EAN/GTIN barcodes. The base (barcode without its
  * last digit) is padded to 13 positions and weighted 3/1 alternating from
@@ -10,7 +12,7 @@ export function eanCheckDigit(base: string): number {
 
   let sum = 0;
   for (let i = 0; i < 13; i += 1) {
-    sum += (padded.charCodeAt(i) - 48) * (i % 2 === 0 ? 3 : 1);
+    sum += digitAt(padded, i) * (i % 2 === 0 ? 3 : 1);
   }
 
   return (10 - (sum % 10)) % 10;

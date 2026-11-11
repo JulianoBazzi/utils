@@ -1,5 +1,6 @@
 import { onlyNumbers } from '../formatting/onlyNumbers.js';
 import { checkDigit } from './internal/checkDigit.js';
+import { isRepeated } from './internal/digits.js';
 
 /**
  * Validate a Brazilian PIS/PASEP number (with or without mask) via its
@@ -12,7 +13,7 @@ import { checkDigit } from './internal/checkDigit.js';
 export function isValidPIS(value?: string | null): boolean {
   const pis = onlyNumbers(value);
 
-  if (pis.length !== 11 || /^(\d)\1{10}$/.test(pis)) {
+  if (pis.length !== 11 || isRepeated(pis)) {
     return false;
   }
 

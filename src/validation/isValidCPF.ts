@@ -1,5 +1,6 @@
 import { onlyNumbers } from '../formatting/onlyNumbers.js';
 import { checkDigit } from './internal/checkDigit.js';
+import { isRepeated } from './internal/digits.js';
 
 /**
  * Validate a Brazilian CPF (with or without mask) via its two check digits.
@@ -11,7 +12,7 @@ import { checkDigit } from './internal/checkDigit.js';
 export function isValidCPF(value?: string | null): boolean {
   const cpf = onlyNumbers(value);
 
-  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
+  if (cpf.length !== 11 || isRepeated(cpf)) {
     return false;
   }
 

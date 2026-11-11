@@ -1,6 +1,7 @@
 import { formatCPF } from '../formatting/formatCPF.js';
-import { getRandomInt } from '../number/getRandomInt.js';
 import { checkDigit } from '../validation/internal/checkDigit.js';
+import { isRepeated } from '../validation/internal/digits.js';
+import { randomDigits } from './internal/randomDigits.js';
 
 interface GenerateCPFOptions {
   /** Return the CPF masked as `000.000.000-00`. Defaults to `false`. */
@@ -19,8 +20,8 @@ export function generateCPF(options: GenerateCPFOptions = {}): string {
 
   let base: string;
   do {
-    base = Array.from({ length: 9 }, () => getRandomInt(0, 9)).join('');
-  } while (/^(\d)\1{8}$/.test(base));
+    base = randomDigits(9);
+  } while (isRepeated(base));
 
   const dv1 = checkDigit(base, [10, 9, 8, 7, 6, 5, 4, 3, 2]);
   const dv2 = checkDigit(`${base}${dv1}`, [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);

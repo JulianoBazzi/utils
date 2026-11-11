@@ -1,5 +1,6 @@
-import { getRandomInt } from '../number/getRandomInt.js';
+import { isRepeated } from '../validation/internal/digits.js';
 import { renavamCheckDigit } from '../validation/internal/renavamDigit.js';
+import { randomDigits } from './internal/randomDigits.js';
 
 interface GenerateRenavamOptions {
   /** Generate the legacy 9-digit format instead of the current 11-digit one. Defaults to `false`. */
@@ -21,8 +22,8 @@ export function generateRenavam(options: GenerateRenavamOptions = {}): string {
 
   let base: string;
   do {
-    base = Array.from({ length: baseLength }, () => getRandomInt(0, 9)).join('');
-  } while (new RegExp(`^(\\d)\\1{${baseLength - 1}}$`).test(base));
+    base = randomDigits(baseLength);
+  } while (isRepeated(base));
 
   // The check digit is always computed over the 10-digit base (zero-padded).
   const dv = renavamCheckDigit(base.padStart(10, '0'));

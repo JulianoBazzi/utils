@@ -1,7 +1,5 @@
 import { onlyNumbers } from '../formatting/onlyNumbers.js';
-
-// All characters identical (e.g. "11111111").
-const isRepeated = (value: string): boolean => /^(\d)\1*$/.test(value);
+import { isRepeated } from './internal/digits.js';
 
 /**
  * Validate a Brazilian phone number (landline or mobile). Strips non-digits

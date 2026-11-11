@@ -1,4 +1,5 @@
 import { applyCasing, type LetterCasing } from './applyCasing.js';
+import { titleCase } from './internal/casing.js';
 
 interface AbbreviateNameOptions {
   /**
@@ -10,12 +11,6 @@ interface AbbreviateNameOptions {
 }
 
 /** Title-case that normalizes: lowercases everything, then capitalizes each word. */
-function normalizeTitleCase(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/\S+/g, (word) => word.charAt(0).toUpperCase() + word.slice(1));
-}
-
 /**
  * Abbreviate a full name to first name + last initial (e.g. `"John S."`).
  * Single-word names are returned unchanged. Empty/blank/missing input → `""`.
@@ -31,7 +26,8 @@ export function abbreviateName(name?: string | null, options: AbbreviateNameOpti
   }
 
   const { casing } = options;
-  const cased = casing === 'titlecase' ? normalizeTitleCase(name) : applyCasing(name, casing);
+  const cased =
+    casing === 'titlecase' ? titleCase(name, { normalize: true }) : applyCasing(name, casing);
 
   const words = cased.trim().split(/\s+/);
   const [first, second] = words;

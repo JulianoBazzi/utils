@@ -1,3 +1,5 @@
+import { titleCase } from './internal/casing.js';
+
 export type LetterCasing = 'lowercase' | 'uppercase' | 'titlecase';
 
 /**
@@ -17,7 +19,7 @@ export function applyCasing(value: string, casing?: LetterCasing): string {
     case 'uppercase':
       return value.toUpperCase();
     case 'titlecase':
-      return value.replace(/\S+/g, (word) => word.charAt(0).toUpperCase() + word.slice(1));
+      return titleCase(value);
     default:
       return value;
   }

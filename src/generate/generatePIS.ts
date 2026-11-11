@@ -1,6 +1,7 @@
 import { formatPIS } from '../formatting/formatPIS.js';
-import { getRandomInt } from '../number/getRandomInt.js';
 import { checkDigit } from '../validation/internal/checkDigit.js';
+import { isRepeated } from '../validation/internal/digits.js';
+import { randomDigits } from './internal/randomDigits.js';
 
 interface GeneratePISOptions {
   /** Return the PIS masked as `000.00000.00-0`. Defaults to `false`. */
@@ -19,8 +20,8 @@ export function generatePIS(options: GeneratePISOptions = {}): string {
 
   let base: string;
   do {
-    base = Array.from({ length: 10 }, () => getRandomInt(0, 9)).join('');
-  } while (/^(\d)\1{9}$/.test(base));
+    base = randomDigits(10);
+  } while (isRepeated(base));
 
   const pis = `${base}${checkDigit(base, [3, 2, 9, 8, 7, 6, 5, 4, 3, 2])}`;
 

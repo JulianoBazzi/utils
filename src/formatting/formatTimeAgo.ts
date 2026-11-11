@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { countLabel } from './internal/pluralize.js';
 
 interface FormatTimeAgoOptions {
   /** Returned when the input is empty/missing. Defaults to `""`. */
@@ -30,28 +31,30 @@ export function formatTimeAgo(date?: string | null, options: FormatTimeAgoOption
   // Clamp future dates to "now" so the diffs below never go negative.
   const receivedDate = parsed.isAfter(currentDate) ? currentDate : parsed;
 
-  const formatDiff = (diff: number, unit: string) => `${diff > 0 ? diff : 1} ${unit}`;
+  // At least 1: a sub-minute (or future) gap still reads as "1 minuto".
+  const formatDiff = (diff: number, singular: string, plural: string) =>
+    countLabel(Math.max(diff, 1), singular, plural);
 
   const diffInMinutes = currentDate.diff(receivedDate, 'minute');
   if (diffInMinutes < 60) {
-    return formatDiff(diffInMinutes, diffInMinutes > 1 ? 'minutos' : 'minuto');
+    return formatDiff(diffInMinutes, 'minuto', 'minutos');
   }
 
   const diffInHours = currentDate.diff(receivedDate, 'hour');
   if (diffInHours < 24) {
-    return formatDiff(diffInHours, diffInHours > 1 ? 'horas' : 'hora');
+    return formatDiff(diffInHours, 'hora', 'horas');
   }
 
   const diffInDays = currentDate.diff(receivedDate, 'day');
   if (diffInDays < 30) {
-    return formatDiff(diffInDays, diffInDays > 1 ? 'dias' : 'dia');
+    return formatDiff(diffInDays, 'dia', 'dias');
   }
 
   const diffInMonths = currentDate.diff(receivedDate, 'month');
   if (diffInMonths < 12) {
-    return formatDiff(diffInMonths, diffInMonths > 1 ? 'meses' : 'mês');
+    return formatDiff(diffInMonths, 'mês', 'meses');
   }
 
   const diffInYears = currentDate.diff(receivedDate, 'year');
-  return formatDiff(diffInYears, diffInYears > 1 ? 'anos' : 'ano');
+  return formatDiff(diffInYears, 'ano', 'anos');
 }

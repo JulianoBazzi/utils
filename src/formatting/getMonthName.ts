@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br.js';
 import { applyCasing, type LetterCasing } from './applyCasing.js';
+import { capitalize } from './internal/casing.js';
 
 interface GetMonthNameOptions {
   /** Use the 3-letter abbreviation (`"Jul"`) instead of the full name. Defaults to `false`. */
@@ -36,7 +37,5 @@ export function getMonthName(
   if (!date.isValid()) return fallback;
 
   const name = date.format(short ? 'MMM' : 'MMMM');
-  const capitalized = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
-
-  return applyCasing(capitalized, casing);
+  return applyCasing(capitalize(name), casing);
 }

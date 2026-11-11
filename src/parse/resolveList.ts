@@ -1,5 +1,6 @@
 import { parseIds } from './parseIds.js';
 import { resolveIdsToObjects } from './resolveIdsToObjects.js';
+import { toArray } from './toArray.js';
 
 /**
  * Parse a comma-separated id string (or array of them) and resolve each id
@@ -14,6 +15,5 @@ export function resolveList<T, P = void>(
   resolver: (id: number, params?: P) => Promise<T>,
   params?: P,
 ): Promise<T[]> {
-  const values = Array.isArray(value) ? value : value ? [value] : [];
-  return resolveIdsToObjects(parseIds(...values), resolver, params);
+  return resolveIdsToObjects(parseIds(...toArray(value)), resolver, params);
 }

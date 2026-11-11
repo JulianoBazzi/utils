@@ -1,4 +1,5 @@
 import { getAge } from './getAge.js';
+import { countLabel } from './internal/pluralize.js';
 
 interface FormatAgeOptions {
   /** Returned when the input is missing/invalid or in the future. Defaults to `""`. */
@@ -23,5 +24,5 @@ export function formatAge(
   if (!birthDate) return fallback;
 
   const age = getAge(birthDate);
-  return `${age} ${age === 1 ? 'ano' : 'anos'}`;
+  return countLabel(age, 'ano', 'anos');
 }

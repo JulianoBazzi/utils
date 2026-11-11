@@ -1,5 +1,5 @@
-import { getRandomInt } from '../number/getRandomInt.js';
 import { eanCheckDigit } from '../validation/internal/eanCheckDigit.js';
+import { randomDigits } from './internal/randomDigits.js';
 
 interface GenerateBarcodeOptions {
   /** Barcode length: EAN-8, GTIN-12, EAN-13 (default) or GTIN-14. */
@@ -17,7 +17,7 @@ interface GenerateBarcodeOptions {
 export function generateBarcode(options: GenerateBarcodeOptions = {}): string {
   const { length = 13 } = options;
 
-  const base = Array.from({ length: length - 1 }, () => getRandomInt(0, 9)).join('');
+  const base = randomDigits(length - 1);
 
   return `${base}${eanCheckDigit(base)}`;
 }

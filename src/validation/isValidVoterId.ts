@@ -1,4 +1,5 @@
 import { onlyNumbers } from '../formatting/onlyNumbers.js';
+import { digitAt } from './internal/digits.js';
 import { voterIdDigit } from './internal/voterIdDigit.js';
 
 /**
@@ -28,11 +29,11 @@ export function isValidVoterId(value?: string | null): boolean {
 
   let sum1 = 0;
   for (let i = 0; i < 8; i += 1) {
-    sum1 += (voterId.charCodeAt(i) - 48) * (i + 2);
+    sum1 += digitAt(voterId, i) * (i + 2);
   }
   const dv1 = voterIdDigit(sum1, isSpOrMg);
 
-  const sum2 = (voterId.charCodeAt(8) - 48) * 7 + (voterId.charCodeAt(9) - 48) * 8 + dv1 * 9;
+  const sum2 = digitAt(voterId, 8) * 7 + digitAt(voterId, 9) * 8 + dv1 * 9;
   const dv2 = voterIdDigit(sum2, isSpOrMg);
 
   return dv1 === Number(voterId[10]) && dv2 === Number(voterId[11]);

@@ -1,3 +1,4 @@
+import { pluralForm } from './internal/pluralize.js';
 import { numberToWords } from './numberToWords.js';
 
 interface CurrencyToWordsOptions {
@@ -40,11 +41,11 @@ export function currencyToWords(
 
     // Round millions and above read as "de reais" ("um milhão de reais").
     const connector = reais >= 1e6 && reais % 1e6 === 0 ? ' de ' : ' ';
-    parts.push(`${reaisWords}${connector}${reais === 1 ? 'real' : 'reais'}`);
+    parts.push(`${reaisWords}${connector}${pluralForm(reais, 'real', 'reais')}`);
   }
 
   if (cents > 0) {
-    parts.push(`${numberToWords(cents)} ${cents === 1 ? 'centavo' : 'centavos'}`);
+    parts.push(`${numberToWords(cents)} ${pluralForm(cents, 'centavo', 'centavos')}`);
   }
 
   const result = parts.join(' e ');

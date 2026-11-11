@@ -1,4 +1,5 @@
 import { getProperty } from '../object/getProperty.js';
+import { resolveOptions } from './internal/resolveOptions.js';
 
 export interface JoinByKeyOptions {
   /** Divider placed between values. Defaults to `" | "`. */
@@ -36,7 +37,7 @@ export function joinByKey<T, K extends keyof T>(
     divider = ' | ',
     sort = false,
     unique = false,
-  } = typeof dividerOrOptions === 'string' ? { divider: dividerOrOptions } : dividerOrOptions;
+  } = resolveOptions<JoinByKeyOptions, 'divider'>(dividerOrOptions, 'divider');
 
   let entries = values.filter((value): value is T => Boolean(value));
 

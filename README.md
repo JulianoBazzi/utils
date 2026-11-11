@@ -186,6 +186,7 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 - `resolveList(value?, resolver, params?)` — `parseIds` + `resolveIdsToObjects`; accepts a string or string array
 - `resolveId(value?, resolver, params?)` — resolves the first valid id into an object, or `null`
 - `parseJson<T>(value?)` — `JSON.parse` returning `undefined` instead of throwing (a parsed `"null"` stays `null`)
+- `toArray(value?)` — wraps a single value in an array or copies an array, dropping `null`/`undefined` (`toArray(undefined)` → `[]`, unlike lodash `castArray`)
 - `toStringArray(value)` — narrows an unknown value to `string[]`, dropping entries of other types; non-arrays → `[]`
 - `getFileExtension(value?)` — extension of a path/URL without the dot; ignores `?query`/`#hash` and dotted hosts, dotfiles → `""`
 - `parseInlineMarkup(value?, { boldMarker?, italicMarker? })` — WhatsApp-style `*bold*`/`_italic_` (nestable) → `{ text, bold?, italic? }[]`

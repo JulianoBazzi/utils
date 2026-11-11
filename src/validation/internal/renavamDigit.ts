@@ -1,3 +1,5 @@
+import { digitAt } from './digits.js';
+
 // Equivalent to the official rule (reverse the base and weight 2,3,4,...),
 // expressed left-to-right over the 10 base digits.
 const WEIGHTS = [3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
@@ -11,7 +13,7 @@ const WEIGHTS = [3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
 export function renavamCheckDigit(base: string): number {
   let sum = 0;
   for (let i = 0; i < 10; i += 1) {
-    sum += (base.charCodeAt(i) - 48) * (WEIGHTS[i] as number);
+    sum += digitAt(base, i) * (WEIGHTS[i] as number);
   }
 
   const rest = (sum * 10) % 11;

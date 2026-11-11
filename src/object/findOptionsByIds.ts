@@ -1,3 +1,4 @@
+import { toArray } from '../parse/toArray.js';
 import { findOptionById } from './findOptionById.js';
 
 /**
@@ -12,9 +13,7 @@ export function findOptionsByIds<O extends { id?: string | number | null }>(
   options: O[] | undefined | null,
   value?: string | string[] | null,
 ): O[] {
-  const values = value ? (Array.isArray(value) ? value : [value]) : [];
-
-  return values
+  return toArray(value)
     .map((item) => findOptionById(options, item))
     .filter((option): option is O => option !== null);
 }
