@@ -1,3 +1,5 @@
+import { FORBIDDEN_KEYS } from './internal/forbiddenKeys.js';
+
 /**
  * Parse a URL query string into an object. Repeated keys collapse into an
  * array — which `Object.fromEntries(new URLSearchParams(...))` silently drops,
@@ -14,8 +16,6 @@
  * parseQueryParams("id=1&id=2") // { id: ["1", "2"] }
  * parseQueryParams("") // {}
  */
-const FORBIDDEN_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
-
 export function parseQueryParams(value?: string | null): Record<string, string | string[]> {
   if (!value) {
     return {};

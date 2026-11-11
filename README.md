@@ -143,6 +143,20 @@ formatDate("2024-01-02", { timeZone: "Asia/Tokyo" }); // "02/01/24" (naive: not 
 
 - `buildQueryParams(params?, { ignore?, prefix?, skipEmpty? })` — serializes an object into a query string; skips `null`/`undefined` (and `""` with `skipEmpty`), expands arrays into repeated keys, writes `Date` as ISO, returns `""` when empty, e.g. `{ id: [1, 2] }` → `?id=1&id=2`
 - `parseQueryParams(value?)` — the inverse; repeated keys become arrays (which `Object.fromEntries(new URLSearchParams(...))` loses). Accepts the string with or without a leading `?`; prototype keys (`__proto__`, `constructor`, `prototype`) are skipped
+- `buildQueryUrl(url, params, { ignore?, keepHash = true })` — patches the query of an existing URL: each key replaces all its occurrences; `""`/`null`/`undefined`/`NaN`/invalid dates/empty arrays remove it; `false` and `0` are written; the hash is kept, e.g. `buildQueryUrl("/a?x=1#top", { x: 2 })` → `/a?x=2#top`
+- `isSameQuery(a, b, { ignoreValueOrder? })` — compares two queries by content (key order, `+`/`%20` and a leading `?` don't matter)
+- `isRouteActive(pathname?, href, { exact? })` — is `href` the active route? Matches by path segment (`/settings` on `/settings/profile`, not on `/settings-old`), ignores query/hash/trailing slash; `/` only matches exactly
+
+Typed readers that never throw — a missing or invalid value comes back `undefined` (or `[]`), so apply defaults with `??`. They accept any query source: `URLSearchParams`, a query string, Pages Router `query` or App Router `searchParams` (`QuerySource`).
+
+- `readQueryString(query, key)` — first non-empty value (`?search=a&search=b` → `"a"`)
+- `readQueryArray(query, key)` — every non-empty value
+- `readQueryNumber(query, key, { integer?, min?, max? })` — plain decimals only (rejects `1e3`, `0x10`, `Infinity`); out of range → `undefined`
+- `readQueryBoolean(query, key)` — `true`/`1` → `true`, `false`/`0` → `false` (`?showAlert=false` is never truthy)
+- `readQueryEnum(query, key, allowed)` — the value only when it is in `allowed`
+- `readQueryDate(query, key)` — a real `YYYY-MM-DD` date (`2026-02-30` → `undefined`)
+- `readQueryIds(query, key, { max? })` — positive integer ids from repeated keys and commas, deduplicated
+- `readQueryRange(query, [startKey, endKey], fallback, { min?, max? })` — date range with per-end fallback; swapped when inverted, clamped into `[min, max]`
 
 ### mask (constants)
 
