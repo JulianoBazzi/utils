@@ -23,14 +23,29 @@ Uma coleção de pequenas funções utilitárias em TypeScript, com suporte a tr
 npm install @julianobazzi/utils
 ```
 
+A única dependência de runtime é o [dayjs](https://day.js.org) (`^1.11.23`), instalado junto com o pacote. Nenhum plugin do dayjs é necessário — o fuso horário usa `Intl`.
+
 ## Uso
 
 ```ts
-import { formatDate, contains, omitFields } from "@julianobazzi/utils";
+import {
+  formatCurrency,
+  formatDate,
+  formatPhone,
+  getToday,
+  isValidCPF,
+  pluralize,
+  readQueryIds,
+} from "@julianobazzi/utils";
 
 formatDate("2024-01-02"); // "02/01/24"
-contains("a", ["a", "b"]); // true
-omitFields({ a: 1, b: 2 }, ["b"]); // { a: 1 }
+formatDate("2024-01-02T02:00:00Z", { timeZone: "America/Sao_Paulo" }); // "01/01/24"
+getToday({ timeZone: "America/Sao_Paulo" }); // "2026-07-21", mesmo num servidor em UTC
+formatCurrency(1990); // "R$ 19,90" (centavos)
+formatPhone("+55 11 98765-4321"); // "(11) 98765-4321"
+isValidCPF("529.982.247-25"); // true
+pluralize(0, "tarefa"); // "0 tarefas"
+readQueryIds({ id: ["1,2", "2", "x"] }, "id"); // [1, 2]
 ```
 
 CommonJS:
@@ -44,6 +59,36 @@ onlyNumbers("(11) 98765-4321"); // "11987654321"
 ## API
 
 Todas as funções são exportadas de forma plana a partir da raiz do pacote, agrupadas internamente por finalidade.
+
+### Valores ausentes e fallbacks
+
+- **Ausente** é `null`, `undefined` ou `NaN` (e `±Infinity` nos formatadores de número). **Zero é valor**: sempre é formatado, nunca trocado pelo fallback.
+- Funções que devolvem string aceitam `fallback` para entrada ausente. Padrões:
+
+| Devolve quando a entrada falta | Funções |
+| --- | --- |
+| `""` | formatadores de data/hora, de documentos (`formatCPF`, `formatPhone`…), `formatAddress`, `build*Url`, durações, `formatNumber`, `numberToWords` |
+| `"R$ 0,00"` / `"0%"` / `"0 Bytes"` / `"00:00:00"` | `formatCurrency` / `formatPercentage` / `formatBytes` / `formatSecondsToTime` |
+| `"Não"` | `formatBoolean` |
+| `0` | `roundInteger`, `toCents`, `precisionRound`, `safeDivide`, `percentOf`, `getAge` |
+| `null` / `undefined` | `findOptionById`, `tryOrNull` / `parseJson`, `getOptionId`, `readQuery*` |
+| `{ startDate: "", endDate: "" }` | `getDateRange`, `getMonthRange` (entrada inválida) |
+
+### Nomes legados (saem na 2.0)
+
+Continuam funcionando na 1.x; troque pela forma nova:
+
+| Legado | Use |
+| --- | --- |
+| `formatHour` | `formatTime` |
+| `formatInteger` | `roundInteger` |
+| `formatEnvironment` | `normalizeEnvironment` |
+| `formatDuration` | `formatMinutesToDuration` |
+| `isMonday` … `isSunday` | `isDayOfWeek(value, 1)` … `isDayOfWeek(value, 0)` |
+| opções `simplified` / `showSeconds` | `year` / `seconds` |
+| argumentos posicionais de `formatCurrency`, `currencyToWords`, `formatPercentage`, `formatBytes`, `formatSecondsToTime`, `truncate`, `getLabelById` | o objeto de opções |
+
+Na 2.0, `pad` passa a ter padrão `false` e `formatBytes`/`formatCompactNumber` passam a ter padrão `pt-BR`.
 
 ### formatting (formatação)
 
@@ -245,7 +290,6 @@ Padrões de máscara de input (convenção react-input-mask: `9` = dígito, `a` 
 - `getMimeType(fileName?, fallback = 'application/octet-stream')` — MIME type pela extensão (imagens incl. webp/bmp/avif, documentos, Office, áudio, vídeo); ignora `?query`/`#hash`
 - `getFileKind(fileName?)` — `'image' | 'pdf' | 'audio' | 'video' | 'office' | 'email' | 'markdown' | 'text' | 'other'`; ignora `?query`/`#hash`
 - `hasExtension(fileName?, extensions)` — checagem de extensão sem diferenciar maiúsculas (com ou sem ponto); ignora `?query`/`#hash`
-
 - `toStringArray(value, { wrap? })` — reduz um valor desconhecido a `string[]`, descartando entradas de outros tipos; não-array → `[]` (`wrap: true` transforma `"a"` em `["a"]`)
 - `getFileExtension(value?)` — extensão de um caminho/URL sem o ponto; ignora `?query`/`#hash` e host com ponto, dotfiles → `""`
 - `parseInlineMarkup(value?, { boldMarker?, italicMarker? })` — markup estilo WhatsApp `*negrito*`/`_itálico_` (aninhável) → `{ text, bold?, italic? }[]`

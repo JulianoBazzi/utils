@@ -25,14 +25,29 @@ A collection of small, tree-shakeable TypeScript utility functions. Shipped as E
 npm install @julianobazzi/utils
 ```
 
+The only runtime dependency is [dayjs](https://day.js.org) (`^1.11.23`), installed with the package. No dayjs plugin is needed — time zones use `Intl`.
+
 ## Usage
 
 ```ts
-import { formatDate, contains, omitFields } from "@julianobazzi/utils";
+import {
+  formatCurrency,
+  formatDate,
+  formatPhone,
+  getToday,
+  isValidCPF,
+  pluralize,
+  readQueryIds,
+} from "@julianobazzi/utils";
 
 formatDate("2024-01-02"); // "02/01/24"
-contains("a", ["a", "b"]); // true
-omitFields({ a: 1, b: 2 }, ["b"]); // { a: 1 }
+formatDate("2024-01-02T02:00:00Z", { timeZone: "America/Sao_Paulo" }); // "01/01/24"
+getToday({ timeZone: "America/Sao_Paulo" }); // "2026-07-21", even on a UTC server
+formatCurrency(1990); // "R$ 19,90" (cents)
+formatPhone("+55 11 98765-4321"); // "(11) 98765-4321"
+isValidCPF("529.982.247-25"); // true
+pluralize(0, "tarefa"); // "0 tarefas"
+readQueryIds({ id: ["1,2", "2", "x"] }, "id"); // [1, 2]
 ```
 
 CommonJS:
@@ -46,6 +61,36 @@ onlyNumbers("(11) 98765-4321"); // "11987654321"
 ## API
 
 All functions are exported flat from the package root, grouped internally by purpose.
+
+### Missing values and fallbacks
+
+- **Missing** means `null`, `undefined` or `NaN` (and `±Infinity` for number formatters). **Zero is a value**: it is always formatted, never replaced by the fallback.
+- Functions that return a string accept `fallback` for missing input. Defaults:
+
+| Returns when the input is missing | Functions |
+| --- | --- |
+| `""` | date/time formatters, document formatters (`formatCPF`, `formatPhone`…), `formatAddress`, `build*Url`, durations, `formatNumber`, `numberToWords` |
+| `"R$ 0,00"` / `"0%"` / `"0 Bytes"` / `"00:00:00"` | `formatCurrency` / `formatPercentage` / `formatBytes` / `formatSecondsToTime` |
+| `"Não"` | `formatBoolean` |
+| `0` | `roundInteger`, `toCents`, `precisionRound`, `safeDivide`, `percentOf`, `getAge` |
+| `null` / `undefined` | `findOptionById`, `tryOrNull` / `parseJson`, `getOptionId`, `readQuery*` |
+| `{ startDate: "", endDate: "" }` | `getDateRange`, `getMonthRange` (unparseable input) |
+
+### Legacy names (removed in 2.0)
+
+These still work in 1.x; switch to the new form:
+
+| Legacy | Use instead |
+| --- | --- |
+| `formatHour` | `formatTime` |
+| `formatInteger` | `roundInteger` |
+| `formatEnvironment` | `normalizeEnvironment` |
+| `formatDuration` | `formatMinutesToDuration` |
+| `isMonday` … `isSunday` | `isDayOfWeek(value, 1)` … `isDayOfWeek(value, 0)` |
+| `simplified` / `showSeconds` options | `year` / `seconds` |
+| positional args of `formatCurrency`, `currencyToWords`, `formatPercentage`, `formatBytes`, `formatSecondsToTime`, `truncate`, `getLabelById` | the options object |
+
+In 2.0, `pad` will default to `false` and `formatBytes`/`formatCompactNumber` will default to `pt-BR`.
 
 ### formatting
 
@@ -247,7 +292,6 @@ Input mask patterns (react-input-mask convention: `9` = digit, `a` = letter, `*`
 - `getMimeType(fileName?, fallback = 'application/octet-stream')` — MIME type from the extension (images incl. webp/bmp/avif, documents, Office, audio, video); `?query`/`#hash` ignored
 - `getFileKind(fileName?)` — `'image' | 'pdf' | 'audio' | 'video' | 'office' | 'email' | 'markdown' | 'text' | 'other'`; `?query`/`#hash` ignored
 - `hasExtension(fileName?, extensions)` — case-insensitive extension check (with or without the dot); `?query`/`#hash` ignored
-
 - `toStringArray(value, { wrap? })` — narrows an unknown value to `string[]`, dropping entries of other types; non-arrays → `[]` (`wrap: true` turns `"a"` into `["a"]`)
 - `getFileExtension(value?)` — extension of a path/URL without the dot; ignores `?query`/`#hash` and dotted hosts, dotfiles → `""`
 - `parseInlineMarkup(value?, { boldMarker?, italicMarker? })` — WhatsApp-style `*bold*`/`_italic_` (nestable) → `{ text, bold?, italic? }[]`
