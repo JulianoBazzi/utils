@@ -15,5 +15,5 @@ export function getAge(birthDate?: Date | string | null): number {
   if (!birth.isValid()) return 0;
 
   const age = dayjs().diff(birth, 'year');
-  return age < 0 ? 0 : age;
+  return Math.max(age, 0);
 }
